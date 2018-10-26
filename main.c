@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "helpers/environment.h"
 #include "helpers/sounds.h"
-#include "helpers/fonts.h"
+#include "helpers/display.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>

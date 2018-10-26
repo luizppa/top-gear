@@ -8,6 +8,3 @@
 #define DISKUN_FONT        "assets/fonts/diskun.ttf"
 
 ALLEGRO_FONT* font(char* font_name, int size);
-void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text);
-ALLEGRO_COLOR rgb(int r, int g, int b);
-void clear_display(ALLEGRO_COLOR color);
