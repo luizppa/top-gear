@@ -29,7 +29,7 @@ ALLEGRO_AUDIO_STREAM *music = NULL;
 
 int main() {
   init();
-  while (1) {
+  while (true) {
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -38,8 +38,7 @@ int main() {
     else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
       else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
-        al_clear_to_color(rgb(42, 51, 232));
-        al_flip_display();
+        clear_display(rgb(42, 51, 232));
       }
     }
   }
@@ -91,9 +90,14 @@ int init() {
     return -1;
   }
 
+  draw_text(DISKUN_FONT, 56, rgb(42, 51, 232), sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE");
+  draw_text(PIXEL_FONT, 26, rgb(255, 255, 255), sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents");
+  al_rest(4.5);
+
   // al_clear_to_color(rgb(42, 51, 232));
+  clear_display(rgb(0, 0, 0));
   draw_text(NINTENDO_FONT, 56, rgb(255, 168, 40), sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
-  draw_text(PRESS_START_FONT, 26, rgb(255, 68, 23), sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
+  draw_text(PIXEL_FONT, 26, rgb(255, 68, 23), sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
 
 
   al_register_event_source(queue, al_get_display_event_source(display));
@@ -104,7 +108,6 @@ int init() {
 }
 
 void deinit() {
-  // al_rest(3.0);
   al_destroy_display(display);
   al_destroy_audio_stream(music);
   clearenv();

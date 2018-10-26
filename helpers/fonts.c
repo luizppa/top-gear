@@ -17,3 +17,8 @@ void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, i
 ALLEGRO_COLOR rgb(int r, int g, int b){
   return al_map_rgb(r, g, b);
 }
+
+void clear_display(ALLEGRO_COLOR color){
+  al_clear_to_color(color);
+  al_flip_display();
+}
