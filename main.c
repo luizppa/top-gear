@@ -20,14 +20,6 @@
 int init();
 void deinit();
 
-// int sw = 1300, sh = 700;
-//
-// ALLEGRO_DISPLAY_MODE disp_data;
-// ALLEGRO_DISPLAY* display = NULL;
-// ALLEGRO_EVENT_QUEUE* queue = NULL;
-// ALLEGRO_TIMER* timer = NULL;
-// ALLEGRO_AUDIO_STREAM *music = NULL;
-
 int main() {
   init();
   while (true) {
@@ -71,7 +63,7 @@ int init() {
   // Music setings
   music = set_music(TITLE_MUSIC);
   al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
-  start_music(music);
+  start_music(music, true);
 
   // Display settings
   // windowed
