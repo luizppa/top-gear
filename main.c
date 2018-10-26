@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "helpers/environment.h"
 #include "helpers/sounds.h"
 #include "helpers/fonts.h"
 
@@ -19,13 +20,13 @@
 int init();
 void deinit();
 
-int sw = 1300, sh = 700;
-
-ALLEGRO_DISPLAY_MODE disp_data;
-ALLEGRO_DISPLAY* display = NULL;
-ALLEGRO_EVENT_QUEUE* queue = NULL;
-ALLEGRO_TIMER* timer = NULL;
-ALLEGRO_AUDIO_STREAM *music = NULL;
+// int sw = 1300, sh = 700;
+//
+// ALLEGRO_DISPLAY_MODE disp_data;
+// ALLEGRO_DISPLAY* display = NULL;
+// ALLEGRO_EVENT_QUEUE* queue = NULL;
+// ALLEGRO_TIMER* timer = NULL;
+// ALLEGRO_AUDIO_STREAM *music = NULL;
 
 int main() {
   init();
@@ -45,7 +46,6 @@ int main() {
   deinit();
   return 0;
 }
-// END_OF_MAIN();
 
 int init() {
 
@@ -78,6 +78,7 @@ int init() {
   al_set_new_display_flags(ALLEGRO_WINDOWED);
   display = al_create_display(sw, sh);
   // fullscreen
+  // TODO: fix fullscreen renderization
   // al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
   // al_set_new_display_flags(ALLEGRO_FULLSCREEN);
   // display = al_create_display(disp_data.width, disp_data.height);
@@ -90,11 +91,12 @@ int init() {
     return -1;
   }
 
+  // Presentation screen
   draw_text(DISKUN_FONT, 56, rgb(42, 51, 232), sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE");
   draw_text(PIXEL_FONT, 26, rgb(255, 255, 255), sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents");
   al_rest(4.5);
 
-  // al_clear_to_color(rgb(42, 51, 232));
+  // Title screen
   clear_display(rgb(0, 0, 0));
   draw_text(NINTENDO_FONT, 56, rgb(255, 168, 40), sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
   draw_text(PIXEL_FONT, 26, rgb(255, 68, 23), sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
