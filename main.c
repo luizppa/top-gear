@@ -2,6 +2,7 @@
 #include "helpers/environment.h"
 #include "helpers/sounds.h"
 #include "helpers/display.h"
+#include "helpers/colors.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>
@@ -31,7 +32,7 @@ int main() {
     else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
       else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
-        clear_display(rgb(42, 51, 232));
+        clear_display(BLUE);
       }
     }
   }
@@ -66,6 +67,7 @@ int init() {
   start_music(music, true);
 
   // Display settings
+  init_colors();
   // windowed
   al_set_new_display_flags(ALLEGRO_WINDOWED);
   display = al_create_display(sw, sh);
@@ -84,14 +86,14 @@ int init() {
   }
 
   // Presentation screen
-  draw_text(DISKUN_FONT, 56, rgb(42, 51, 232), sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE");
-  draw_text(PIXEL_FONT, 26, rgb(255, 255, 255), sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents");
+  draw_text(DISKUN_FONT, 56, BLUE, sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE");
+  draw_text(PIXEL_FONT, 26, WHITE, sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents");
   al_rest(4.5);
 
   // Title screen
   clear_display(rgb(0, 0, 0));
-  draw_text(NINTENDO_FONT, 56, rgb(255, 168, 40), sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
-  draw_text(PIXEL_FONT, 26, rgb(255, 68, 23), sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
+  draw_text(NINTENDO_FONT, 56, ORANGE, sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
+  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
 
 
   al_register_event_source(queue, al_get_display_event_source(display));

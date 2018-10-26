@@ -8,11 +8,6 @@ void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, i
   al_destroy_font(selected_font);
 }
 
-// Returns a rgb allegro color
-ALLEGRO_COLOR rgb(int r, int g, int b){
-  return al_map_rgb(r, g, b);
-}
-
 // Clear the display to a given color
 void clear_display(ALLEGRO_COLOR color){
   al_clear_to_color(color);
