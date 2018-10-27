@@ -1,5 +1,11 @@
 #include "display.h"
 
+ALLEGRO_BITMAP *game_title = NULL;
+
+void init_bitmaps(){
+  game_title = al_load_bitmap("assets/images/logo.png");
+}
+
 // Draw a message to the screen
 void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text){
   ALLEGRO_FONT *selected_font = font(font_name, size);
@@ -12,4 +18,8 @@ void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, i
 void clear_display(ALLEGRO_COLOR color){
   al_clear_to_color(color);
   al_flip_display();
+}
+
+void destroy_bitmaps(){
+  al_destroy_bitmap(game_title);
 }

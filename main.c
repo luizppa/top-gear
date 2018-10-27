@@ -42,20 +42,10 @@ int main() {
 
 int init() {
 
-  // Setings
-  if (!al_init()) {
-    printf("Allegro init failed.\n");
-    return 1;
-  }
-  if (!al_install_audio() || !al_install_keyboard() || !al_install_mouse() || !al_reserve_samples(3)) {
-    printf("Install failed.\n");
-    return 2;
-  }
-  if (!al_init_font_addon() || !al_init_ttf_addon() || !al_init_acodec_addon() || !al_init_video_addon() || !al_init_image_addon() || !al_init_primitives_addon()) {
-    printf("Addon init failed.\n");
-    return 5;
-  }
+  // Instaling plugins
+  init_environment();
 
+  // Seting path
   ALLEGRO_PATH* p = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
   al_change_directory(al_path_cstr(p, '\\'));
   al_destroy_path(p);
@@ -68,18 +58,11 @@ int init() {
 
   // Display settings
   init_colors();
-  // windowed
-  al_set_new_display_flags(ALLEGRO_WINDOWED);
-  display = al_create_display(sw, sh);
-  // fullscreen
-  // TODO: fix fullscreen renderization
-  // al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
-  // al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-  // display = al_create_display(disp_data.width, disp_data.height);
-  al_set_window_title(display, "Top Gear");
+  init_bitmaps();
+  setup_display();
 
-  queue = al_create_event_queue();
-  timer = al_create_timer(1.0 / 60.0);
+  // Events setings
+  setup_events();
   if (!display || !queue || !timer || !music) {
     printf("Failed setup.\n");
     return -1;
@@ -91,20 +74,18 @@ int init() {
   al_rest(4.5);
 
   // Title screen
-  clear_display(rgb(0, 0, 0));
-  draw_text(NINTENDO_FONT, 56, ORANGE, sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
-  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
-
-
-  al_register_event_source(queue, al_get_display_event_source(display));
-  al_register_event_source(queue, al_get_timer_event_source(timer));
-  al_register_event_source(queue, al_get_keyboard_event_source());
-  al_reserve_samples(2);
+  clear_display(BLUE);
+  al_draw_bitmap(game_title, (sw/2)-203, (sh/2)-182, 0);
+  // draw_text(NINTENDO_FONT, 56, ORANGE, sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
+  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
 
 }
 
 void deinit() {
+  destroy_bitmaps();
+  al_destroy_timer(timer);
   al_destroy_display(display);
+  al_destroy_event_queue(queue);
   al_destroy_audio_stream(music);
   clearenv();
 }
