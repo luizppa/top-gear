@@ -7,9 +7,14 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-extern ALLEGRO_BITMAP *game_title; // 406x182
+extern int sw;
+extern int sh;
+
+extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
+extern ALLEGRO_BITMAP *GAME_ICON;
 
 void init_bitmaps();
 void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text);
 void clear_display(ALLEGRO_COLOR color);
+void draw_title();
 void destroy_bitmaps();

@@ -1,9 +1,14 @@
 #include "display.h"
 
-ALLEGRO_BITMAP *game_title = NULL;
+int sw = 1300;
+int sh = 700;
+
+ALLEGRO_BITMAP *GAME_TITLE = NULL;
+ALLEGRO_BITMAP *GAME_ICON = NULL;
 
 void init_bitmaps(){
-  game_title = al_load_bitmap("assets/images/logo.png");
+  GAME_TITLE = al_load_bitmap("assets/images/logo.png");
+  GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
 }
 
 // Draw a message to the screen
@@ -20,6 +25,14 @@ void clear_display(ALLEGRO_COLOR color){
   al_flip_display();
 }
 
+void draw_title(){
+  clear_display(BLUE);
+  al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-182, 0);
+  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
+  draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.");
+}
+
 void destroy_bitmaps(){
-  al_destroy_bitmap(game_title);
+  al_destroy_bitmap(GAME_TITLE);
+  al_destroy_bitmap(GAME_ICON);
 }

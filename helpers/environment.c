@@ -1,7 +1,5 @@
 #include "environment.h"
 
-int sw = 1300;
-int sh = 700;
 float fps = 60.0;
 
 ALLEGRO_DISPLAY_MODE disp_data;
@@ -27,6 +25,8 @@ void init_environment(){
 }
 
 void setup_display(){
+  init_colors();
+  init_bitmaps();
   // windowed
   al_set_new_display_flags(ALLEGRO_WINDOWED);
   display = al_create_display(sw, sh);
@@ -36,6 +36,7 @@ void setup_display(){
   // al_set_new_display_flags(ALLEGRO_FULLSCREEN);
   // display = al_create_display(disp_data.width, disp_data.height);
   al_set_window_title(display, "Top Gear");
+  al_set_display_icon(display, GAME_ICON);
 }
 
 void setup_events(){

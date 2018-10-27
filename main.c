@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "helpers/environment.h"
-#include "helpers/sounds.h"
-#include "helpers/display.h"
-#include "helpers/colors.h"
+#include "helpers/menus.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>
@@ -23,16 +21,18 @@ void deinit();
 
 int main() {
   init();
+  int op;
   while (true) {
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       break;
     }
-    else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
       else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
-        clear_display(BLUE);
+        op = main_menu();
+        if(op == 4) break;
       }
     }
   }
@@ -57,8 +57,6 @@ int init() {
   start_music(music, true);
 
   // Display settings
-  init_colors();
-  init_bitmaps();
   setup_display();
 
   // Events setings
@@ -74,10 +72,7 @@ int init() {
   al_rest(4.5);
 
   // Title screen
-  clear_display(BLUE);
-  al_draw_bitmap(game_title, (sw/2)-203, (sh/2)-182, 0);
-  // draw_text(NINTENDO_FONT, 56, ORANGE, sw/2, (sh/2)-28, ALLEGRO_ALIGN_CENTRE, "Top Gear");
-  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...");
+  draw_title();
 
 }
 

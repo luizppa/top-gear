@@ -5,6 +5,7 @@ ALLEGRO_COLOR WHITE;
 ALLEGRO_COLOR BLUE;
 ALLEGRO_COLOR RED;
 ALLEGRO_COLOR ORANGE;
+ALLEGRO_COLOR YELLOW;
 
 // Returns a rgb allegro color
 ALLEGRO_COLOR rgb(int r, int g, int b){
@@ -17,4 +18,5 @@ void init_colors(){
   BLUE = rgb(42, 51, 232);
   RED = rgb(255, 68, 23);
   ORANGE = rgb(255, 168, 40);
+  YELLOW = rgb(255, 193, 30);
 }
