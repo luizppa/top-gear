@@ -12,6 +12,7 @@ ALLEGRO_COLOR rgb(int r, int g, int b){
   return al_map_rgb(r, g, b);
 }
 
+// Initialize color values
 void init_colors(){
   BLACK = rgb(0, 0, 0);
   WHITE = rgb(255, 255, 255);

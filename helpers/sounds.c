@@ -1,9 +1,7 @@
 #include "sounds.h"
 
 // Play music from the beginning
-/*  TODO: modify start_music() to recieve a boolean
-    that tells if the music should be played in loop  */
-void start_music(ALLEGRO_AUDIO_STREAM* music, int loop){
+void start_music(ALLEGRO_AUDIO_STREAM* music, bool loop){
   if(loop) al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_LOOP);
   else al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_ONCE);
   al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
@@ -13,6 +11,7 @@ void start_music(ALLEGRO_AUDIO_STREAM* music, int loop){
 // Stop the music execution
 void stop_music(ALLEGRO_AUDIO_STREAM* music){
   al_set_audio_stream_playing(music, false);
+  al_destroy_audio_stream(music);
 }
 
 // Set the music to be played

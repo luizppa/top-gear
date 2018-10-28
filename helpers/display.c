@@ -4,10 +4,13 @@ int sw = 1300;
 int sh = 700;
 
 ALLEGRO_BITMAP *GAME_TITLE = NULL;
+ALLEGRO_BITMAP *GAME_CAR_BITMAP = NULL;
 ALLEGRO_BITMAP *GAME_ICON = NULL;
 
+// Initialize bitmaps
 void init_bitmaps(){
   GAME_TITLE = al_load_bitmap("assets/images/logo.png");
+  GAME_CAR_BITMAP = al_load_bitmap("assets/images/car.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
 }
 
@@ -25,6 +28,7 @@ void clear_display(ALLEGRO_COLOR color){
   al_flip_display();
 }
 
+// Draw title screen
 void draw_title(){
   clear_display(BLUE);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-182, 0);
@@ -32,7 +36,9 @@ void draw_title(){
   draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.");
 }
 
+// Free pointers
 void destroy_bitmaps(){
   al_destroy_bitmap(GAME_TITLE);
+  al_destroy_bitmap(GAME_CAR_BITMAP);
   al_destroy_bitmap(GAME_ICON);
 }

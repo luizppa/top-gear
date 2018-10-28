@@ -20,7 +20,7 @@ extern ALLEGRO_DISPLAY* display;
 extern ALLEGRO_EVENT_QUEUE* queue;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_AUDIO_STREAM* music;
-extern ALLEGRO_KEYBOARD_STATE* key_state;
+extern ALLEGRO_KEYBOARD_STATE key_state;
 
 void init_environment();
 void setup_display();

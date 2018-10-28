@@ -14,7 +14,7 @@
 #define QUALIFIED_MUSIC "assets/music/06_qualified.ogg"
 #define ENDING_MUSIC "assets/music/07_ending_theme.ogg"
 
-void start_music(ALLEGRO_AUDIO_STREAM* music, int loop);
+void start_music(ALLEGRO_AUDIO_STREAM* music, bool loop);
 void stop_music(ALLEGRO_AUDIO_STREAM* music);
 ALLEGRO_AUDIO_STREAM* set_music(char* file);
 void change_music(ALLEGRO_AUDIO_STREAM* music, char* file);

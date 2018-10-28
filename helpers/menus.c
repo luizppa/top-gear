@@ -2,8 +2,8 @@
 
 ALLEGRO_COLOR colors[4];
 
+// Updates menu on screen
 int redraw_main_menu(int op){
-  clear_display(BLUE);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-250, 0);
   draw_text(PIXEL_FONT, 28, colors[0], sw/2, (sh/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY");
   draw_text(PIXEL_FONT, 28, colors[1], sw/2, (sh/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS");
@@ -11,12 +11,14 @@ int redraw_main_menu(int op){
   draw_text(PIXEL_FONT, 28, colors[3], sw/2, (sh/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT");
 }
 
+// Runs main menu
 int main_menu(){
   int op = 1;
   colors[0] = WHITE;
   colors[1] = YELLOW;
   colors[2] = YELLOW;
   colors[3] = YELLOW;
+  clear_display(BLUE);
   redraw_main_menu(op);
   while (true) {
     ALLEGRO_EVENT ev;
@@ -25,7 +27,7 @@ int main_menu(){
       return 4;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
       switch (ev.keyboard.keycode) {
         case ALLEGRO_KEY_UP:
         case ALLEGRO_KEY_W:

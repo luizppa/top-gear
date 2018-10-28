@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "helpers/environment.h"
 #include "helpers/menus.h"
+#include "helpers/game.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>
@@ -25,14 +26,46 @@ int main() {
   while (true) {
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
+    // Events handling
+    // Close window
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       break;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
+      // Quit game
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        deinit();
+        return 0;
+      }
+      // Go to main menu
       else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
-        op = main_menu();
-        if(op == 4) break;
+        while(true){
+          op = main_menu();
+          // Quit game
+          if(op == 4){
+            deinit();
+            return 0;
+          }
+          // Back to title
+          else if(op == -1){
+            draw_title();
+            break;
+          }
+          switch (op) {
+            // Start race
+            case 1:
+              op = play();
+              stop_music(music);
+              music = set_music(TITLE_MUSIC);
+              start_music(music, true);
+              break;
+          }
+          // Quit game
+          if(op == 4){
+            deinit();
+            return 0;
+          }
+        }
       }
     }
   }
@@ -69,7 +102,7 @@ int init() {
   // Presentation screen
   draw_text(DISKUN_FONT, 56, BLUE, sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE");
   draw_text(PIXEL_FONT, 26, WHITE, sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents");
-  al_rest(4.5);
+  al_rest(4);
 
   // Title screen
   draw_title();

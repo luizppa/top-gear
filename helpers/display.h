@@ -11,6 +11,7 @@ extern int sw;
 extern int sh;
 
 extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
+extern ALLEGRO_BITMAP *GAME_CAR_BITMAP; // 246x163
 extern ALLEGRO_BITMAP *GAME_ICON;
 
 void init_bitmaps();

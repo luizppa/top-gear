@@ -7,8 +7,9 @@ ALLEGRO_DISPLAY* display = NULL;
 ALLEGRO_EVENT_QUEUE* queue = NULL;
 ALLEGRO_TIMER* timer = NULL;
 ALLEGRO_AUDIO_STREAM *music = NULL;
-ALLEGRO_KEYBOARD_STATE* key_state = NULL;
+ALLEGRO_KEYBOARD_STATE key_state;
 
+// Install plugins
 void init_environment(){
   if (!al_init()) {
     printf("Allegro init failed.\n");
@@ -24,6 +25,7 @@ void init_environment(){
   }
 }
 
+// Configure display
 void setup_display(){
   init_colors();
   init_bitmaps();
@@ -39,11 +41,13 @@ void setup_display(){
   al_set_display_icon(display, GAME_ICON);
 }
 
+// Configure event listeners
 void setup_events(){
   queue = al_create_event_queue();
   timer = al_create_timer(1.0 / fps);
   al_register_event_source(queue, al_get_display_event_source(display));
   al_register_event_source(queue, al_get_timer_event_source(timer));
   al_register_event_source(queue, al_get_keyboard_event_source());
+  al_start_timer(timer);
   al_reserve_samples(2);
 }
