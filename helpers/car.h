@@ -3,6 +3,7 @@
 
 #define GRASS_SLOW_EFFECT 0.13333333333
 #define NO_ACCELERATE_EFFECT 0.03333333333
+#define BREAK_EFFECT 0.6
 
 struct CAR_TYPE {
   float width;

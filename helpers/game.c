@@ -61,8 +61,7 @@ int update(){
   }
   else{
     moviment_speed = 10.0;
-    if(player.speed - GRASS_SLOW_EFFECT > 0) player.speed -= GRASS_SLOW_EFFECT;
-    else player.speed = 0;
+    player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
     if(position < max(sw, street_width)+player.width) position += moviment_speed;
@@ -71,7 +70,7 @@ int update(){
     if(position > 0-player.width) position -= moviment_speed;
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
-    if(player.speed+speed_increase(player.gear, player.speed) < 8.6/10.0*max_speed(player.gear)) {
+    if(player.speed+speed_increase(player.gear, player.speed) < 0.86*max_speed(player.gear)) {
       player.speed += speed_increase(player.gear, player.speed);
     }
     else {
@@ -79,8 +78,10 @@ int update(){
     }
   }
   else {
-    if(player.speed > NO_ACCELERATE_EFFECT) player.speed -= NO_ACCELERATE_EFFECT;
-    else player.speed = 0;
+    player.speed = max(0, player.speed - NO_ACCELERATE_EFFECT);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_S)){
+    player.speed = max(0, player.speed - BREAK_EFFECT);
   }
   redraw_game();
   return 0;

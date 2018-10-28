@@ -17,20 +17,20 @@ float speed_increase(int gear, float speed){
     case 1:
       return 4.0/60;
     case 2:
-      if(speed > 8/10*max_speed(gear-1)) return 4.0/60;
-      else return 4/10*speed_increase(gear-1, speed);
+      if(speed > 0.8*max_speed(gear-1)) return 4.0/60;
+      else return 0.4*speed_increase(gear-1, speed);
     case 3:
-      if(speed > 8/10*max_speed(gear-1)) return 7.0/60;
-      else return 8/10*speed_increase(gear-1, speed);
+      if(speed > 0.8*max_speed(gear-1)) return 7.0/60;
+      else return 0.8*speed_increase(gear-1, speed);
     case 4:
-      if(speed > 8/10*max_speed(gear-1)) return 9.0/60;
-      else return 6/10*speed_increase(gear-1, speed);
+      if(speed > 0.8*max_speed(gear-1)) return 9.0/60;
+      else return 0.6*speed_increase(gear-1, speed);
     case 5:
-      if(speed > 8/10*max_speed(gear-1)) return 7.0/60;
-      else return 4/10*speed_increase(gear-1, speed);
+      if(speed > 0.8*max_speed(gear-1)) return 7.0/60;
+      else return 0.4*speed_increase(gear-1, speed);
     case 6:
-      if(speed > 8/10*max_speed(gear-1)) return 5.0/60;
-      else return 4/10*speed_increase(gear-1, speed);
+      if(speed > 0.8*max_speed(gear-1)) return 5.0/60;
+      else return 0.4*speed_increase(gear-1, speed);
   }
 }
 
@@ -45,8 +45,8 @@ float max_speed(int gear){
     case 4:
       return 100.0;
     case 5:
-      return 120.0;
+      return 140.0;
     case 6:
-      return 160.0;
+      return 200.0;
   }
 }
