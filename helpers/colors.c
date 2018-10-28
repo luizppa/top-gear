@@ -2,6 +2,7 @@
 
 ALLEGRO_COLOR BLACK;
 ALLEGRO_COLOR WHITE;
+ALLEGRO_COLOR GREY;
 ALLEGRO_COLOR BLUE;
 ALLEGRO_COLOR LIGHT_BLUE;
 ALLEGRO_COLOR RED;
@@ -17,6 +18,7 @@ ALLEGRO_COLOR rgb(int r, int g, int b){
 void init_colors(){
   BLACK = rgb(0, 0, 0);
   WHITE = rgb(255, 255, 255);
+  GREY = rgb(45, 45, 45);
   BLUE = rgb(42, 51, 232);
   LIGHT_BLUE = rgb(13, 162, 255);
   RED = rgb(255, 68, 23);
