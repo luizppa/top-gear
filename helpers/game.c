@@ -13,6 +13,11 @@ float max(float a, float b){
   return b;
 }
 
+float min(float a, float b){
+  if(a < b) return a;
+  return b;
+}
+
 void draw_track(){
   // Street center
   // al_draw_filled_circle(position, sh-60, 1, BLUE);
@@ -64,10 +69,10 @@ int update(){
     player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
-    if(position < max(sw, street_width)+player.width) position += moviment_speed;
+    if(position < max(sw, street_width)+player.width) position += min(moviment_speed*((player.speed)/40), moviment_speed);
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_D)){
-    if(position > 0-player.width) position -= moviment_speed;
+    if(position > 0-player.width) position -= min(moviment_speed*((player.speed)/40), moviment_speed);
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
     if(speed_increase(player.gear, player.speed) < 0){
