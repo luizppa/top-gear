@@ -27,8 +27,8 @@ void draw_track(){
 
 void draw_car(){
   al_draw_bitmap(player.texture, (sw/2)-(player.width/2), (sh)-(20+player.height), 0);
-  al_draw_rectangle((sw/2)-(player.width/2), sh-(player.height+20), (sw/2)+(player.width/2), sh-20.0, RED, 1);
-  al_draw_filled_circle(sw/2, sh-(20+(player.height/2)), 1, RED);
+  // al_draw_rectangle((sw/2)-(player.width/2), sh-(player.height+20), (sw/2)+(player.width/2), sh-20.0, RED, 1);
+  // al_draw_filled_circle(sw/2, sh-(20+(player.height/2)), 1, RED);
 }
 
 void draw_hud(){
@@ -70,14 +70,20 @@ int update(){
     if(position > 0-player.width) position -= moviment_speed;
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
-    if(player.speed+speed_increase(player.gear, player.speed) < 0.86*max_speed(player.gear)) {
+    if(speed_increase(player.gear, player.speed) < 0){
+      player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
+    }
+    else if(player.speed+speed_increase(player.gear, player.speed) < 0.86*max_speed(player.gear)) {
       player.speed += speed_increase(player.gear, player.speed);
     }
     else {
-      player.speed += speed_increase(player.gear, player.speed)/8;
+      player.speed += speed_increase(player.gear, player.speed)/6;
     }
   }
   else {
+    if(speed_increase(player.gear, player.speed) < 0){
+      player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
+    }
     player.speed = max(0, player.speed - NO_ACCELERATE_EFFECT);
   }
   if (al_key_down(&key_state, ALLEGRO_KEY_S)){
