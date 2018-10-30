@@ -1,32 +1,23 @@
 #include "game.h"
 #include "car.h"
+#include "utils.h"
 
 int oponent_count = 12;
 float position;
 float moviment_speed = 22.0;
 float street_width = 1300.0;
 float street_length = 500.0;
-float street_left_limit;
 float view_angle = 16.0;
+float street_left_limit;
 CAR player;
 CAR* oponents;
 
-float max(float a, float b){
-  if(a > b) return a;
-  return b;
-}
-
-float min(float a, float b){
-  if(a < b) return a;
-  return b;
-}
-
 float distance_to(int i){
-  return oponents[i].position_y - player.position_y;
+  return oponents[i].position_y - (player.position_y+(player.height/2));
 }
 
 bool is_car_on_sight(int i){
-  return (distance_to(i) <= 650 && distance_to(i) >= -20);
+  return (distance_to(i) <= street_length && distance_to(i) >= -20);
 }
 
 void draw_track(){
@@ -42,44 +33,59 @@ void draw_track(){
 }
 
 void draw_car(){
+// Perspective rate
+float delta = get_delta(street_width, street_width/view_angle, street_length, player.height+20);
   // Car texture
-  al_draw_bitmap(player.texture, (sw/2)-(player.width/2), (sh)-(20+player.height), 0);
+  al_draw_scaled_bitmap(player.texture, 0, 0, player.width, player.height, (sw/2)-(player.width/2)*delta, (sh)-(20+player.height), player.width*delta, player.height*delta, 0);
+  // al_draw_bitmap(player.texture, (sw/2)-(player.width/2), (sh)-(20+player.height), 0);
   // Car boundaries
-  // al_draw_rectangle((sw/2)-(player.width/2), sh-(player.height+20), (sw/2)+(player.width/2), sh-20.0, RED, 1);
+  // al_draw_rectangle((sw/2)-(player.width/2), sh-(player.height+20), (sw/2)+(player.width/2), sh-20.0, BLUE, 1);
   // Car center
   // al_draw_filled_circle(sw/2, sh-(20+(player.height/2)), 1, RED);
 }
 
 void draw_oponent(int i){
   CAR oponent = oponents[i];
-  al_draw_bitmap(oponent.texture, position+(oponent.position_x-oponent.width/2), sh-(20+distance_to(i)), 0);
+  // Perspective rate
+  float delta = get_delta(street_width, street_width/view_angle, street_length, distance_to(i));
+  // Car texture
+  al_draw_scaled_bitmap(oponent.texture, 0, 0, oponent.width, oponent.height, position+((oponent.position_x-oponent.width/2)*delta), sh-(distance_to(i)), oponent.width*delta, oponent.height*delta, 0);
+  // Car boundaries
+  // al_draw_rectangle(position+(oponent.position_x-oponent.width/2), sh-(20+distance_to(i)), position+(oponent.position_x-oponent.width/2)+STANDARD_CAR_WIDTH, sh-(20+distance_to(i))+STANDARD_CAR_HEIGHT, RED, 1);
 }
 
 void draw_hud(){
   char gear[10];
   char speed[20];
+  // Gears
   sprintf(gear, "%d", player.gear);
-  sprintf(speed, "%.0f Km/h", player.speed);
   draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
   draw_text(DISKUN_FONT, 80, YELLOW, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
+  // Speed
+  sprintf(speed, "%.0f Km/h", player.speed);
   draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
   draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
 void redraw_game(){
   al_clear_to_color(GREY);
+  // Draw track boundaries
   draw_track();
+  // Draw cars ahead to the player
   for(int i = oponent_count-1; i >= 0; i--){
     if(is_car_on_sight(i) && distance_to(i) > STANDARD_CAR_HEIGHT){
       draw_oponent(i);
     }
   }
+  // Draw player
   draw_car();
+  // Draw cars behind the player
   for(int i = oponent_count-1; i >= 0; i--){
     if(is_car_on_sight(i) && distance_to(i) < STANDARD_CAR_HEIGHT){
       draw_oponent(i);
     }
   }
+  // Draw screen stats
   draw_hud();
   al_flip_display();
 }

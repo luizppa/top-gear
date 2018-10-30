@@ -36,7 +36,7 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   else{
     car.position_x = ((1*25)+(1*400));
   }
-  car.position_y = (((lvl%4)+1)*100)+car.height;
+  car.position_y = (((lvl%4)+1)*150)+car.height;
   return car;
 }
 
@@ -104,9 +104,6 @@ CAR* quick_sort_cars(CAR* cars, int size){
     cars[wall] = cars[pivot];
     cars[pivot] = aux;
     wall++;
-  }
-  for(int i = 0; i < size; i++){
-    printf("%.2f\n", cars[i].position_y);
   }
   return cars;
 }

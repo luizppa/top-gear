@@ -35,7 +35,7 @@ void draw_title(){
   clear_display(BLUE, false);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-182, 0);
   draw_text(PIXEL_FONT, 22, YELLOW, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
-  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
+  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+85, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
   draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
   draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
 }
