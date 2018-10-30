@@ -5,12 +5,14 @@ int sh = 700;
 
 ALLEGRO_BITMAP *GAME_TITLE = NULL;
 ALLEGRO_BITMAP *GAME_CAR_BITMAP = NULL;
+ALLEGRO_BITMAP *OPONENT_CAR_BITMAP = NULL;
 ALLEGRO_BITMAP *GAME_ICON = NULL;
 
 // Initialize bitmaps
 void init_bitmaps(){
   GAME_TITLE = al_load_bitmap("assets/images/logo.png");
   GAME_CAR_BITMAP = al_load_bitmap("assets/images/car.png");
+  OPONENT_CAR_BITMAP = al_load_bitmap("assets/images/oponent_car.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
 }
 
@@ -32,7 +34,9 @@ void clear_display(ALLEGRO_COLOR color, bool flip){
 void draw_title(){
   clear_display(BLUE, false);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-182, 0);
-  draw_text(PIXEL_FONT, 26, RED, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
+  draw_text(PIXEL_FONT, 22, YELLOW, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
+  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+70, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
+  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
   draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
 }
 
