@@ -2,13 +2,15 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 12;
+int oponent_count = 11;
 float position;
 float moviment_speed = 22.0;
 float street_width = 1300.0;
 float street_length = 500.0;
 float view_angle = 16.0;
 float street_left_limit;
+int placement = 1;
+ALLEGRO_EVENT ev;
 CAR player;
 CAR* oponents;
 
@@ -55,8 +57,13 @@ void draw_oponent(int i){
 }
 
 void draw_hud(){
-  char gear[10];
-  char speed[20];
+  char position[8];
+  char gear[8];
+  char speed[16];
+  // Position
+  // sprintf(position, "%dth", placement);
+  // draw_text(DISKUN_FONT, 60, YELLOW, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  // draw_text(DISKUN_FONT, 80, YELLOW, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
   draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
@@ -72,16 +79,19 @@ void redraw_game(){
   // Draw track boundaries
   draw_track();
   // Draw cars ahead to the player
+  placement = 1;
   for(int i = oponent_count-1; i >= 0; i--){
-    if(is_car_on_sight(i) && distance_to(i) > STANDARD_CAR_HEIGHT){
-      draw_oponent(i);
+    if(distance_to(i) > 20){
+      placement++;
+      if(is_car_on_sight(i)) draw_oponent(i);
     }
+    else break;
   }
   // Draw player
   draw_car();
   // Draw cars behind the player
   for(int i = oponent_count-1; i >= 0; i--){
-    if(is_car_on_sight(i) && distance_to(i) < STANDARD_CAR_HEIGHT){
+    if(is_car_on_sight(i) && distance_to(i) <= STANDARD_CAR_HEIGHT+20){
       draw_oponent(i);
     }
   }
@@ -126,6 +136,13 @@ void move(){
 }
 
 int update(){
+  al_get_keyboard_state(&key_state);
+  // Return to menu
+  if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
+  // // Gear up
+  // else if(al_key_down(&key_state, ALLEGRO_KEY_E)) gear_up(&player);
+  // // Gear down
+  // else if(al_key_down(&key_state, ALLEGRO_KEY_Q)) gear_down(&player);
   if(is_car_on_track()){
     moviment_speed = 22.0;
   }
@@ -149,8 +166,8 @@ int play(){
   start_music(music, true);
 
   // Initialize player
-  position = (sw/2);
   player = new_car(GAME_CAR_BITMAP);
+  position = (sw/2);
 
   // Initialize oponents
   oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
@@ -158,22 +175,26 @@ int play(){
     oponents[i] = new_oponent(i+1, OPONENT_CAR_BITMAP);
   }
 
-  redraw_game();
+  for (int i = 3; i > 0; i--) {
+    redraw_game();
+    char countdown[4];
+    sprintf(countdown, "%d", i);
+    draw_text(DISKUN_FONT, 60, YELLOW, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
+    al_rest(1);
+  }
+  al_flush_event_queue(queue);
   while (true) {
-    ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
-    // Return to menu
-    if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+    if(ev.type == ALLEGRO_EVENT_KEY_UP){
       // Gear up
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
+      if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
       // Gear down
       else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
     }
     // Quit game
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
     // Each 1/fps seconds
-    if(ev.type == ALLEGRO_EVENT_TIMER) {
+    else if(ev.type == ALLEGRO_EVENT_TIMER) {
       if(update() == -1){
         return -1;
       }

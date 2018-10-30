@@ -28,15 +28,15 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   car.max_gear = 5;
   car.texture = texture;
   if(lvl < 5){
-    car.position_x = -((1*25)+(1*400));
-  }
-  else if(lvl < 9){
-    car.position_x = 0;
-  }
-  else{
     car.position_x = ((1*25)+(1*400));
   }
-  car.position_y = (((lvl%4)+1)*150)+car.height;
+  else if(lvl < 9){
+    car.position_x = -((1*25)+(1*400));
+  }
+  else{
+    car.position_x = 0;
+  }
+  car.position_y = (((lvl%4)+1)*60)+car.height+20;
   return car;
 }
 
