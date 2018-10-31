@@ -1,4 +1,5 @@
 #include "car.h"
+#include "utils.h"
 
 #include <stdio.h>
 
@@ -25,18 +26,22 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   car.speed = 0.0;
   car.fuel = 100.0;
   car.gear = 1;
-  car.max_gear = 5;
+  car.max_gear = 6;
   car.texture = texture;
-  if(lvl < 5){
-    car.position_x = ((1*25)+(1*400));
+  if(lvl < 4){
+    car.position_y = (4*STARTING_DISTANCE)+car.height+20;
   }
-  else if(lvl < 9){
-    car.position_x = -((1*25)+(1*400));
+  else if(lvl < 7){
+    car.position_y = (3*STARTING_DISTANCE)+car.height+20;
+  }
+  else if(lvl < 10){
+    car.position_y = (2*STARTING_DISTANCE)+car.height+20;
   }
   else{
-    car.position_x = 0;
+    car.position_y = (STARTING_DISTANCE)+car.height+20;
   }
-  car.position_y = (((lvl%4)+1)*60)+car.height+20;
+  float x = ((lvl%3)-1);
+  car.position_x = (x*25)+(x*400);
   return car;
 }
 
@@ -106,4 +111,29 @@ CAR* quick_sort_cars(CAR* cars, int size){
     wall++;
   }
   return cars;
+}
+
+void control_ia(CAR* car){
+  // Going left
+  // if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
+  //   if(position < max(sw, street_width)+player.width) position += min(moviment_speed*((player.speed)/40), moviment_speed);
+  // }
+  // Going right
+  // if (al_key_down(&key_state, ALLEGRO_KEY_D)){
+  //   if(position > 0-player.width) position -= min(moviment_speed*((player.speed)/40), moviment_speed);
+  // }
+  // Accelerating
+  float delta_speed = speed_increase(car->gear, car->speed);
+  if(delta_speed < 0){
+    gear_down(car);
+    car->speed = max(0, car->speed + delta_speed);
+  }
+  else if(car->speed+delta_speed < 0.86*max_speed(car->gear)) {
+    car->speed += delta_speed;
+  }
+  else {
+    gear_up(car);
+    car->speed += delta_speed/6;
+  }
+  car->position_y += car->speed * DISTANCE_VARIATION * 0.86;
 }

@@ -9,19 +9,31 @@ float street_width = 1300.0;
 float street_length = 500.0;
 float view_angle = 16.0;
 float street_left_limit;
+float player_delta;
 int placement = 1;
 ALLEGRO_EVENT ev;
 CAR player;
 CAR* oponents;
 
-float distance_to(int i){
-  return oponents[i].position_y - (player.position_y+(player.height/2));
+// Distance from the car wheels to the bottom of the screen
+float distance_from_bottom(int i){
+  return oponents[i].position_y-player.position_y-oponents[i].height;
 }
 
+// Verify if the car should be rendered
 bool is_car_on_sight(int i){
-  return (distance_to(i) <= street_length && distance_to(i) >= -20);
+  float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(i));
+  float apparent_height = oponents[i].height*delta;
+  return (distance_from_bottom(i) <= street_length && distance_from_bottom(i) >= -apparent_height);
+  // return true;
 }
 
+// Verify it the car went off the road
+bool is_car_on_track(){
+  return (position-(player.width/2) >= street_left_limit && position+(player.width/2) <= sw-street_left_limit);
+}
+
+// Draw the scenario
 void draw_track(){
   // Street center
   // al_draw_filled_circle(position, sh-60, 1, BLUE);
@@ -34,33 +46,46 @@ void draw_track(){
   // al_draw_line(0, sh-street_length, sw, sh-street_length, BLUE, 1);
 }
 
-void draw_car(){
-// Perspective rate
-float delta = get_delta(street_width, street_width/view_angle, street_length, player.height+20);
+// Draw player's car
+void draw_player(){
   // Car texture
-  al_draw_scaled_bitmap(player.texture, 0, 0, player.width, player.height, (sw/2)-(player.width/2)*delta, (sh)-(20+player.height), player.width*delta, player.height*delta, 0);
-  // al_draw_bitmap(player.texture, (sw/2)-(player.width/2), (sh)-(20+player.height), 0);
+  al_draw_bitmap(player.texture, (sw/2)-(player.width/2), sh-player.height, 0);
   // Car boundaries
-  // al_draw_rectangle((sw/2)-(player.width/2), sh-(player.height+20), (sw/2)+(player.width/2), sh-20.0, BLUE, 1);
+  al_draw_rectangle((sw/2)-(player.width/2), sh-player.height, (sw/2)+(player.width/2), sh, BLUE, 1);
   // Car center
   // al_draw_filled_circle(sw/2, sh-(20+(player.height/2)), 1, RED);
 }
 
+// Draw oponet's cars
 void draw_oponent(int i){
   CAR oponent = oponents[i];
   // Perspective rate
-  float delta = get_delta(street_width, street_width/view_angle, street_length, distance_to(i));
+  float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(i));
+  float apparent_width = oponent.width*delta;
+  float apparent_height = oponent.height*delta;
   // Car texture
-  al_draw_scaled_bitmap(oponent.texture, 0, 0, oponent.width, oponent.height, position+((oponent.position_x-oponent.width/2)*delta), sh-(distance_to(i)), oponent.width*delta, oponent.height*delta, 0);
+  /*
+    TODO: Fix the x and y relative positions in perspective of the oponents
+  */
+  al_draw_scaled_bitmap(oponent.texture, 0, 0, oponent.width, oponent.height, position+oponent.position_x-(apparent_width/2), sh-distance_from_bottom(i)-apparent_height, apparent_width, apparent_height, 0);
   // Car boundaries
-  // al_draw_rectangle(position+(oponent.position_x-oponent.width/2), sh-(20+distance_to(i)), position+(oponent.position_x-oponent.width/2)+STANDARD_CAR_WIDTH, sh-(20+distance_to(i))+STANDARD_CAR_HEIGHT, RED, 1);
+  // al_draw_rectangle(position+oponent.position_x-(apparent_width/2), sh-distance_from_bottom(i)-apparent_height, position+oponent.position_x+(apparent_width/2), sh-distance_from_bottom(i), RED, 1);
 }
 
+// Draw screen info
 void draw_hud(){
   char position[8];
   char gear[8];
   char speed[16];
   // Position
+  /*
+    TODO: Fix the event queue problems
+    Drawing to much text on the screen causes te update to take longer than
+    1/60 seconds which is the refresh rate of the game. Therefore, the event
+    queue gets flooded with clock events causing the keyboard input listeners
+    (like gears up and down) to be drastically delayed.
+    -- Uncomment the three lines bellow to reproduce the error --
+  */
   // sprintf(position, "%dth", placement);
   // draw_text(DISKUN_FONT, 60, YELLOW, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
   // draw_text(DISKUN_FONT, 80, YELLOW, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
@@ -74,44 +99,55 @@ void draw_hud(){
   draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
-void redraw_game(){
-  al_clear_to_color(GREY);
-  // Draw track boundaries
-  draw_track();
+// Draw the game cars
+void draw_cars(){
   // Draw cars ahead to the player
   placement = 1;
-  for(int i = oponent_count-1; i >= 0; i--){
-    if(distance_to(i) > 20){
+  for(int i = 0; i < oponent_count; i++){
+    if(distance_from_bottom(i) > 0){
       placement++;
-      if(is_car_on_sight(i)) draw_oponent(i);
+      if(is_car_on_sight(i)){
+        draw_oponent(i);
+        // Uncoment these to see the order in which the cars are being rendered
+        // al_flip_display();
+        // al_rest(1);
+      }
     }
-    else break;
   }
   // Draw player
-  draw_car();
+  draw_player();
   // Draw cars behind the player
-  for(int i = oponent_count-1; i >= 0; i--){
-    if(is_car_on_sight(i) && distance_to(i) <= STANDARD_CAR_HEIGHT+20){
+  for(int i = 0; i < oponent_count; i++){
+    if(is_car_on_sight(i) && distance_from_bottom(i) <= 0){
       draw_oponent(i);
     }
   }
+}
+
+// Refresh game screen
+void draw_game(){
+  al_clear_to_color(GREY);
+  // Draw track boundaries
+  draw_track();
+  // Draw player and oponents
+  draw_cars();
   // Draw screen stats
   draw_hud();
   al_flip_display();
 }
 
-bool is_car_on_track(){
-  return (position-(player.width/2) >= street_left_limit && position+(player.width/2) <= sw-street_left_limit);
-}
-
+// Move the player based on input
 void move(){
   al_get_keyboard_state(&key_state);
+  // Going left
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
     if(position < max(sw, street_width)+player.width) position += min(moviment_speed*((player.speed)/40), moviment_speed);
   }
+  // Going right
   if (al_key_down(&key_state, ALLEGRO_KEY_D)){
     if(position > 0-player.width) position -= min(moviment_speed*((player.speed)/40), moviment_speed);
   }
+  // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
     if(speed_increase(player.gear, player.speed) < 0){
       player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
@@ -123,26 +159,26 @@ void move(){
       player.speed += speed_increase(player.gear, player.speed)/6;
     }
   }
+  // Natural deacceleration
   else {
     if(speed_increase(player.gear, player.speed) < 0){
       player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
     }
     player.speed = max(0, player.speed - NO_ACCELERATE_EFFECT);
   }
+  // Break
   if (al_key_down(&key_state, ALLEGRO_KEY_S)){
     player.speed = max(0, player.speed - BREAK_EFFECT);
   }
   player.position_y += player.speed * DISTANCE_VARIATION;
 }
 
+// Update game instant
 int update(){
   al_get_keyboard_state(&key_state);
   // Return to menu
   if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
-  // // Gear up
-  // else if(al_key_down(&key_state, ALLEGRO_KEY_E)) gear_up(&player);
-  // // Gear down
-  // else if(al_key_down(&key_state, ALLEGRO_KEY_Q)) gear_down(&player);
+  // Decrease the speed if the player has gone out of the road
   if(is_car_on_track()){
     moviment_speed = 22.0;
   }
@@ -150,9 +186,14 @@ int update(){
     moviment_speed = 10.0;
     player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
   }
+  for (int i = 0; i < oponent_count; i++) {
+    control_ia(&oponents[i]);
+  }
   move();
-  oponents = quick_sort_cars(oponents, oponent_count);
-  redraw_game();
+  // Sort oponents array (reportedly causing rendering issues)
+  // oponents = quick_sort_cars(oponents, oponent_count);
+  // Update screen
+  draw_game();
   return 0;
 }
 
@@ -175,14 +216,17 @@ int play(){
     oponents[i] = new_oponent(i+1, OPONENT_CAR_BITMAP);
   }
 
+  // Countdown
   for (int i = 3; i > 0; i--) {
-    redraw_game();
+    draw_game();
     char countdown[4];
     sprintf(countdown, "%d", i);
     draw_text(DISKUN_FONT, 60, YELLOW, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
     al_rest(1);
   }
   al_flush_event_queue(queue);
+
+  // Main loop
   while (true) {
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_KEY_UP){
