@@ -1,5 +1,6 @@
 #include "colors.h"
 
+// Predefined colors
 ALLEGRO_COLOR BLACK;
 ALLEGRO_COLOR WHITE;
 ALLEGRO_COLOR GREY;

@@ -1,5 +1,6 @@
 #include "display.h"
 
+// Screen dimensions
 int sw = 1300;
 int sh = 700;
 

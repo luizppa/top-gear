@@ -4,8 +4,10 @@
 #define SAMPLES_PER_BUFFER  1024
 
 // Predefined songs
-// Special thanks to https://downloads.khinsider.com/game-soundtracks/album/top-gear-snes
-// and https://audio.online-convert.com/convert-to-ogg for making this files possible
+/*
+  Special thanks to https://downloads.khinsider.com/game-soundtracks/album/top-gear-snes
+  and https://audio.online-convert.com/convert-to-ogg for making this files possible
+*/
 #define TITLE_MUSIC "assets/music/01_title.ogg"
 #define LAS_VEGAS_MUSIC "assets/music/02_las_vegas.ogg"
 #define HIROSHIMA_MUSIC "assets/music/03_hiroshima.ogg"

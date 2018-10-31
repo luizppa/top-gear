@@ -11,8 +11,6 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-extern int sw;
-extern int sh;
 extern float fps;
 
 extern ALLEGRO_DISPLAY_MODE disp_data;

@@ -2,14 +2,13 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 11;
-float position;
-float moviment_speed = 22.0;
-float street_width = 1300.0;
-float street_length = 500.0;
-float view_angle = 16.0;
-float street_left_limit;
-float player_delta;
+int oponent_count = 11; // Number of AI controlled oponents on the game
+float position; // The road center x coordinate on the screen
+float movement_speed = 22.0; // Lateral movement speed
+float street_width = 1300.0; // Street base width
+float street_length = 500.0; // Street visible spam
+float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
+float street_left_limit; // Street border
 int placement = 1;
 ALLEGRO_EVENT ev;
 CAR player;
@@ -141,11 +140,11 @@ void move(){
   al_get_keyboard_state(&key_state);
   // Going left
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
-    if(position < max(sw, street_width)+player.width) position += min(moviment_speed*((player.speed)/40), moviment_speed);
+    if(position < max(sw, street_width)+player.width) position += min(movement_speed*((player.speed)/40), movement_speed);
   }
   // Going right
   if (al_key_down(&key_state, ALLEGRO_KEY_D)){
-    if(position > 0-player.width) position -= min(moviment_speed*((player.speed)/40), moviment_speed);
+    if(position > 0-player.width) position -= min(movement_speed*((player.speed)/40), movement_speed);
   }
   // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
@@ -180,10 +179,10 @@ int update(){
   if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
   // Decrease the speed if the player has gone out of the road
   if(is_car_on_track()){
-    moviment_speed = 22.0;
+    movement_speed = 22.0;
   }
   else{
-    moviment_speed = 10.0;
+    movement_speed = 10.0;
     player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
   }
   for (int i = 0; i < oponent_count; i++) {
