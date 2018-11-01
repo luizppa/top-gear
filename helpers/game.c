@@ -13,6 +13,7 @@ int placement = 1;
 ALLEGRO_EVENT ev;
 CAR player;
 CAR* oponents;
+CAR** cars;
 
 // Distance from the car wheels to the bottom of the screen
 float distance_from_bottom(int i){
@@ -23,7 +24,7 @@ float distance_from_bottom(int i){
 bool is_car_on_sight(int i){
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(i));
   float apparent_height = oponents[i].height*delta;
-  return (distance_from_bottom(i) <= street_length && distance_from_bottom(i) >= -apparent_height);
+  return (distance_from_bottom(i) <= street_length-8 && distance_from_bottom(i) >= -apparent_height);
   // return true;
 }
 
@@ -85,9 +86,9 @@ void draw_hud(){
     (like gears up and down) to be drastically delayed.
     -- Uncomment the three lines bellow to reproduce the error --
   */
-  // sprintf(position, "%dth", placement);
-  // draw_text(DISKUN_FONT, 60, YELLOW, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  // draw_text(DISKUN_FONT, 80, YELLOW, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
+  sprintf(position, "%dth", placement);
+  draw_text(DISKUN_FONT, 60, YELLOW, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  draw_text(DISKUN_FONT, 80, YELLOW, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
   draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
@@ -135,8 +136,31 @@ void draw_game(){
   al_flip_display();
 }
 
+// Set gear to a specifc value if the numeric key corresponding to the gear is pressed
+void control_gears(){
+  if (al_key_down(&key_state, ALLEGRO_KEY_1)) {
+    set_gear(&player, 1);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_2)) {
+    set_gear(&player, 2);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_3)) {
+    set_gear(&player, 3);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_4)) {
+    set_gear(&player, 4);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_5)) {
+    set_gear(&player, 5);
+  }
+  if (al_key_down(&key_state, ALLEGRO_KEY_6)) {
+    set_gear(&player, 6);
+  }
+}
+
 // Move the player based on input
 void move(){
+  float delta_speed = speed_increase(player.gear, player.speed);
   al_get_keyboard_state(&key_state);
   // Going left
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
@@ -148,14 +172,14 @@ void move(){
   }
   // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
-    if(speed_increase(player.gear, player.speed) < 0){
-      player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
+    if(delta_speed < 0){
+      player.speed = max(0, player.speed + delta_speed);
     }
-    else if(player.speed+speed_increase(player.gear, player.speed) < 0.86*max_speed(player.gear)) {
-      player.speed += speed_increase(player.gear, player.speed);
+    else if(player.speed+delta_speed < 0.86*max_speed(player.gear)) {
+      player.speed += delta_speed;
     }
     else {
-      player.speed += speed_increase(player.gear, player.speed)/6;
+      player.speed += delta_speed/6;
     }
   }
   // Natural deacceleration
@@ -174,6 +198,7 @@ void move(){
 
 // Update game instant
 int update(){
+  control_gears();
   al_get_keyboard_state(&key_state);
   // Return to menu
   if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
@@ -185,10 +210,12 @@ int update(){
     movement_speed = 10.0;
     player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
   }
+  // car_colided(&player, cars, oponent_count+1);
+  move();
   for (int i = 0; i < oponent_count; i++) {
+    car_colided(&oponents[i], cars, oponent_count+1);
     control_ia(&oponents[i]);
   }
-  move();
   // Sort oponents array (reportedly causing rendering issues)
   // oponents = quick_sort_cars(oponents, oponent_count);
   // Update screen
@@ -211,9 +238,12 @@ int play(){
 
   // Initialize oponents
   oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
+  cars = (CAR**) calloc(oponent_count+1, sizeof(CAR*));
   for (int i = 0; i < oponent_count; i++) {
     oponents[i] = new_oponent(i+1, OPONENT_CAR_BITMAP);
+    cars[i] = &oponents[i];
   }
+  cars[oponent_count] = &player;
 
   // Countdown
   for (int i = 3; i > 0; i--) {

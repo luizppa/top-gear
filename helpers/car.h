@@ -6,7 +6,7 @@
 #define NO_ACCELERATE_EFFECT 0.05433333333
 #define BREAK_EFFECT 0.73
 #define WRONG_GEAR_EFFECT 0.00166666666
-#define DISTANCE_VARIATION 0.177778
+#define DISTANCE_VARIATION 0.077778
 #define STARTING_DISTANCE 100
 
 #define STANDARD_CAR_WIDTH 166.0
@@ -30,7 +30,9 @@ CAR new_car(ALLEGRO_BITMAP *texture);
 CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture);
 void gear_up(CAR *car);
 void gear_down(CAR *car);
+void set_gear(CAR *car, int gear);
 float max_speed(int gear);
 float speed_increase(int gear, float speed);
 CAR* quick_sort_cars(CAR* cars, int size);
+bool car_colided(CAR* car, CAR** cars, int car_count);
 void control_ia(CAR* car);
