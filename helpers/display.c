@@ -5,16 +5,20 @@ int sw = 1300;
 int sh = 700;
 
 ALLEGRO_BITMAP *GAME_TITLE = NULL;
+ALLEGRO_BITMAP *GAME_ICON = NULL;
 ALLEGRO_BITMAP *GAME_CAR_BITMAP = NULL;
 ALLEGRO_BITMAP *OPONENT_CAR_BITMAP = NULL;
-ALLEGRO_BITMAP *GAME_ICON = NULL;
+ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
+ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 
 // Initialize bitmaps
 void init_bitmaps(){
   GAME_TITLE = al_load_bitmap("assets/images/logo.png");
+  GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
   GAME_CAR_BITMAP = al_load_bitmap("assets/images/car.png");
   OPONENT_CAR_BITMAP = al_load_bitmap("assets/images/oponent_car.png");
-  GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
+  LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/las_vegas_landscape.png");
+  LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/road.png");
 }
 
 // Draw a message to the screen
@@ -44,6 +48,9 @@ void draw_title(){
 // Free pointers
 void destroy_bitmaps(){
   al_destroy_bitmap(GAME_TITLE);
-  al_destroy_bitmap(GAME_CAR_BITMAP);
   al_destroy_bitmap(GAME_ICON);
+  al_destroy_bitmap(GAME_CAR_BITMAP);
+  al_destroy_bitmap(OPONENT_CAR_BITMAP);
+  al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
+  al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
 }

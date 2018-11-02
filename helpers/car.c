@@ -9,7 +9,7 @@ CAR new_car(ALLEGRO_BITMAP *texture){
   car.width = STANDARD_CAR_WIDTH;
   car.height = STANDARD_CAR_HEIGHT;
   car.speed = 0.0;
-  car.position_x = 0-(car.width/2.0);
+  car.position_x = -425;
   car.position_y = 0.0;
   car.screen_position_x = sw/2;
   car.screen_position_y = sh-(STANDARD_CAR_HEIGHT/2);
@@ -32,16 +32,16 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   car.max_gear = 6;
   car.texture = texture;
   if(lvl < 4){
-    car.position_y = (4*STARTING_DISTANCE)+car.height+20;
+    car.position_y = (3*STARTING_DISTANCE)+car.height;
   }
   else if(lvl < 7){
-    car.position_y = (3*STARTING_DISTANCE)+car.height+20;
+    car.position_y = (2*STARTING_DISTANCE)+car.height;
   }
   else if(lvl < 10){
-    car.position_y = (2*STARTING_DISTANCE)+car.height+20;
+    car.position_y = (1*STARTING_DISTANCE)+car.height;
   }
   else{
-    car.position_y = (STARTING_DISTANCE)+car.height+20;
+    car.position_y = (0*STARTING_DISTANCE)+car.height;
   }
   float x = ((lvl%3)-1);
   car.position_x = (x*25)+(x*400);

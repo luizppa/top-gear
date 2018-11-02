@@ -2,13 +2,14 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 1; // Number of AI controlled oponents on the game
+int oponent_count = 11; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
 float movement_speed = 22.0; // Lateral movement speed
 float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
 float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
 float street_left_limit; // Street border
+float paralax = 1.3;
 int placement = 1;
 ALLEGRO_EVENT ev;
 CAR player;
@@ -37,13 +38,16 @@ bool is_car_on_track(){
 void draw_track(){
   // Street center
   if(debug) al_draw_filled_circle(position, sh-60, 1, BLUE);
-  // Sky
-  al_draw_filled_rectangle(0, 0, sw, sh-street_length, LIGHT_BLUE);
-  // Left strret border
-  al_draw_line(position-(street_width/2), sh, position-((street_width/view_angle)/2), sh-street_length, BLUE, 1);
-  // Right street border
-  al_draw_line(position+(street_width/2), sh, position+((street_width/view_angle)/2), sh-street_length, BLUE, 1);
-  // al_draw_line(0, sh-street_length, sw, sh-street_length, BLUE, 1);
+  // Landscape
+  al_draw_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP, -(2600/2)+(position/paralax), 0, 0);
+  // Road
+  al_draw_bitmap(LAS_VEGAS_ROAD_BITMAP, position-(street_width/2), sh-street_length, 0);
+  if(debug){
+    // Left road border
+    al_draw_line(position-(street_width/2), sh, position-((street_width/view_angle)/2), sh-street_length, BLUE, 1);
+    // Right road border
+    al_draw_line(position+(street_width/2), sh, position+((street_width/view_angle)/2), sh-street_length, BLUE, 1);
+  }
 }
 
 // Draw player's car
@@ -98,16 +102,16 @@ void draw_hud(){
     -- Uncomment the three lines bellow to reproduce the error --
   */
   sprintf(position, "%dth", placement);
-  draw_text(DISKUN_FONT, 60, YELLOW, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
+  draw_text(DISKUN_FONT, 60, BLUE, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  draw_text(DISKUN_FONT, 80, BLUE, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
-  draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
+  draw_text(DISKUN_FONT, 60, BLUE, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
+  draw_text(DISKUN_FONT, 80, BLUE, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
   // Speed
   sprintf(speed, "%.0f Km/h", player.speed);
-  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
+  draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
+  draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
 // Draw the game cars
@@ -137,7 +141,7 @@ void draw_cars(){
 
 // Refresh game screen
 void draw_game(){
-  al_clear_to_color(GREY);
+  al_clear_to_color(GREEN);
   // Draw track boundaries
   draw_track();
   // Draw player and oponents
@@ -244,7 +248,7 @@ int play(){
 
   // Initialize player
   player = new_car(GAME_CAR_BITMAP);
-  position = (sw/2);
+  position = (sw/2)+425;
 
   // Initialize oponents
   oponents = (CAR*) calloc(oponent_count, sizeof(CAR));

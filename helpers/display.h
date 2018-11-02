@@ -11,9 +11,11 @@ extern int sw;
 extern int sh;
 
 extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
+extern ALLEGRO_BITMAP *GAME_ICON;
 extern ALLEGRO_BITMAP *GAME_CAR_BITMAP; // 166x120
 extern ALLEGRO_BITMAP *OPONENT_CAR_BITMAP; // 166x120
-extern ALLEGRO_BITMAP *GAME_ICON;
+extern ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP; // 2600x200
+extern ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP; // 1300x500
 
 void init_bitmaps();
 void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text, bool flip);

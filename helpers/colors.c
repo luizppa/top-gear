@@ -26,5 +26,5 @@ void init_colors(){
   RED = rgb(255, 68, 23);
   ORANGE = rgb(255, 168, 40);
   YELLOW = rgb(255, 193, 30);
-  GREEN = rgb(48, 255, 53);
+  GREEN = rgb(74, 191, 48);
 }
