@@ -2,7 +2,7 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 11; // Number of AI controlled oponents on the game
+int oponent_count = 1; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
 float movement_speed = 22.0; // Lateral movement speed
 float street_width = 1300.0; // Street base width
@@ -36,7 +36,7 @@ bool is_car_on_track(){
 // Draw the scenario
 void draw_track(){
   // Street center
-  // al_draw_filled_circle(position, sh-60, 1, BLUE);
+  if(debug) al_draw_filled_circle(position, sh-60, 1, BLUE);
   // Sky
   al_draw_filled_rectangle(0, 0, sw, sh-street_length, LIGHT_BLUE);
   // Left strret border
@@ -50,26 +50,37 @@ void draw_track(){
 void draw_player(){
   // Car texture
   al_draw_bitmap(player.texture, (sw/2)-(player.width/2), sh-player.height, 0);
-  // Car boundaries
-  al_draw_rectangle((sw/2)-(player.width/2), sh-player.height, (sw/2)+(player.width/2), sh, BLUE, 1);
-  // Car center
-  // al_draw_filled_circle(sw/2, sh-(20+(player.height/2)), 1, RED);
+  if(debug) {
+    // Car boundaries
+    al_draw_rectangle((sw/2)-(player.width/2), sh-player.height, (sw/2)+(player.width/2), sh, BLUE, 1);
+    // Car center
+    al_draw_filled_circle(sw/2, sh-(player.height/2), 1, BLUE);
+    // Baseline
+    al_draw_line(0, player.screen_position_y, sw, player.screen_position_y, BLUE, 1);
+  }
 }
 
-// Draw oponet's cars
+// Draw oponent's cars
 void draw_oponent(int i){
-  CAR oponent = oponents[i];
+  CAR* oponent = &oponents[i];
+  float distance = distance_from_bottom(i);
   // Perspective rate
-  float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(i));
-  float apparent_width = oponent.width*delta;
-  float apparent_height = oponent.height*delta;
+  float delta = get_delta(street_width, street_width/view_angle, street_length, distance);
+  oponent->apparent_width = oponent->width*delta;
+  oponent->apparent_height = oponent->height*delta;
+  oponent->screen_position_x = position+oponent->position_x;
+  oponent->screen_position_y = sh-distance-(oponent->height/2);
   // Car texture
   /*
     TODO: Fix the x and y relative positions in perspective of the oponents
   */
-  al_draw_scaled_bitmap(oponent.texture, 0, 0, oponent.width, oponent.height, position+oponent.position_x-(apparent_width/2), sh-distance_from_bottom(i)-apparent_height, apparent_width, apparent_height, 0);
-  // Car boundaries
-  // al_draw_rectangle(position+oponent.position_x-(apparent_width/2), sh-distance_from_bottom(i)-apparent_height, position+oponent.position_x+(apparent_width/2), sh-distance_from_bottom(i), RED, 1);
+  al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
+  if(debug){
+    // Car boundaries
+    al_draw_rectangle(position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, position+oponent->position_x+(oponent->apparent_width/2), sh-distance, RED, 1);
+    // Baseline
+    al_draw_line(0, oponent->screen_position_y, sw, oponent->screen_position_y, RED, 1);
+  }
 }
 
 // Draw screen info
@@ -161,7 +172,16 @@ void control_gears(){
 // Move the player based on input
 void move(){
   float delta_speed = speed_increase(player.gear, player.speed);
+  if(colisions) car_colided(&player, cars, oponent_count+1);
   al_get_keyboard_state(&key_state);
+  // Decrease the speed if the player has gone out of the road
+  if(is_car_on_track()){
+    movement_speed = 22.0;
+  }
+  else{
+    movement_speed = 10.0;
+    player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
+  }
   // Going left
   if (al_key_down(&key_state, ALLEGRO_KEY_A)) {
     if(position < max(sw, street_width)+player.width) position += min(movement_speed*((player.speed)/40), movement_speed);
@@ -202,19 +222,9 @@ int update(){
   al_get_keyboard_state(&key_state);
   // Return to menu
   if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
-  // Decrease the speed if the player has gone out of the road
-  if(is_car_on_track()){
-    movement_speed = 22.0;
-  }
-  else{
-    movement_speed = 10.0;
-    player.speed = max(0, player.speed - GRASS_SLOW_EFFECT);
-  }
-  // car_colided(&player, cars, oponent_count+1);
   move();
-  for (int i = 0; i < oponent_count; i++) {
-    car_colided(&oponents[i], cars, oponent_count+1);
-    control_ia(&oponents[i]);
+  for (int i = 0; i < oponent_count; i++){
+    control_ia(&oponents[i], cars, oponent_count+1);
   }
   // Sort oponents array (reportedly causing rendering issues)
   // oponents = quick_sort_cars(oponents, oponent_count);

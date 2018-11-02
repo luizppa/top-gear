@@ -1,5 +1,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#include <stdio.h>
 
 // Environmental values
 #define GRASS_SLOW_EFFECT 0.13333333333
@@ -15,10 +17,14 @@
 struct CAR_TYPE {
   int lvl;
   float width;
+  float apparent_width;
   float height;
+  float apparent_height;
   float speed;
-  float position_x; // The top left car x coordinate (on the screen where 0 is the center)
-  float position_y; // The top left car y coordinate (on the virtual environment)
+  float position_x; // The car center x coordinate (on the road, where 0 is the center)
+  float screen_position_x; // The car center x coordinate (on the screen, where 0 is the left border of the window)
+  float position_y; // The car center y coordinate (on the road, a virtual environment)
+  float screen_position_y; // The car center y coordinate (on the screen, where 0 is the top of the window)
   float fuel;
   int gear;
   int max_gear;
@@ -34,5 +40,6 @@ void set_gear(CAR *car, int gear);
 float max_speed(int gear);
 float speed_increase(int gear, float speed);
 CAR* quick_sort_cars(CAR* cars, int size);
+bool are_cars_aligned(CAR* a, CAR* b);
 bool car_colided(CAR* car, CAR** cars, int car_count);
-void control_ia(CAR* car);
+void control_ia(CAR* car, CAR** cars, int car_count);

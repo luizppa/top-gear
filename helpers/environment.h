@@ -12,6 +12,8 @@
 #include <allegro5/allegro_ttf.h>
 
 extern float fps;
+extern bool colisions;
+extern bool debug;
 
 extern ALLEGRO_DISPLAY_MODE disp_data;
 extern ALLEGRO_DISPLAY* display;

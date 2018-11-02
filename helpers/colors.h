@@ -8,6 +8,8 @@ extern ALLEGRO_COLOR LIGHT_BLUE;
 extern ALLEGRO_COLOR RED;
 extern ALLEGRO_COLOR ORANGE;
 extern ALLEGRO_COLOR YELLOW;
+extern ALLEGRO_COLOR GREEN;
+
 
 void init_colors();
 ALLEGRO_COLOR rgb(int r, int g, int b);

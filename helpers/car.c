@@ -2,10 +2,6 @@
 #include "utils.h"
 #include "environment.h"
 
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_image.h>
-#include <stdio.h>
-
 // Return a player car
 CAR new_car(ALLEGRO_BITMAP *texture){
   CAR car;
@@ -15,6 +11,8 @@ CAR new_car(ALLEGRO_BITMAP *texture){
   car.speed = 0.0;
   car.position_x = 0-(car.width/2.0);
   car.position_y = 0.0;
+  car.screen_position_x = sw/2;
+  car.screen_position_y = sh-(STANDARD_CAR_HEIGHT/2);
   car.fuel = 100.0;
   car.gear = 1;
   car.max_gear = 6;
@@ -135,22 +133,34 @@ CAR* quick_sort_cars(CAR* cars, int size){
 }
 
 bool are_cars_aligned(CAR* a, CAR* b){
-  float a_x0 = a->position_x;
-  float a_xf = a->position_x + a->width;
-  float b_x0 = b->position_x;
-  float b_xf = b->position_x + b->width;
-  return ((a_xf - a_x0 >= b_x0 - a_x0 && b_x0 - a_x0 >= 0) || (b_xf - b_x0 >= a_x0 - b_x0 && a_x0 - b_x0 >= 0));
+  float a_x0 = a->screen_position_x - (a->width/2);
+  float a_xf = a->screen_position_x + (a->width/2);
+  float b_x0 = b->screen_position_x - (a->width/2);
+  float b_xf = b->screen_position_x + (b->width/2);
+  // if(debug){
+    al_draw_line(a_x0, 0, a_x0, sh, RED, 1);
+    al_draw_line(a_xf, 0, a_xf, sh, YELLOW, 1);
+    al_draw_line(b_x0, 0, b_x0, sh, BLUE, 1);
+    al_draw_line(b_xf, 0, b_xf, sh, GREEN, 1);
+  // }
+  if ((a_xf - a_x0 >= b_x0 - a_x0 && b_x0 - a_x0 >= 0) || (b_xf - b_x0 >= a_x0 - b_x0 && a_x0 - b_x0 >= 0)) {
+    if(debug) printf("aligned\n");
+    return true;
+  }
+  else {
+    if(debug) printf("not aligned\n");
+    return false;
+  }
 }
 
 bool car_colided(CAR* car, CAR** cars, int car_count){
   for(int i = 0; i < car_count; i++){
     if(cars[i] != car){
-      if(cars[i]->position_y - car->position_y < 50 && cars[i]->position_y - car->position_y >= 0 && are_cars_aligned(car, cars[i]) && car->speed > cars[i]->speed){
-        float relative_speed = car->speed - cars[i]->speed;
-        float impact = (relative_speed/290);
+      if(cars[i]->screen_position_y - car->screen_position_y <= 50.0 && cars[i]->screen_position_y - car->screen_position_y >= 0.0 && are_cars_aligned(car, cars[i]) && car->speed > cars[i]->speed){
+        // float relative_speed = car->speed - cars[i]->speed;
+        // float impact = (relative_speed/290);
         car->speed = 0;
-        cars[i]->speed += impact*cars[i]->speed;
-        printf("colided\n");
+        car->position_y -= 10/fps;
         return true;
       }
     }
@@ -183,12 +193,15 @@ float ai_gear_up_point(int gear, int lvl){
   return max_speed(gear)*miss_rate;
 }
 
-void control_ia(CAR* car){
-  // Going left
-  // Going right
-  // Accelerating
+void control_ia(CAR* car, CAR** cars, int car_count){
   float skill_rate = (0.05/12.0)*car->lvl;
   float delta_speed = speed_increase(car->gear, car->speed);
+  // Going left
+  // Going right
+  // TODO: make cars steer left and right to avoid colisions
+  // Verify colision
+  if(colisions) car_colided(car, cars, car_count);
+  // Accelerating
   if(delta_speed < 0){
     if(car->speed < max_speed(car->max_gear)) gear_down(car);
     car->speed = max(0, car->speed + delta_speed);
