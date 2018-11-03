@@ -6,6 +6,13 @@ this project was developed for educational purposes as part of the work to compl
 
 ## Installing
 In order to run this project you must have the [Allegro 5](https://liballeg.org/) library installed.You can find further information about installing allegro [here](https://wiki.allegro.cc/index.php?title=Getting_Started).
+Note: if you're using a ubuntu environment, your installation is as simple as running these three commands:
+
+```
+$ sudo add-apt-repository ppa:allegro/5.2
+$ sudo apt-get update
+$ sudo apt-get install liballegro5-dev
+```
 
 Once you have allegro installed, clone the project into your computer. On the root directory you will find a ```compile``` file which contains the script you need to compile the code (it is possible that I will make a makefile for this in the future, but it is most likely not, feel free to pull a request if you are feeling generous). With the code compiled run the executable ```top_gear.tp``` output file to start the game.
 
