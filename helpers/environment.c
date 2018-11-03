@@ -2,7 +2,7 @@
 
 // Setings
 float fps = 60.0;
-bool colisions = true;
+bool colisions = false;
 bool debug = false;
 bool ai_pilots = true;
 

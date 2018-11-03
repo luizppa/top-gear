@@ -209,7 +209,7 @@ void control_ia(CAR* car, CAR** cars, int car_count){
   if(ai_pilots){
     // Accelerating
     if(delta_speed < 0){
-      gear_down(car);
+      if(car->speed != 0.8*max_speed(car->max_gear-1)) gear_down(car);
       delta_speed = speed_increase(car->gear, car->speed);
       car->speed = max(0, car->speed + delta_speed);
     }

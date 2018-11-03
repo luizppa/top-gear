@@ -2,7 +2,7 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 1; // Number of AI controlled oponents on the game
+int oponent_count = 11; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
 float movement_speed = 22.0; // Lateral movement speed
 float street_width = 1300.0; // Street base width
@@ -80,10 +80,7 @@ void draw_oponent(int i){
   oponent->screen_position_x = position+oponent->position_x;
   oponent->screen_position_y = sh-distance-(oponent->height/2);
   // Car texture
-  /*
-    TODO: Fix the x and y relative positions in perspective of the oponents
-  */
-  al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
+  al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, (position)+(oponent->position_x*delta)-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
   if(debug){
     // Car boundaries
     al_draw_rectangle(position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, position+oponent->position_x+(oponent->apparent_width/2), sh-distance, RED, 1);
@@ -104,16 +101,16 @@ void draw_hud(){
   char speed[16];
   // Position
   sprintf(position, "%dth", placement);
-  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
+  draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  draw_text(DISKUN_FONT, 100, YELLOW, 30, sh-100, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
-  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
-  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
+  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
+  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
   // Speed
   sprintf(speed, "%.0f Km/h", player.speed);
-  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
-  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
+  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
+  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
 // Draw the game cars
