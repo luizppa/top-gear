@@ -1,4 +1,6 @@
 #include "environment.h"
+#include "car.h"
+#include "utils.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_audio.h>
@@ -11,5 +13,10 @@
 
 enum DIR {LEFT, RIGHT};
 typedef enum DIR DIRECTION;
+
+extern int oponent_count;
+extern int placement;
+extern float race_time;
+extern CAR** leaderboard;
 
 int play();

@@ -1,6 +1,6 @@
 #include "game.h"
-#include "car.h"
-#include "utils.h"
+
+#include <time.h>
 
 int oponent_count = 6; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
@@ -8,12 +8,15 @@ float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
 float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
 float street_left_limit; // Street border
+float track_length = 60000.0; // Standart at 60000.0
 float paralax = 1.3;
+float race_time;
 int placement = 1;
 ALLEGRO_EVENT ev;
 CAR player;
 CAR* oponents;
 CAR** cars;
+CAR** leaderboard;
 
 // Distance from the car wheels to the bottom of the screen
 float distance_from_bottom(int i){
@@ -96,6 +99,13 @@ void draw_hud(){
   char position[8];
   char gear[8];
   char speed[16];
+  float minimap_heigth = track_length/300;
+  float player_minimap_position = player.position_y/300;
+  // Minimap
+  al_draw_line(30, sh-250, 30, (sh-250)-minimap_heigth, YELLOW, 6);
+  al_draw_filled_circle(30, sh-250, 9, ORANGE);
+  al_draw_filled_circle(30, (sh-250)-minimap_heigth, 9, ORANGE);
+  al_draw_filled_circle(30, (sh-250)-player_minimap_position, 9, BLUE);
   // Position
   sprintf(position, "%dth", placement);
   draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION", false);
@@ -228,17 +238,60 @@ int update(){
     control_ia(&oponents[i], cars, oponent_count+1);
   }
   // Sort oponents array (reportedly causing rendering issues)
-  // oponents = quick_sort_cars(oponents, oponent_count);
+  // cars = quick_sort_cars(cars, oponent_count+1);
   // Stop timer to avoid flooding the event queue
   al_stop_timer(timer);
   // Update screen
   draw_game();
   // Resume timer
   al_resume_timer(timer);
-  return 0;
+  if(player.position_y >= track_length) {
+    leaderboard = quick_sort_cars(cars, oponent_count+1);
+    return 1;
+  }
+  else return 0;
+}
+
+int show_leaderboard(){
+  char result[50];
+  char duration[50];
+  char competitor[50];
+  sprintf(result, "YOU FINISHED %dth", placement);
+  sprintf(duration, "RACE DURATION: %.2fs", race_time);
+  stop_music(music);
+  if(placement <= 3) music = set_music(QUALIFIED_MUSIC);
+  else music = set_music(FRANKFURT_MUSIC);
+  start_music(music, false);
+  clear_display(BLUE, false);
+  if(placement <= 3){
+    draw_text(DISKUN_FONT, 160, YELLOW, sw/2, sh/2-(200), ALLEGRO_ALIGN_CENTER, "CONGRATULATIONS", false);
+    draw_text(DISKUN_FONT, 160, YELLOW, sw/2, sh/2-(80), ALLEGRO_ALIGN_CENTER, result, false);
+  }
+  else draw_text(DISKUN_FONT, 160, YELLOW, sw/2, sh/2-(80), ALLEGRO_ALIGN_CENTER, "YOU DID NOT QUALIFIED", false);
+  draw_text(PIXEL_FONT, 28, ORANGE, sw/2, (sh/2)+100, ALLEGRO_ALIGN_CENTER, "Press enter to continue", false);
+  al_flip_display();
+  while (true) {
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_KEY_UP && ev.keyboard.keycode == ALLEGRO_KEY_ENTER) break;
+  }
+  clear_display(BLUE, false);
+  draw_text(DISKUN_FONT, 80, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, duration, false);
+  for (int i = 0; i < oponent_count+1; i++) {
+    if(i+1 == placement) sprintf(competitor, "%d. PLAYER", i+1);
+    else sprintf(competitor, "%d. OPONENT %d", i+1, leaderboard[i]->lvl);
+    draw_text(DISKUN_FONT, 60, YELLOW, 30, (i+1)*(80), ALLEGRO_ALIGN_LEFT, competitor, false);
+  }
+  al_flip_display();
+  while (true) {
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_KEY_UP && ev.keyboard.keycode == ALLEGRO_KEY_ENTER) break;
+  }
 }
 
 int play(){
+  int result;
+  clock_t begin, end;
+
   // Initialize environment
   street_left_limit = (sw-street_width)/2;
 
@@ -272,6 +325,7 @@ int play(){
 
   // Main loop
   while (true) {
+    begin = clock();
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_KEY_UP){
       // Gear up
@@ -283,8 +337,15 @@ int play(){
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
     // Each 1/fps seconds
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
-      if(update() == -1){
+      result = update();
+      if(result == -1){
         return -1;
+      }
+      else if(result == 1){
+        end = clock();
+        race_time = (float)(end-begin)/CLOCKS_PER_SEC;
+        show_leaderboard();
+        return 1;
       }
     }
   }

@@ -65,6 +65,9 @@ int main() {
             deinit();
             return 0;
           }
+          else if(op == 1){
+            // show_leaderboard(leaderboard, race_time, oponent_count+1, placement);
+          }
         }
       }
     }

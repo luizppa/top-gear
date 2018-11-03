@@ -56,3 +56,8 @@ int main_menu(){
   draw_title();
   return 0;
 }
+
+// int show_leaderboard(CAR** leaderboard, float race_time, int size, int player_position){
+//   clear_display(BLUE, false);
+//   al_flip_display();
+// }

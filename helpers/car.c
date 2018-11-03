@@ -116,12 +116,12 @@ float speed_increase(int gear, float speed){
 }
 
 // Sort the cars array based on their Y position
-CAR* quick_sort_cars(CAR* cars, int size){
+CAR** quick_sort_cars(CAR** cars, int size){
   int wall = 0, pivot = size-1;
-  CAR aux;
+  CAR* aux;
   while(pivot > wall){
     for (int i = wall; i < pivot; i++) {
-      if(cars[i].position_y < cars[pivot].position_y){
+      if(cars[i]->position_y < cars[pivot]->position_y){
         aux = cars[wall];
         cars[wall] = cars[i];
         cars[i] = aux;
@@ -175,7 +175,7 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
         }
         // If the car is less than COLISION_DISTANCE meters away from cars[i]
         if (distance <= COLISION_DISTANCE && distance > 0) {
-          car->speed -= relative_speed;
+          car->speed = max(0, car->speed-(relative_speed*2.3));
           cars[i]->speed += relative_speed;
           return true;
         }
