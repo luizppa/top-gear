@@ -103,14 +103,6 @@ void draw_hud(){
   char gear[8];
   char speed[16];
   // Position
-  /*
-    TODO: Fix the event queue problems
-    Drawing to much text on the screen causes te update to take longer than
-    1/60 seconds which is the refresh rate of the game. Therefore, the event
-    queue gets flooded with clock events causing the keyboard input listeners
-    (like gears up and down) to be drastically delayed.
-    -- Uncomment the three lines bellow to reproduce the error --
-  */
   sprintf(position, "%dth", placement);
   draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
   draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
@@ -243,8 +235,12 @@ int update(){
   }
   // Sort oponents array (reportedly causing rendering issues)
   // oponents = quick_sort_cars(oponents, oponent_count);
+  // Stop timer to avoid flooding the event queue
+  al_stop_timer(timer);
   // Update screen
   draw_game();
+  // Resume timer
+  al_resume_timer(timer);
   return 0;
 }
 

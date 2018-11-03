@@ -158,14 +158,11 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
     // Don't verify colisions of a car with itslef
     if(cars[i] != car){
       float distance = cars[i]->position_y - car->position_y;
-      printf("distance: %f\n", distance);
       // If the car is less than 8 meters away from cars[i]
       if (distance <= COLISION_DISTANCE && distance > 0) {
         float relative_speed = car->speed - cars[i]->speed;
-        printf("relative speed: %f\n", relative_speed);
         // If the cars are aligned and "car" is getting closer to "cars[i]"
         if(are_cars_aligned(car, cars[i]) && relative_speed > 0){
-          printf("colided\nrelative speed: %f\n", relative_speed);
           car->speed -= relative_speed;
           cars[i]->speed += relative_speed;
           return true;
