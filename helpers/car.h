@@ -9,7 +9,7 @@
 #define BREAK_EFFECT 0.73
 #define WRONG_GEAR_EFFECT 0.00166666666
 #define DISTANCE_VARIATION 0.077778
-#define STARTING_DISTANCE 100
+#define STARTING_DISTANCE 130
 #define COLISION_DISTANCE 50
 
 #define STANDARD_CAR_WIDTH 166.0
@@ -29,6 +29,8 @@ struct CAR_TYPE {
   float fuel;
   int gear;
   int max_gear;
+  bool will_colide;
+  bool going_right;
   ALLEGRO_BITMAP* texture;
 };
 typedef struct CAR_TYPE CAR;

@@ -2,9 +2,8 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 11; // Number of AI controlled oponents on the game
+int oponent_count = 6; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
-float movement_speed = 22.0; // Lateral movement speed
 float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
 float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
@@ -63,9 +62,7 @@ void draw_player(){
     al_draw_line(player.screen_position_x-(player.width/2), 0, player.screen_position_x-(player.width/2), sh, BLUE, 1);
     al_draw_line(player.screen_position_x+(player.width/2), 0, player.screen_position_x+(player.width/2), sh, BLUE, 1);
     // Center line
-    al_draw_line(0, player.screen_position_y, sw, player.screen_position_y, BLUE, 1);
-    // Baseline
-    al_draw_line(0, player.position_y, sw, player.position_y, BLUE, 1);
+    al_draw_line(0, sh-(player.height/2), sw, sh-(player.height/2), BLUE, 1);
   }
 }
 
@@ -80,17 +77,17 @@ void draw_oponent(int i){
   oponent->screen_position_x = position+oponent->position_x;
   oponent->screen_position_y = sh-distance-(oponent->height/2);
   // Car texture
-  al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, (position)+(oponent->position_x*delta)-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
+  al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, position+(oponent->position_x*delta)-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
   if(debug){
     // Car boundaries
-    al_draw_rectangle(position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, position+oponent->position_x+(oponent->apparent_width/2), sh-distance, RED, 1);
+    al_draw_rectangle(position+(oponent->position_x*delta)-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, position+(oponent->position_x*delta)+(oponent->apparent_width/2), sh-distance, RED, 1);
     // Sideline
-    al_draw_line(oponent->screen_position_x-(oponent->width/2), 0, oponent->screen_position_x-(oponent->width/2), sh, RED, 1);
-    al_draw_line(oponent->screen_position_x+(oponent->width/2), 0, oponent->screen_position_x+(oponent->width/2), sh, RED, 1);
+    al_draw_line(oponent->screen_position_x-(oponent->apparent_width/2), 0, oponent->screen_position_x-(oponent->apparent_width/2), sh, RED, 1);
+    al_draw_line(oponent->screen_position_x+(oponent->apparent_width/2), 0, oponent->screen_position_x+(oponent->apparent_width/2), sh, RED, 1);
     // Center line
-    al_draw_line(0, oponent->screen_position_y, sw, oponent->screen_position_y, RED, 1);
+    al_draw_line(0, sh-distance-(oponent->apparent_height/2), sw, sh-distance-(oponent->apparent_height/2), RED, 1);
     // Baseline
-    al_draw_line(0, oponent->screen_position_y+(oponent->apparent_height/2), sw, oponent->screen_position_y+(oponent->apparent_height/2), RED, 1);
+    al_draw_line(0, sh-distance, sw, sh-distance, RED, 1);
   }
 }
 

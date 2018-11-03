@@ -1,10 +1,11 @@
 #include "environment.h"
 
 // Setings
-float fps = 60.0;
-bool colisions = false;
-bool debug = false;
-bool ai_pilots = true;
+float fps = 60.0; // Not a good ideia to change this, probably
+bool colisions = true; // Cars will colide
+bool debug = false; // Debug markers will appear on screen and events will be logged
+bool ai_pilots = true; // Oponent cars will be controlled by AI
+float movement_speed = 22.0; // Lateral movement speed
 
 ALLEGRO_DISPLAY_MODE disp_data;
 ALLEGRO_DISPLAY* display = NULL;
