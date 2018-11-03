@@ -2,7 +2,7 @@
 #include "car.h"
 #include "utils.h"
 
-int oponent_count = 11; // Number of AI controlled oponents on the game
+int oponent_count = 1; // Number of AI controlled oponents on the game
 float position; // The road center x coordinate on the screen
 float movement_speed = 22.0; // Lateral movement speed
 float street_width = 1300.0; // Street base width
@@ -18,7 +18,7 @@ CAR** cars;
 
 // Distance from the car wheels to the bottom of the screen
 float distance_from_bottom(int i){
-  return oponents[i].position_y-player.position_y-oponents[i].height;
+  return oponents[i].position_y-player.position_y;
 }
 
 // Verify if the car should be rendered
@@ -59,8 +59,13 @@ void draw_player(){
     al_draw_rectangle((sw/2)-(player.width/2), sh-player.height, (sw/2)+(player.width/2), sh, BLUE, 1);
     // Car center
     al_draw_filled_circle(sw/2, sh-(player.height/2), 1, BLUE);
-    // Baseline
+    // Sideline
+    al_draw_line(player.screen_position_x-(player.width/2), 0, player.screen_position_x-(player.width/2), sh, BLUE, 1);
+    al_draw_line(player.screen_position_x+(player.width/2), 0, player.screen_position_x+(player.width/2), sh, BLUE, 1);
+    // Center line
     al_draw_line(0, player.screen_position_y, sw, player.screen_position_y, BLUE, 1);
+    // Baseline
+    al_draw_line(0, player.position_y, sw, player.position_y, BLUE, 1);
   }
 }
 
@@ -82,8 +87,13 @@ void draw_oponent(int i){
   if(debug){
     // Car boundaries
     al_draw_rectangle(position+oponent->position_x-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, position+oponent->position_x+(oponent->apparent_width/2), sh-distance, RED, 1);
-    // Baseline
+    // Sideline
+    al_draw_line(oponent->screen_position_x-(oponent->width/2), 0, oponent->screen_position_x-(oponent->width/2), sh, RED, 1);
+    al_draw_line(oponent->screen_position_x+(oponent->width/2), 0, oponent->screen_position_x+(oponent->width/2), sh, RED, 1);
+    // Center line
     al_draw_line(0, oponent->screen_position_y, sw, oponent->screen_position_y, RED, 1);
+    // Baseline
+    al_draw_line(0, oponent->screen_position_y+(oponent->apparent_height/2), sw, oponent->screen_position_y+(oponent->apparent_height/2), RED, 1);
   }
 }
 
@@ -102,16 +112,16 @@ void draw_hud(){
     -- Uncomment the three lines bellow to reproduce the error --
   */
   sprintf(position, "%dth", placement);
-  draw_text(DISKUN_FONT, 60, BLUE, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  draw_text(DISKUN_FONT, 80, BLUE, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
+  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, 30, 50, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, 30, 120, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
-  draw_text(DISKUN_FONT, 60, BLUE, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
-  draw_text(DISKUN_FONT, 80, BLUE, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
+  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, 30, sh-140, ALLEGRO_ALIGN_LEFT, "GEAR", false);
+  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, 30, sh-80, ALLEGRO_ALIGN_LEFT, gear, false);
   // Speed
   sprintf(speed, "%.0f Km/h", player.speed);
-  draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
-  draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
+  draw_text(DISKUN_FONT, 60, YELLOW_ORANGE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
+  draw_text(DISKUN_FONT, 80, YELLOW_ORANGE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
 // Draw the game cars
@@ -225,9 +235,10 @@ int update(){
   control_gears();
   al_get_keyboard_state(&key_state);
   // Return to menu
-  if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;
+  if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;  // Control player
   move();
   for (int i = 0; i < oponent_count; i++){
+    // Controll oponents
     control_ia(&oponents[i], cars, oponent_count+1);
   }
   // Sort oponents array (reportedly causing rendering issues)

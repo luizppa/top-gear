@@ -14,6 +14,7 @@
 extern float fps;
 extern bool colisions;
 extern bool debug;
+extern bool ai_pilots;
 
 extern ALLEGRO_DISPLAY_MODE disp_data;
 extern ALLEGRO_DISPLAY* display;

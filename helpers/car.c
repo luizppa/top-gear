@@ -12,7 +12,7 @@ CAR new_car(ALLEGRO_BITMAP *texture){
   car.position_x = -425;
   car.position_y = 0.0;
   car.screen_position_x = sw/2;
-  car.screen_position_y = sh-(STANDARD_CAR_HEIGHT/2);
+  car.screen_position_y = 0;
   car.fuel = 100.0;
   car.gear = 1;
   car.max_gear = 6;
@@ -32,16 +32,16 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   car.max_gear = 6;
   car.texture = texture;
   if(lvl < 4){
-    car.position_y = (3*STARTING_DISTANCE)+car.height;
+    car.position_y = (3*STARTING_DISTANCE);
   }
   else if(lvl < 7){
-    car.position_y = (2*STARTING_DISTANCE)+car.height;
+    car.position_y = (2*STARTING_DISTANCE);
   }
   else if(lvl < 10){
-    car.position_y = (1*STARTING_DISTANCE)+car.height;
+    car.position_y = (1*STARTING_DISTANCE);
   }
   else{
-    car.position_y = (0*STARTING_DISTANCE)+car.height;
+    car.position_y = (0*STARTING_DISTANCE);
   }
   float x = ((lvl%3)-1);
   car.position_x = (x*25)+(x*400);
@@ -137,12 +137,12 @@ bool are_cars_aligned(CAR* a, CAR* b){
   float a_xf = a->screen_position_x + (a->width/2);
   float b_x0 = b->screen_position_x - (a->width/2);
   float b_xf = b->screen_position_x + (b->width/2);
-  // if(debug){
+  if(debug){
     al_draw_line(a_x0, 0, a_x0, sh, RED, 1);
     al_draw_line(a_xf, 0, a_xf, sh, YELLOW, 1);
     al_draw_line(b_x0, 0, b_x0, sh, BLUE, 1);
     al_draw_line(b_xf, 0, b_xf, sh, GREEN, 1);
-  // }
+  }
   if ((a_xf - a_x0 >= b_x0 - a_x0 && b_x0 - a_x0 >= 0) || (b_xf - b_x0 >= a_x0 - b_x0 && a_x0 - b_x0 >= 0)) {
     if(debug) printf("aligned\n");
     return true;
@@ -155,13 +155,21 @@ bool are_cars_aligned(CAR* a, CAR* b){
 
 bool car_colided(CAR* car, CAR** cars, int car_count){
   for(int i = 0; i < car_count; i++){
+    // Don't verify colisions of a car with itslef
     if(cars[i] != car){
-      if(cars[i]->screen_position_y - car->screen_position_y <= 50.0 && cars[i]->screen_position_y - car->screen_position_y >= 0.0 && are_cars_aligned(car, cars[i]) && car->speed > cars[i]->speed){
-        // float relative_speed = car->speed - cars[i]->speed;
-        // float impact = (relative_speed/290);
-        car->speed = 0;
-        car->position_y -= 10/fps;
-        return true;
+      float distance = cars[i]->position_y - car->position_y;
+      printf("distance: %f\n", distance);
+      // If the car is less than 8 meters away from cars[i]
+      if (distance <= COLISION_DISTANCE && distance > 0) {
+        float relative_speed = car->speed - cars[i]->speed;
+        printf("relative speed: %f\n", relative_speed);
+        // If the cars are aligned and "car" is getting closer to "cars[i]"
+        if(are_cars_aligned(car, cars[i]) && relative_speed > 0){
+          printf("colided\nrelative speed: %f\n", relative_speed);
+          car->speed -= relative_speed;
+          cars[i]->speed += relative_speed;
+          return true;
+        }
       }
     }
   }
@@ -201,17 +209,25 @@ void control_ia(CAR* car, CAR** cars, int car_count){
   // TODO: make cars steer left and right to avoid colisions
   // Verify colision
   if(colisions) car_colided(car, cars, car_count);
-  // Accelerating
-  if(delta_speed < 0){
-    if(car->speed < max_speed(car->max_gear)) gear_down(car);
-    car->speed = max(0, car->speed + delta_speed);
-  }
-  else if(car->speed < ai_gear_up_point(car->gear, car->lvl) || car->gear == car->max_gear) {
-    car->speed += delta_speed*(1-skill_rate);
+  if(ai_pilots){
+    // Accelerating
+    if(delta_speed < 0){
+      gear_down(car);
+      delta_speed = speed_increase(car->gear, car->speed);
+      car->speed = max(0, car->speed + delta_speed);
+    }
+    else {
+      if(car->gear > 1 && car->speed < 0.8*max_speed(car->gear-1)){
+        gear_down(car);
+      }
+      else if(car->speed >= ai_gear_up_point(car->gear, car->lvl) && car->gear < car->max_gear) {
+        gear_up(car);
+      }
+      car->speed += delta_speed*(1-skill_rate);
+    }
   }
   else {
-    gear_up(car);
-    car->speed += delta_speed/6;
+    car->speed = max(0, car->speed - NO_ACCELERATE_EFFECT);
   }
   car->position_y += car->speed*DISTANCE_VARIATION;
 }

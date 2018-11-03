@@ -2,8 +2,9 @@
 
 // Setings
 float fps = 60.0;
-bool colisions = false;
+bool colisions = true;
 bool debug = false;
+bool ai_pilots = true;
 
 ALLEGRO_DISPLAY_MODE disp_data;
 ALLEGRO_DISPLAY* display = NULL;

@@ -10,6 +10,7 @@
 #define WRONG_GEAR_EFFECT 0.00166666666
 #define DISTANCE_VARIATION 0.077778
 #define STARTING_DISTANCE 100
+#define COLISION_DISTANCE 50
 
 #define STANDARD_CAR_WIDTH 166.0
 #define STANDARD_CAR_HEIGHT 120.0
@@ -23,7 +24,7 @@ struct CAR_TYPE {
   float speed;
   float position_x; // The car center x coordinate (on the road, where 0 is the center)
   float screen_position_x; // The car center x coordinate (on the screen, where 0 is the left border of the window)
-  float position_y; // The car center y coordinate (on the road, a virtual environment)
+  float position_y; // The car bottom y coordinate (on the road, a virtual environment)
   float screen_position_y; // The car center y coordinate (on the screen, where 0 is the top of the window)
   float fuel;
   int gear;
