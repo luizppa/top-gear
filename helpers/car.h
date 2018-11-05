@@ -8,9 +8,10 @@
 #define NO_ACCELERATE_EFFECT 0.05433333333
 #define BREAK_EFFECT 0.73
 #define WRONG_GEAR_EFFECT 0.00166666666
-#define DISTANCE_VARIATION 0.077778
+#define DISTANCE_VARIATION 0.097778
 #define STARTING_DISTANCE 130
 #define COLISION_DISTANCE 50
+#define COLISION_CRITICAL_DISTACE 30
 
 #define STANDARD_CAR_WIDTH 166.0
 #define STANDARD_CAR_HEIGHT 120.0
@@ -21,6 +22,8 @@
 
 struct CAR_TYPE {
   int lvl;
+  char *name;
+  int points;
   float width;
   float apparent_width;
   float height;

@@ -6,8 +6,10 @@
 CAR new_car(ALLEGRO_BITMAP* texture){
   CAR car;
   car.lvl = 0;
-  car.width = STANDARD_CAR_WIDTH;
-  car.height = STANDARD_CAR_HEIGHT;
+  car.name = "Player";
+  car.points = 0;
+  car.width = get_bitmap_width(texture);
+  car.height = get_bitmap_height(texture);
   car.speed = 0.0;
   car.position_x = -425;
   car.position_y = 0.0;
@@ -25,8 +27,10 @@ CAR new_car(ALLEGRO_BITMAP* texture){
 CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   CAR car;
   car.lvl = lvl;
-  car.width = player_car_width;
-  car.height = player_car_height;
+  car.name = names[lvl];
+  car.points = 0;
+  car.width = get_bitmap_width(texture);
+  car.height = get_bitmap_height(texture);
   car.speed = 0.0;
   car.fuel = 100.0;
   car.gear = 1;
@@ -170,7 +174,7 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
       // If the cars are aligned and "car" is getting closer to "cars[i]"
       if(aligned && relative_speed > 0){
         // If the car is about to colide, set a warn to steer
-        if (distance <= COLISION_DISTANCE*1.5 && distance > COLISION_DISTANCE*0.5){
+        if (distance <= COLISION_DISTANCE*1.8 && distance > COLISION_DISTANCE*0.5){
           car->will_colide = true;
         }
         // If the car is less than COLISION_DISTANCE meters away from cars[i]
@@ -179,6 +183,11 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
           cars[i]->speed += relative_speed;
           return true;
         }
+      }
+      // If "car" is not getting closer to "cars[i]" but has already touched it
+      else if(aligned && (distance <= COLISION_CRITICAL_DISTACE && distance >= 0)){
+        car->speed *= 0.4;
+        return true;
       }
     }
   }
@@ -219,12 +228,12 @@ void control_ia(CAR* car, CAR** cars, int car_count){
     if (car->will_colide) {
       // Go left
       if(!car->going_right){
-        if(car->position_x > -440) car->position_x -= 15;
+        if(car->position_x > -440) car->position_x -= 20;
         else car->going_right = true;
       }
       // Go right
       if(car->going_right){
-        if(car->position_x < 440) car->position_x += 15;
+        if(car->position_x < 440) car->position_x += 20;
         else car->going_right = false;
       }
     }

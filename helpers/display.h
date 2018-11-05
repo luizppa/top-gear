@@ -10,10 +10,11 @@
 extern int sw;
 extern int sh;
 
-extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
 extern ALLEGRO_BITMAP *GAME_ICON;
+extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
 extern ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP; // 2600x200
 extern ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP; // 1300x500
+extern ALLEGRO_BITMAP *FINISH_LINE; // 1295x691
 
 // Cars
 extern ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP; // 187x88
@@ -29,10 +30,9 @@ extern ALLEGRO_BITMAP *DOMINUS_GT_GREEN_BITMAP; // 166x103
 extern ALLEGRO_BITMAP *DOMINUS_GT_PURPLE_BITMAP; // 166x103
 extern ALLEGRO_BITMAP *DOMINUS_GT_GREY_BITMAP; // 166x103
 
-extern float player_car_width;
-extern float player_car_height;
-
 void init_bitmaps();
+float get_bitmap_width(ALLEGRO_BITMAP* bitmap);
+float get_bitmap_height(ALLEGRO_BITMAP* bitmap);
 void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text, bool flip);
 void clear_display(ALLEGRO_COLOR color, bool flip);
 void draw_title();

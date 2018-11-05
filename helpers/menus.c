@@ -86,6 +86,7 @@ int main_menu(){
 void redraw_mode_selection(int op){
   float square_side = 250.0;
   clear_display(BLUE, false);
+  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
   al_draw_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), colors[0], 5);
   draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-25-(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
   al_draw_rectangle((sw/2)+25+square_side, (sh/2)-(square_side/2), (sw/2)+25, (sh/2)+(square_side/2), colors[1], 5);
@@ -132,7 +133,7 @@ int mode_selection(){
               op = car_selection();
               if(op == 4) return op;
               if(op == -1) return 0;
-              op = play(get_car(op, 4, true));
+              op = play(get_car(op, 4, true), NULL, 11);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);
@@ -146,16 +147,17 @@ int mode_selection(){
 }
 
 void redraw_car_selection(int op){
-  float square_side = 500.0;
-  float dominus_w = 290.0, dominus_h = 70.0;
+  float square_width = 330.0, square_height = 180;
+  float dominus_w = 239.0, dominus_h = 70.0;
   float octane_w = 187.0, octane_h = 88.0;
   clear_display(BLUE, false);
-  al_draw_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), colors[0], 5);
-  draw_text(PIXEL_FONT, 22, colors[0], (sw/2)-25-(square_side/2), (sh/2)-(square_side/2)+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
-  al_draw_bitmap(DOMINUS_GT_ICON_BITMAP, (sw/2)-25-((square_side-dominus_w)/2)-dominus_w, (sh/2)-(dominus_h/2), 0);
-  al_draw_rectangle((sw/2)+25+square_side, (sh/2)-(square_side/2), (sw/2)+25, (sh/2)+(square_side/2), colors[1], 5);
-  al_draw_bitmap(OCTANE_ZSR_ICON_BITMAP, (sw/2)+25+((square_side-octane_w)/2), (sh/2)-(octane_h/2), 0);
-  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_side/2), (sh/2)-(square_side/2)+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", true);
+  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", false);
+  al_draw_rectangle((sw/2)-25-square_width, (sh/2)-(square_height/2), (sw/2)-25, (sh/2)+(square_height/2), colors[0], 5);
+  draw_text(PIXEL_FONT, 22, colors[0], (sw/2)-25-(square_width/2), (sh/2)-(square_height/2)+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
+  al_draw_bitmap(DOMINUS_GT_ICON_BITMAP, (sw/2)-25-((square_width-dominus_w)/2)-dominus_w, (sh/2)-(dominus_h/2), 0);
+  al_draw_rectangle((sw/2)+25+square_width, (sh/2)-(square_height/2), (sw/2)+25, (sh/2)+(square_height/2), colors[1], 5);
+  al_draw_bitmap(OCTANE_ZSR_ICON_BITMAP, (sw/2)+25+((square_width-octane_w)/2), (sh/2)-(octane_h/2), 0);
+  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_width/2), (sh/2)-(square_height/2)+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", true);
 }
 
 // Select car

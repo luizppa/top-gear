@@ -8,6 +8,7 @@ ALLEGRO_BITMAP *GAME_TITLE = NULL;
 ALLEGRO_BITMAP *GAME_ICON = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
+ALLEGRO_BITMAP *FINISH_LINE = NULL;
 
 ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP = NULL;
 ALLEGRO_BITMAP *OCTANE_ZSR_BLUE_BITMAP = NULL;
@@ -22,14 +23,12 @@ ALLEGRO_BITMAP *DOMINUS_GT_GREEN_BITMAP = NULL;
 ALLEGRO_BITMAP *DOMINUS_GT_PURPLE_BITMAP = NULL;
 ALLEGRO_BITMAP *DOMINUS_GT_GREY_BITMAP = NULL;
 
-float player_car_width = 166.0;
-float player_car_height = 120.0;
-
 // Initialize bitmaps
 void init_bitmaps(){
   GAME_TITLE = al_load_bitmap("assets/images/misc/logo.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
+  FINISH_LINE = al_load_bitmap("assets/images/misc/finish.png");
   LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
   OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("assets/images/cars/octane_icon.png");
   OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
@@ -43,6 +42,18 @@ void init_bitmaps(){
   DOMINUS_GT_GREEN_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_green.png");
   DOMINUS_GT_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_purple.png");
   DOMINUS_GT_GREY_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_grey.png");
+}
+
+float get_bitmap_width(ALLEGRO_BITMAP* bitmap){
+  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 166.0;
+  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 166.0;
+  else return 0.0;
+}
+
+float get_bitmap_height(ALLEGRO_BITMAP* bitmap){
+  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 120.0;
+  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 103.0;
+  else return 0.0;
 }
 
 // Draw a message to the screen
@@ -85,10 +96,6 @@ ALLEGRO_BITMAP* get_car(int car, int color, bool is_player){
   // return DOMINUS_GT_PURPLE_BITMAP;
   switch (car) {
     case 1:
-      if(is_player){
-        player_car_width = 166.0;
-        player_car_height = 120.0;
-      }
       switch (color) {
         case 0:
           return DOMINUS_GT_RED_BITMAP;
@@ -103,10 +110,6 @@ ALLEGRO_BITMAP* get_car(int car, int color, bool is_player){
       }
       break;
     case 2:
-      if(is_player){
-        player_car_width = 166.0;
-        player_car_height = 103.0;
-      }
       switch (color) {
         case 0:
           return OCTANE_ZSR_RED_BITMAP;
@@ -129,6 +132,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(GAME_ICON);
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
+  al_destroy_bitmap(FINISH_LINE);
   al_destroy_bitmap(OCTANE_ZSR_ICON_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_BLUE_BITMAP);

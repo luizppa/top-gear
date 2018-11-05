@@ -1,5 +1,7 @@
 #include "utils.h"
 
+char* names[50] = {"Jack", "Bruce", "Hammond", "Alice", "Ana", "Vincent", "Robert", "Patrick"};
+
 // Returns the biggest number in [a, b]
 float max(float a, float b){
   if(a > b) return a;
