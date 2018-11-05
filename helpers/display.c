@@ -6,19 +6,38 @@ int sh = 700;
 
 ALLEGRO_BITMAP *GAME_TITLE = NULL;
 ALLEGRO_BITMAP *GAME_ICON = NULL;
-ALLEGRO_BITMAP *GAME_CAR_BITMAP = NULL;
-ALLEGRO_BITMAP *OPONENT_CAR_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 
+ALLEGRO_BITMAP *OCTANE_ZSR_BLUE_BITMAP = NULL;
+ALLEGRO_BITMAP *OCTANE_ZSR_RED_BITMAP = NULL;
+ALLEGRO_BITMAP *OCTANE_ZSR_GREEN_BITMAP = NULL;
+ALLEGRO_BITMAP *OCTANE_ZSR_PURPLE_BITMAP = NULL;
+ALLEGRO_BITMAP *OCTANE_ZSR_GREY_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_ICON_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_BLUE_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_RED_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_GREEN_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_PURPLE_BITMAP = NULL;
+ALLEGRO_BITMAP *DOMINUS_GT_GREY_BITMAP = NULL;
+
 // Initialize bitmaps
 void init_bitmaps(){
-  GAME_TITLE = al_load_bitmap("assets/images/logo.png");
+  GAME_TITLE = al_load_bitmap("assets/images/misc/logo.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
-  GAME_CAR_BITMAP = al_load_bitmap("assets/images/car.png");
-  OPONENT_CAR_BITMAP = al_load_bitmap("assets/images/oponent_car.png");
-  LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/las_vegas_landscape.png");
-  LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/road.png");
+  LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
+  LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
+  OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
+  OCTANE_ZSR_RED_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_red.png");
+  OCTANE_ZSR_GREEN_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_green.png");
+  OCTANE_ZSR_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_purple.png");
+  OCTANE_ZSR_GREY_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_grey.png");
+  DOMINUS_GT_ICON_BITMAP = al_load_bitmap("assets/images/cars/dominus_icon.png");
+  DOMINUS_GT_BLUE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_blue.png");
+  DOMINUS_GT_RED_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_red.png");
+  DOMINUS_GT_GREEN_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_green.png");
+  DOMINUS_GT_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_purple.png");
+  DOMINUS_GT_GREY_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_grey.png");
 }
 
 // Draw a message to the screen
@@ -45,12 +64,67 @@ void draw_title(){
   draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
 }
 
+// Get car bitmap
+/*
+  Cars:
+    0 = Octane
+    1 = Dominus
+  Colors:
+    0 = Red
+    1 = Blue
+    2 = Green
+    3 = Grey
+    4 = Purple
+*/
+ALLEGRO_BITMAP* get_car(int car, int color){
+  // return DOMINUS_GT_PURPLE_BITMAP;
+  switch (car) {
+    case 1:
+      switch (color) {
+        case 0:
+          return DOMINUS_GT_RED_BITMAP;
+        case 1:
+          return DOMINUS_GT_BLUE_BITMAP;
+        case 2:
+          return DOMINUS_GT_GREEN_BITMAP;
+        case 3:
+          return DOMINUS_GT_GREY_BITMAP;
+        case 4:
+          return DOMINUS_GT_PURPLE_BITMAP;
+      }
+      break;
+    case 2:
+      switch (color) {
+        case 0:
+          return OCTANE_ZSR_RED_BITMAP;
+        case 1:
+          return OCTANE_ZSR_BLUE_BITMAP;
+        case 2:
+          return OCTANE_ZSR_GREEN_BITMAP;
+        case 3:
+          return OCTANE_ZSR_GREY_BITMAP;
+        case 4:
+          return OCTANE_ZSR_PURPLE_BITMAP;
+      }
+      break;
+  }
+}
+
 // Free pointers
 void destroy_bitmaps(){
   al_destroy_bitmap(GAME_TITLE);
   al_destroy_bitmap(GAME_ICON);
-  al_destroy_bitmap(GAME_CAR_BITMAP);
-  al_destroy_bitmap(OPONENT_CAR_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_BLUE_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_GREEN_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_GREY_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_PURPLE_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_ICON_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_RED_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_BLUE_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_GREEN_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_GREY_BITMAP);
+  al_destroy_bitmap(DOMINUS_GT_PURPLE_BITMAP);
 }

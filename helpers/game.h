@@ -16,7 +16,7 @@ typedef enum DIR DIRECTION;
 
 extern int oponent_count;
 extern int placement;
-extern float race_time;
+extern double race_time;
 extern CAR** leaderboard;
 
-int play();
+int play(ALLEGRO_BITMAP* player_texture);

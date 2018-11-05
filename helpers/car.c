@@ -3,7 +3,7 @@
 #include "environment.h"
 
 // Return a player car
-CAR new_car(ALLEGRO_BITMAP *texture){
+CAR new_car(ALLEGRO_BITMAP* texture){
   CAR car;
   car.lvl = 0;
   car.width = STANDARD_CAR_WIDTH;
@@ -44,7 +44,7 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   else if(lvl < 10){
     car.position_y = (1*STARTING_DISTANCE);
   }
-  else{
+  else if(lvl < 13){
     car.position_y = (0*STARTING_DISTANCE);
   }
   float x = ((lvl%3)-1);
@@ -251,5 +251,5 @@ void control_ia(CAR* car, CAR** cars, int car_count){
   else {
     car->speed = max(0, car->speed - NO_ACCELERATE_EFFECT);
   }
-  car->position_y += car->speed*DISTANCE_VARIATION;
+  car->position_y += car->speed*DISTANCE_VARIATION*(0.9-skill_rate);
 }

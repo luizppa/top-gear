@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "helpers/environment.h"
 #include "helpers/menus.h"
-#include "helpers/game.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>
@@ -51,23 +52,6 @@ int main() {
             draw_title();
             break;
           }
-          switch (op) {
-            // Start race
-            case 1:
-              op = play();
-              stop_music(music);
-              music = set_music(TITLE_MUSIC);
-              start_music(music, true);
-              break;
-          }
-          // Quit game
-          if(op == 4){
-            deinit();
-            return 0;
-          }
-          else if(op == 1){
-            // show_leaderboard(leaderboard, race_time, oponent_count+1, placement);
-          }
         }
       }
     }
@@ -77,7 +61,7 @@ int main() {
 }
 
 int init() {
-
+  srand(time(NULL));
   // Instaling plugins
   init_environment();
 

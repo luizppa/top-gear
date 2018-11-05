@@ -15,6 +15,10 @@
 #define STANDARD_CAR_WIDTH 166.0
 #define STANDARD_CAR_HEIGHT 120.0
 
+// Car code
+#define OCTANE 0
+#define DOMINUS 1
+
 struct CAR_TYPE {
   int lvl;
   float width;
@@ -35,7 +39,7 @@ struct CAR_TYPE {
 };
 typedef struct CAR_TYPE CAR;
 
-CAR new_car(ALLEGRO_BITMAP *texture);
+CAR new_car(ALLEGRO_BITMAP* texture);
 CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture);
 void gear_up(CAR *car);
 void gear_down(CAR *car);
