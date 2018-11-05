@@ -9,6 +9,7 @@ ALLEGRO_BITMAP *GAME_ICON = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 
+ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP = NULL;
 ALLEGRO_BITMAP *OCTANE_ZSR_BLUE_BITMAP = NULL;
 ALLEGRO_BITMAP *OCTANE_ZSR_RED_BITMAP = NULL;
 ALLEGRO_BITMAP *OCTANE_ZSR_GREEN_BITMAP = NULL;
@@ -21,12 +22,16 @@ ALLEGRO_BITMAP *DOMINUS_GT_GREEN_BITMAP = NULL;
 ALLEGRO_BITMAP *DOMINUS_GT_PURPLE_BITMAP = NULL;
 ALLEGRO_BITMAP *DOMINUS_GT_GREY_BITMAP = NULL;
 
+float player_car_width = 166.0;
+float player_car_height = 120.0;
+
 // Initialize bitmaps
 void init_bitmaps(){
   GAME_TITLE = al_load_bitmap("assets/images/misc/logo.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
   LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
+  OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("assets/images/cars/octane_icon.png");
   OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
   OCTANE_ZSR_RED_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_red.png");
   OCTANE_ZSR_GREEN_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_green.png");
@@ -76,10 +81,14 @@ void draw_title(){
     3 = Grey
     4 = Purple
 */
-ALLEGRO_BITMAP* get_car(int car, int color){
+ALLEGRO_BITMAP* get_car(int car, int color, bool is_player){
   // return DOMINUS_GT_PURPLE_BITMAP;
   switch (car) {
     case 1:
+      if(is_player){
+        player_car_width = 166.0;
+        player_car_height = 120.0;
+      }
       switch (color) {
         case 0:
           return DOMINUS_GT_RED_BITMAP;
@@ -94,6 +103,10 @@ ALLEGRO_BITMAP* get_car(int car, int color){
       }
       break;
     case 2:
+      if(is_player){
+        player_car_width = 166.0;
+        player_car_height = 103.0;
+      }
       switch (color) {
         case 0:
           return OCTANE_ZSR_RED_BITMAP;
@@ -116,6 +129,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(GAME_ICON);
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
+  al_destroy_bitmap(OCTANE_ZSR_ICON_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_BLUE_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_GREEN_BITMAP);

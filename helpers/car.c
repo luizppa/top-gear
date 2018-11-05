@@ -25,8 +25,8 @@ CAR new_car(ALLEGRO_BITMAP* texture){
 CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   CAR car;
   car.lvl = lvl;
-  car.width = STANDARD_CAR_WIDTH;
-  car.height = STANDARD_CAR_HEIGHT;
+  car.width = player_car_width;
+  car.height = player_car_height;
   car.speed = 0.0;
   car.fuel = 100.0;
   car.gear = 1;
@@ -170,7 +170,7 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
       // If the cars are aligned and "car" is getting closer to "cars[i]"
       if(aligned && relative_speed > 0){
         // If the car is about to colide, set a warn to steer
-        if (distance <= COLISION_DISTANCE*1.3 && distance > COLISION_DISTANCE*0.5){
+        if (distance <= COLISION_DISTANCE*1.5 && distance > COLISION_DISTANCE*0.5){
           car->will_colide = true;
         }
         // If the car is less than COLISION_DISTANCE meters away from cars[i]
@@ -251,5 +251,5 @@ void control_ia(CAR* car, CAR** cars, int car_count){
   else {
     car->speed = max(0, car->speed - NO_ACCELERATE_EFFECT);
   }
-  car->position_y += car->speed*DISTANCE_VARIATION*(0.9-skill_rate);
+  car->position_y += car->speed*DISTANCE_VARIATION;
 }

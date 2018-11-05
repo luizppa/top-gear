@@ -111,16 +111,16 @@ void draw_hud(){
   al_draw_filled_circle(30, (sh-250)-player_minimap_position, 9, BLUE);
   // Position
   sprintf(position, "%dth", placement);
-  draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  draw_text(DISKUN_FONT, 100, YELLOW, 30, sh-100, ALLEGRO_ALIGN_LEFT, position, false);
+  draw_text(DISKUN_FONT, 60, BLUE, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION", false);
+  draw_text(DISKUN_FONT, 100, BLUE, 30, sh-100, ALLEGRO_ALIGN_LEFT, position, false);
   // Gears
   sprintf(gear, "%d", player.gear);
-  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
+  draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
+  draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
   // Speed
   sprintf(speed, "%.0f Km/h", player.speed);
-  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
+  draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
+  draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
 
 // Draw the game cars
@@ -327,7 +327,7 @@ void setup(ALLEGRO_BITMAP* player_texture){
   for (int i = 0; i < oponent_count; i++) {
     car_type = (rand()%2)+1;
     car_color = rand()%5;
-    oponents[i] = new_oponent(i+1, get_car(car_type, car_color));
+    oponents[i] = new_oponent(i+1, get_car(car_type, car_color, false));
     cars[i] = &oponents[i];
   }
   cars[oponent_count] = &player;
