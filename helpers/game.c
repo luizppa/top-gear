@@ -117,7 +117,7 @@ void draw_object(int i){
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance);
   float apparent_width = object.width*delta;
   float apparent_height = object.height*delta;
-  float screen_position_x = position+object.position_x-(apparent_width/2);
+  float screen_position_x = position+(object.position_x*delta)-(apparent_width/2);
   float screen_position_y = sh-distance-apparent_height;
   // Objcet texture
   al_draw_scaled_bitmap(object.texture, 0, 0, object.width, object.height, screen_position_x, screen_position_y, apparent_width, apparent_height, 0);
@@ -281,6 +281,9 @@ int update(){
     // Controll oponents
     control_ia(&oponents[i], cars, oponent_count+1);
   }
+  for (int i = 1; i < object_count; i++) {
+    if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + 500;
+  }
   // Sort oponents array (reportedly causing rendering issues)
   // cars = quick_sort_cars(cars, oponent_count+1);
   // Stop timer to avoid flooding the event queue
@@ -367,9 +370,13 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   int player_position = oponent_count+1;
   // Initialize environment
   street_left_limit = (sw-street_width)/2;
-  object_count = 1;
+  object_count = 11;
   objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
   objects[0] = new_object(0, track_length, 1295.0, 691.0, FINISH_LINE);
+  for (int i = 1; i < 6; i++) {
+    objects[i] = new_object(-(street_width/2)-120, i*100, 120.0, 120.0, ROAD_SIGN_LEFT);
+    objects[i+5] = new_object((street_width/2)+120, i*100, 120.0, 120.0, ROAD_SIGN_LEFT);
+  }
 
   // Change track to Las Vegas theme
   stop_music(music);

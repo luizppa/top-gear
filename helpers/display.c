@@ -9,6 +9,7 @@ ALLEGRO_BITMAP *GAME_ICON = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 ALLEGRO_BITMAP *FINISH_LINE = NULL;
+ALLEGRO_BITMAP *ROAD_SIGN_LEFT = NULL;
 
 // Octane assets
 ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP = NULL;
@@ -44,6 +45,7 @@ void init_bitmaps(){
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
   FINISH_LINE = al_load_bitmap("assets/images/misc/finish.png");
+  ROAD_SIGN_LEFT = al_load_bitmap("assets/images/misc/road_sign_left.png");
   LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
   OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("assets/images/cars/octane_icon.png");
   OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
@@ -193,6 +195,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
   al_destroy_bitmap(FINISH_LINE);
+  al_destroy_bitmap(ROAD_SIGN_LEFT);
   al_destroy_bitmap(OCTANE_ZSR_ICON_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_BLUE_BITMAP);
