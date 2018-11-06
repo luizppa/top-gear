@@ -9,7 +9,7 @@ float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
 float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
 float street_left_limit; // Street border
-float track_length = 60000.0; // Standart at 60000.0
+float track_length = 50000.0; // Standart at 60000.0
 float paralax = 1.3;
 double race_time;
 int placement = 1;
@@ -129,13 +129,13 @@ void draw_hud(){
   char gear[8];
   char speed[16];
   float minimap_heigth = track_length/300;
-  float player_minimap_position = player.position_y/300;
+  float player_minimap_position = min(player.position_y, track_length)/300;
   // Minimap
   al_draw_line(30, sh-250, 30, (sh-250)-minimap_heigth, YELLOW, 6);
   al_draw_filled_circle(30, sh-250, 9, ORANGE);
   al_draw_filled_circle(30, (sh-250)-minimap_heigth, 9, ORANGE);
   for (int i = 0; i < oponent_count; i++) {
-    al_draw_filled_circle(30, (sh-250)-(oponents[i].position_y/300), 8, RED);
+    al_draw_filled_circle(30, (sh-250)-(min(oponents[i].position_y, track_length)/300), 8, RED);
   }
   al_draw_filled_circle(30, (sh-250)-player_minimap_position, 9, BLUE);
   // Position
@@ -296,6 +296,35 @@ int update(){
   else return 0;
 }
 
+// Deaccelerate and stop
+int deaccelerate_until_stop(){
+  while (true) {
+    al_wait_for_event(queue, &ev);
+    // Quit game
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
+    // Each 1/fps seconds
+    else if(ev.type == ALLEGRO_EVENT_TIMER) {
+      for (int i = 0; i < oponent_count; i++){
+        // Controll oponents
+        control_ia(&oponents[i], cars, oponent_count+1);
+      }
+      player.speed = max(0, player.speed-(800/(fps*3)));
+      if(player.speed <= 0){
+        al_rest(3);
+        return 0;
+      }
+      player.position_y += player.speed * DISTANCE_VARIATION;
+      // Stop timer to avoid flooding the event queue
+      al_stop_timer(timer);
+      // Update screen
+      draw_game();
+      // Resume timer
+      al_resume_timer(timer);
+    }
+  }
+  return 0;
+}
+
 // Show match leaderboards
 int show_leaderboard(){
   char result[50];
@@ -426,7 +455,7 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
         end = clock();
         race_time = (double)(end-begin)/CLOCKS_PER_SEC;
         // show_leaderboard();
-        return 1;
+        return deaccelerate_until_stop();
       }
     }
   }
