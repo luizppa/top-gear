@@ -3,7 +3,7 @@
 #include "sounds.h"
 #include "environment.h"
 
-ALLEGRO_COLOR colors[4];
+ALLEGRO_COLOR colors[5];
 
 // Updates menu on screen
 int redraw_main_menu(int op){
@@ -16,7 +16,8 @@ int redraw_main_menu(int op){
 }
 
 int mode_selection();
-int car_selection();
+int* car_selection();
+int color_selection();
 
 // Runs main menu
 int main_menu(){
@@ -26,6 +27,7 @@ int main_menu(){
   colors[1] = YELLOW;
   colors[2] = YELLOW;
   colors[3] = YELLOW;
+  colors[4] = YELLOW;
   // Update screen
   redraw_main_menu(op);
   while (true) {
@@ -83,19 +85,28 @@ int main_menu(){
   return 0;
 }
 
+// Update mode selection screen
 void redraw_mode_selection(int op){
   float square_side = 250.0;
   clear_display(BLUE, false);
   draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
-  al_draw_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), colors[0], 5);
+  al_draw_rounded_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), 0, 0, colors[0], 5);
   draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-25-(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
-  al_draw_rectangle((sw/2)+25+square_side, (sh/2)-(square_side/2), (sw/2)+25, (sh/2)+(square_side/2), colors[1], 5);
-  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", true);
+  al_draw_rounded_rectangle((sw/2)+25, (sh/2)-(square_side/2), (sw/2)+25+square_side, (sh/2)+(square_side/2), 0, 0, colors[1], 5);
+  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
+  switch (op) {
+    case 1:
+      draw_text(PIXEL_FONT, 22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "A single race to test your skills", true);
+      break;
+    case 2:
+      draw_text(PIXEL_FONT, 22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "Join a series of races and make your way to the top!", true);
+      break;
+  }
 }
 
 // Select gamemode
 int mode_selection(){
-  int op = 1;
+  int op = 1, *car;
   colors[0] = WHITE;
   colors[1] = YELLOW;
   redraw_mode_selection(op);
@@ -130,10 +141,10 @@ int mode_selection(){
           switch (op) {
             // Start race
             case 1:
-              op = car_selection();
-              if(op == 4) return op;
-              if(op == -1) return 0;
-              op = play(get_car(op, 4, true), NULL, 11);
+              car = car_selection();
+              if(car[0] == 4) return 4;
+              if(car[0] == -1) return -1;
+              op = play(get_car(car[0], car[1]), NULL, 11);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);
@@ -146,6 +157,7 @@ int mode_selection(){
   return 0;
 }
 
+// Update car selection screen
 void redraw_car_selection(int op){
   float square_width = 330.0, square_height = 180;
   float dominus_w = 239.0, dominus_h = 70.0;
@@ -154,15 +166,15 @@ void redraw_car_selection(int op){
   draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", false);
   al_draw_rectangle((sw/2)-25-square_width, (sh/2)-(square_height/2), (sw/2)-25, (sh/2)+(square_height/2), colors[0], 5);
   draw_text(PIXEL_FONT, 22, colors[0], (sw/2)-25-(square_width/2), (sh/2)-(square_height/2)+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
-  al_draw_bitmap(DOMINUS_GT_ICON_BITMAP, (sw/2)-25-((square_width-dominus_w)/2)-dominus_w, (sh/2)-(dominus_h/2), 0);
-  al_draw_rectangle((sw/2)+25+square_width, (sh/2)-(square_height/2), (sw/2)+25, (sh/2)+(square_height/2), colors[1], 5);
-  al_draw_bitmap(OCTANE_ZSR_ICON_BITMAP, (sw/2)+25+((square_width-octane_w)/2), (sh/2)-(octane_h/2), 0);
+  al_draw_bitmap(DOMINUS_GT_ICON_BITMAP, (sw/2)-25-((square_width-dominus_w)/2)-dominus_w, 25+(sh/2)-(dominus_h/2), 0);
+  al_draw_rectangle((sw/2)+25, (sh/2)-(square_height/2), (sw/2)+25+square_width, (sh/2)+(square_height/2), colors[1], 5);
+  al_draw_bitmap(OCTANE_ZSR_ICON_BITMAP, (sw/2)+25+((square_width-octane_w)/2), 25+(sh/2)-(octane_h/2), 0);
   draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_width/2), (sh/2)-(square_height/2)+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", true);
 }
 
 // Select car
-int car_selection(){
-  int op = 1;
+int* car_selection(){
+  int op = 1, *res = (int*) calloc(2, sizeof(int)), color;
   colors[0] = WHITE;
   colors[1] = YELLOW;
   redraw_car_selection(op);
@@ -170,10 +182,14 @@ int car_selection(){
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      return 4;
+      res[0] = 4;
+      return res;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
+        res[0] = -1;
+        return res;
+      }
       switch (ev.keyboard.keycode) {
         case ALLEGRO_KEY_RIGHT:
         case ALLEGRO_KEY_D:
@@ -191,6 +207,70 @@ int car_selection(){
             op--;
             colors[op-1] = WHITE;
             redraw_car_selection(op);
+          }
+          break;
+        case ALLEGRO_KEY_ENTER:
+          res[0] = op;
+          color = color_selection();
+          if(color == 5) res[0] = 4;
+          if(color == -1) res[0] = -1;
+          res[1] = color;
+          return res;
+      }
+    }
+  }
+  res[0] = 0;
+  return res;
+}
+
+// Update color selection screen
+void redraw_color_selection(int op){
+  float block_size = 150.0;
+  ALLEGRO_COLOR options[5] = {rgb(255, 0, 0), rgb(0, 0, 255), rgb(0, 255, 0), rgb(100, 100, 100), rgb(170, 0, 240)};
+  clear_display(BLUE, false);
+  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR COLOR", false);
+  for(int i = -2; i < 3; i++){
+    al_draw_filled_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 10, 10, options[i+2]);
+    al_draw_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 10, 10, colors[i+2], 5);
+  }
+  al_flip_display();
+}
+
+// Select car color
+int color_selection(){
+  int op = 0;
+  // Selected option = WHITE
+  colors[0] = WHITE;
+  colors[1] = YELLOW;
+  colors[2] = YELLOW;
+  colors[3] = YELLOW;
+  colors[4] = YELLOW;
+  redraw_color_selection(op);
+  while (true) {
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+      return 5;
+    }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+      switch (ev.keyboard.keycode) {
+        case ALLEGRO_KEY_RIGHT:
+        case ALLEGRO_KEY_D:
+          if(op < 4){
+            colors[op] = YELLOW;
+            op++;
+            colors[op] = WHITE;
+            redraw_color_selection(op);
+          }
+          break;
+        case ALLEGRO_KEY_LEFT:
+        case ALLEGRO_KEY_A:
+          if(op > 0){
+            colors[op] = YELLOW;
+            op--;
+            colors[op] = WHITE;
+            redraw_color_selection(op);
           }
           break;
         case ALLEGRO_KEY_ENTER:

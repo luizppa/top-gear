@@ -179,8 +179,8 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
         }
         // If the car is less than COLISION_DISTANCE meters away from cars[i]
         if (distance <= COLISION_DISTANCE && distance > 0) {
-          car->speed = max(0, car->speed-(relative_speed*2.3));
-          cars[i]->speed += relative_speed;
+          car->speed = max(0, car->speed-(relative_speed*0.8));
+          cars[i]->speed += relative_speed*0.8;
           return true;
         }
       }

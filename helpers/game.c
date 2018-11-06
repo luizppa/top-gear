@@ -109,6 +109,7 @@ void draw_oponent(int i){
   }
 }
 
+// Draw a static object to the screen
 void draw_object(int i){
   OBJECT object = objects[i];
   float distance = object_distance(i);
@@ -295,6 +296,7 @@ int update(){
   else return 0;
 }
 
+// Show match leaderboards
 int show_leaderboard(){
   char result[50];
   char duration[50];
@@ -331,6 +333,7 @@ int show_leaderboard(){
   }
 }
 
+// Setup game environment
 void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   int player_position = oponent_count+1;
   // Initialize environment
@@ -370,7 +373,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
     for (int i = 0; i < oponent_count; i++) {
       car_type = (rand()%2)+1;
       car_color = rand()%5;
-      oponents[i] = new_oponent(i+1, get_car(car_type, car_color, false));
+      oponents[i] = new_oponent(i+1, get_car(car_type, car_color));
       cars[i] = &oponents[i];
     }
   }
@@ -383,6 +386,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   cars[oponent_count] = &player;
 }
 
+// Main
 int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amount){
   int result;
   clock_t begin, end;

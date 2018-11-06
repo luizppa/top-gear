@@ -11,12 +11,12 @@
  *    Author: Luiz Philippe (https://github.com/luizppa & https://luizppa.com)
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "helpers/environment.h"
 #include "helpers/menus.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <allegro5/allegro5.h>
 #include <allegro5/error.h>
 #include <allegro5/events.h>
@@ -31,7 +31,9 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
+// Initialize environment
 int init();
+// Clear environment
 void deinit();
 
 int main() {

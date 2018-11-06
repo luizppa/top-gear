@@ -37,4 +37,4 @@ void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, i
 void clear_display(ALLEGRO_COLOR color, bool flip);
 void draw_title();
 void destroy_bitmaps();
-ALLEGRO_BITMAP* get_car(int car, int color, bool is_player);
+ALLEGRO_BITMAP* get_car(int car, int color);

@@ -44,12 +44,14 @@ void init_bitmaps(){
   DOMINUS_GT_GREY_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_grey.png");
 }
 
+// Returns the width of a car bitmap
 float get_bitmap_width(ALLEGRO_BITMAP* bitmap){
   if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 166.0;
   else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 166.0;
   else return 0.0;
 }
 
+// Returns the height of a car bitmap
 float get_bitmap_height(ALLEGRO_BITMAP* bitmap){
   if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 120.0;
   else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 103.0;
@@ -92,7 +94,7 @@ void draw_title(){
     3 = Grey
     4 = Purple
 */
-ALLEGRO_BITMAP* get_car(int car, int color, bool is_player){
+ALLEGRO_BITMAP* get_car(int car, int color){
   // return DOMINUS_GT_PURPLE_BITMAP;
   switch (car) {
     case 1:
