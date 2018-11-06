@@ -6,7 +6,7 @@ this project was developed for educational purposes as part of the work to compl
 
 ## Installing
 In order to run this project you must have the [Allegro 5](https://liballeg.org/) library installed.You can find further information about installing allegro [here](https://wiki.allegro.cc/index.php?title=Getting_Started).
-Note: if you're using a ubuntu environment, your installation is as simple as running these three commands:
+Note: if you're using an ubuntu environment, your installation is as simple as running these three commands:
 
 ```
 $ sudo add-apt-repository ppa:allegro/5.2
