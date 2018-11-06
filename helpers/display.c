@@ -46,15 +46,15 @@ void init_bitmaps(){
 
 // Returns the width of a car bitmap
 float get_bitmap_width(ALLEGRO_BITMAP* bitmap){
-  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 166.0;
-  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 166.0;
+  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP) return 166.0;
+  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP) return 166.0;
   else return 0.0;
 }
 
 // Returns the height of a car bitmap
 float get_bitmap_height(ALLEGRO_BITMAP* bitmap){
-  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || OCTANE_ZSR_RED_BITMAP || OCTANE_ZSR_GREEN_BITMAP || OCTANE_ZSR_PURPLE_BITMAP || OCTANE_ZSR_GREY_BITMAP) return 120.0;
-  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || DOMINUS_GT_RED_BITMAP || DOMINUS_GT_GREEN_BITMAP || DOMINUS_GT_PURPLE_BITMAP || DOMINUS_GT_GREY_BITMAP) return 103.0;
+  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP) return 120.0;
+  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP) return 103.0;
   else return 0.0;
 }
 
