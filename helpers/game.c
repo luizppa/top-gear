@@ -35,7 +35,7 @@ float object_distance(int i){
 bool is_car_on_sight(int i){
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(i));
   float apparent_height = oponents[i].height*delta;
-  return (distance_from_bottom(i) <= street_length-8 && distance_from_bottom(i) >= -apparent_height);
+  return (distance_from_bottom(i) <= street_length-8 && distance_from_bottom(i) >= -apparent_height-(20*delta));
   // return true;
 }
 
@@ -94,6 +94,9 @@ void draw_oponent(int i){
   oponent->apparent_height = oponent->height*delta;
   oponent->screen_position_x = position+oponent->position_x;
   oponent->screen_position_y = sh-distance-(oponent->height/2);
+  float height_variation = oponent->height-oponent->apparent_height;
+  // Oponent name
+  draw_text(PIXEL_FONT, 14*delta, WHITE, position+(oponent->position_x*delta), sh-distance-(20*delta)-oponent->height+height_variation, ALLEGRO_ALIGN_CENTRE, oponent->name, false);
   // Car texture
   al_draw_scaled_bitmap(oponent->texture, 0, 0, oponent->width, oponent->height, position+(oponent->position_x*delta)-(oponent->apparent_width/2), sh-distance-oponent->apparent_height, oponent->apparent_width, oponent->apparent_height, 0);
   if(debug){
@@ -282,7 +285,7 @@ int update(){
     control_ia(&oponents[i], cars, oponent_count+1);
   }
   for (int i = 1; i < object_count; i++) {
-    if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + 500;
+    if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + street_length;
   }
   // Sort oponents array (reportedly causing rendering issues)
   // cars = quick_sort_cars(cars, oponent_count+1);
@@ -374,8 +377,8 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
   objects[0] = new_object(0, track_length, 1295.0, 691.0, FINISH_LINE);
   for (int i = 1; i < 6; i++) {
-    objects[i] = new_object(-(street_width/2)-120, i*100, 120.0, 120.0, ROAD_SIGN_LEFT);
-    objects[i+5] = new_object((street_width/2)+120, i*100, 120.0, 120.0, ROAD_SIGN_LEFT);
+    objects[i] = new_object(-(street_width/2)-120, i*120, 120.0, 120.0, ROAD_SIGN_LEFT);
+    objects[i+5] = new_object((street_width/2)+120, i*120, 120.0, 120.0, ROAD_SIGN_LEFT);
   }
 
   // Change track to Las Vegas theme
