@@ -147,7 +147,7 @@ void draw_hud(){
   draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
   draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
   // Speed
-  sprintf(speed, "%.0f Km/h", player.speed);
+  sprintf(speed, "%.0f Km/h", max(0, player.speed));
   draw_text(DISKUN_FONT, 60, BLUE, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
   draw_text(DISKUN_FONT, 80, BLUE, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
 }
@@ -309,10 +309,6 @@ int deaccelerate_until_stop(){
         control_ia(&oponents[i], cars, oponent_count+1);
       }
       player.speed = max(0, player.speed-(800/(fps*3)));
-      if(player.speed <= 0){
-        al_rest(3);
-        return 0;
-      }
       player.position_y += player.speed * DISTANCE_VARIATION;
       // Stop timer to avoid flooding the event queue
       al_stop_timer(timer);
@@ -320,6 +316,10 @@ int deaccelerate_until_stop(){
       draw_game();
       // Resume timer
       al_resume_timer(timer);
+      if(player.speed <= 0){
+        al_rest(3);
+        return 0;
+      }
     }
   }
   return 0;
@@ -400,8 +400,8 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   if(tournament_cars == NULL){
     int car_type, car_color;
     for (int i = 0; i < oponent_count; i++) {
-      car_type = (rand()%2)+1;
-      car_color = rand()%5;
+      car_type = (rand()%3)+1;
+      car_color = rand()%7;
       oponents[i] = new_oponent(i+1, get_car(car_type, car_color));
       cars[i] = &oponents[i];
     }
