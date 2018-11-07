@@ -105,6 +105,7 @@ int init() {
   draw_text(DISKUN_FONT, 56, BLUE, sw/2, (sh/2)-56, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE", false);
   draw_text(PIXEL_FONT, 26, WHITE, sw/2, sh/2, ALLEGRO_ALIGN_CENTRE, "presents", true);
   al_rest(3);
+  al_flush_event_queue(queue);
 
   // Title screen
   draw_title();

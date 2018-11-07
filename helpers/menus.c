@@ -142,7 +142,7 @@ int mode_selection(){
             // Start race
             case 1:
               car = car_selection();
-              if(car[0] == 4) return 4;
+              if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;
               op = play(get_car(car[0], car[1]), NULL, 11);
               stop_music(music);
@@ -163,6 +163,7 @@ void redraw_car_selection(int op){
   float dominus_w = 239.0, dominus_h = 70.0;
   float octane_w = 187.0, octane_h = 88.0;
   float roadhog_w = 233.0, roadhog_h = 116.0;
+  float maverick_w = 269.0, maverick_h = 108.0;
   clear_display(BLUE, false);
   // Dominus
   al_draw_rectangle((sw/2)-25-square_width, (sh/2)-25-square_height, (sw/2)-25, (sh/2)-25, colors[0], 5);
@@ -179,6 +180,11 @@ void redraw_car_selection(int op){
   draw_text(PIXEL_FONT, 28, colors[2], (sw/2)-25-(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
   al_draw_bitmap(ROADHOG_ICON_BITMAP, (sw/2)-25-(square_width/2)-(roadhog_w/2), (sh/2)+25+square_height-35-roadhog_h, 0);
 
+  // Maverick
+  al_draw_rectangle((sw/2)+25, (sh/2)+25, (sw/2)+25+square_width, (sh/2)+25+square_height, colors[3], 5);
+  draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+25+(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
+  al_draw_bitmap(MAVERICK_ICON_BITMAP, (sw/2)+25+(square_width/2)-(maverick_w/2), (sh/2)+25+square_height-35-maverick_h, 0);
+
   draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 30, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", true);
 }
 
@@ -188,12 +194,13 @@ int* car_selection(){
   colors[0] = WHITE;
   colors[1] = YELLOW;
   colors[2] = YELLOW;
+  colors[3] = YELLOW;
   redraw_car_selection(op);
   while (true) {
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      res[0] = 4;
+      res[0] = 5;
       return res;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -204,7 +211,7 @@ int* car_selection(){
       switch (ev.keyboard.keycode) {
         case ALLEGRO_KEY_RIGHT:
         case ALLEGRO_KEY_D:
-          if(op < 2){
+          if(op == 1 || op == 3){
             colors[op-1] = YELLOW;
             op++;
             colors[op-1] = WHITE;
@@ -213,7 +220,7 @@ int* car_selection(){
           break;
         case ALLEGRO_KEY_DOWN:
         case ALLEGRO_KEY_S:
-          if(op < 2){
+          if(op < 3){
             colors[op-1] = YELLOW;
             op += 2;
             colors[op-1] = WHITE;
@@ -222,7 +229,7 @@ int* car_selection(){
           break;
         case ALLEGRO_KEY_LEFT:
         case ALLEGRO_KEY_A:
-          if(op > 1 && op < 3){
+          if(op == 2 || op == 4){
             colors[op-1] = YELLOW;
             op--;
             colors[op-1] = WHITE;
@@ -241,7 +248,7 @@ int* car_selection(){
         case ALLEGRO_KEY_ENTER:
           res[0] = op;
           color = color_selection();
-          if(color == 7) res[0] = 4;
+          if(color == 7) res[0] = 5;
           if(color == -1) res[0] = -1;
           res[1] = color;
           return res;

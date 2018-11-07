@@ -324,6 +324,7 @@ int deaccelerate_until_stop(){
       al_resume_timer(timer);
       if(player.speed <= 0){
         al_rest(3);
+        al_flush_event_queue(queue);
         return 0;
       }
     }
@@ -410,7 +411,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   if(tournament_cars == NULL){
     int car_type, car_color;
     for (int i = 0; i < oponent_count; i++) {
-      car_type = (rand()%3)+1;
+      car_type = (rand()%4)+1;
       car_color = rand()%7;
       oponents[i] = new_oponent(i+1, get_car(car_type, car_color));
       cars[i] = &oponents[i];

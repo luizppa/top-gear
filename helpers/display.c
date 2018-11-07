@@ -38,6 +38,15 @@ ALLEGRO_BITMAP *ROADHOG_PURPLE_BITMAP = NULL;
 ALLEGRO_BITMAP *ROADHOG_GREY_BITMAP = NULL;
 ALLEGRO_BITMAP *ROADHOG_BLACK_BITMAP = NULL;
 ALLEGRO_BITMAP *ROADHOG_YELLOW_BITMAP = NULL;
+// Maverick assets
+ALLEGRO_BITMAP *MAVERICK_ICON_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_BLUE_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_RED_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_GREEN_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_PURPLE_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_GREY_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_BLACK_BITMAP = NULL;
+ALLEGRO_BITMAP *MAVERICK_YELLOW_BITMAP = NULL;
 
 // Initialize bitmaps
 void init_bitmaps(){
@@ -71,6 +80,14 @@ void init_bitmaps(){
   ROADHOG_GREY_BITMAP = al_load_bitmap("assets/images/cars/roadhog_grey.png");
   ROADHOG_BLACK_BITMAP = al_load_bitmap("assets/images/cars/roadhog_black.png");
   ROADHOG_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/roadhog_yellow.png");
+  MAVERICK_ICON_BITMAP = al_load_bitmap("assets/images/cars/maverick_icon.png");
+  MAVERICK_BLUE_BITMAP = al_load_bitmap("assets/images/cars/maverick_blue.png");
+  MAVERICK_RED_BITMAP = al_load_bitmap("assets/images/cars/maverick_red.png");
+  MAVERICK_GREEN_BITMAP = al_load_bitmap("assets/images/cars/maverick_green.png");
+  MAVERICK_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/maverick_purple.png");
+  MAVERICK_GREY_BITMAP = al_load_bitmap("assets/images/cars/maverick_grey.png");
+  MAVERICK_BLACK_BITMAP = al_load_bitmap("assets/images/cars/maverick_black.png");
+  MAVERICK_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/maverick_yellow.png");
 }
 
 // Returns the width of a car bitmap
@@ -78,6 +95,7 @@ float get_bitmap_width(ALLEGRO_BITMAP* bitmap){
   if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP || bitmap == OCTANE_ZSR_BLACK_BITMAP || bitmap == OCTANE_ZSR_YELLOW_BITMAP) return 166.0;
   else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP || bitmap == DOMINUS_GT_BLACK_BITMAP || bitmap == DOMINUS_GT_YELLOW_BITMAP) return 166.0;
   else if(bitmap == ROADHOG_BLUE_BITMAP || bitmap == ROADHOG_RED_BITMAP || bitmap == ROADHOG_GREEN_BITMAP || bitmap == ROADHOG_PURPLE_BITMAP || bitmap == ROADHOG_GREY_BITMAP || bitmap == ROADHOG_BLACK_BITMAP || bitmap == ROADHOG_YELLOW_BITMAP) return 166.0;
+  else if(bitmap == MAVERICK_BLUE_BITMAP || bitmap == MAVERICK_RED_BITMAP || bitmap == MAVERICK_GREEN_BITMAP || bitmap == MAVERICK_PURPLE_BITMAP || bitmap == MAVERICK_GREY_BITMAP || bitmap == MAVERICK_BLACK_BITMAP || bitmap == MAVERICK_YELLOW_BITMAP) return 166.0;
   else return 0.0;
 }
 
@@ -86,6 +104,7 @@ float get_bitmap_height(ALLEGRO_BITMAP* bitmap){
   if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP || bitmap == OCTANE_ZSR_BLACK_BITMAP || bitmap == OCTANE_ZSR_YELLOW_BITMAP) return 120.0;
   else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP || bitmap == DOMINUS_GT_BLACK_BITMAP || bitmap == DOMINUS_GT_YELLOW_BITMAP) return 103.0;
   else if(bitmap == ROADHOG_BLUE_BITMAP || bitmap == ROADHOG_RED_BITMAP || bitmap == ROADHOG_GREEN_BITMAP || bitmap == ROADHOG_PURPLE_BITMAP || bitmap == ROADHOG_GREY_BITMAP || bitmap == ROADHOG_BLACK_BITMAP || bitmap == ROADHOG_YELLOW_BITMAP) return 131.0;
+  else if(bitmap == MAVERICK_BLUE_BITMAP || bitmap == MAVERICK_RED_BITMAP || bitmap == MAVERICK_GREEN_BITMAP || bitmap == MAVERICK_PURPLE_BITMAP || bitmap == MAVERICK_GREY_BITMAP || bitmap == MAVERICK_BLACK_BITMAP || bitmap == MAVERICK_YELLOW_BITMAP) return 102.0;
   else return 0.0;
 }
 
@@ -119,6 +138,7 @@ void draw_title(){
     0 = Octane
     1 = Dominus
     2 = Roadhog
+    3 = Maverick
   Colors:
     0 = Red
     1 = Blue
@@ -185,6 +205,24 @@ ALLEGRO_BITMAP* get_car(int car, int color){
           return ROADHOG_BLACK_BITMAP;
       }
       break;
+    case 4:
+      switch (color) {
+        case 0:
+          return MAVERICK_RED_BITMAP;
+        case 1:
+          return MAVERICK_BLUE_BITMAP;
+        case 2:
+          return MAVERICK_GREEN_BITMAP;
+        case 3:
+          return MAVERICK_GREY_BITMAP;
+        case 4:
+          return MAVERICK_PURPLE_BITMAP;
+        case 5:
+          return MAVERICK_YELLOW_BITMAP;
+        case 6:
+          return MAVERICK_BLACK_BITMAP;
+      }
+      break;
   }
 }
 
@@ -220,4 +258,12 @@ void destroy_bitmaps(){
   al_destroy_bitmap(ROADHOG_GREY_BITMAP);
   al_destroy_bitmap(ROADHOG_BLACK_BITMAP);
   al_destroy_bitmap(ROADHOG_YELLOW_BITMAP);
+  al_destroy_bitmap(MAVERICK_ICON_BITMAP);
+  al_destroy_bitmap(MAVERICK_BLUE_BITMAP);
+  al_destroy_bitmap(MAVERICK_RED_BITMAP);
+  al_destroy_bitmap(MAVERICK_GREEN_BITMAP);
+  al_destroy_bitmap(MAVERICK_PURPLE_BITMAP);
+  al_destroy_bitmap(MAVERICK_GREY_BITMAP);
+  al_destroy_bitmap(MAVERICK_BLACK_BITMAP);
+  al_destroy_bitmap(MAVERICK_YELLOW_BITMAP);
 }
