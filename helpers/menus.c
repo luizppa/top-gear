@@ -39,7 +39,10 @@ int main_menu(){
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
       // Return to title
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
+        play_sample(MENU_BACK_SOUND);
+        return -1;
+      }
       switch (ev.keyboard.keycode) {
         // Selection UP
         case ALLEGRO_KEY_UP:
@@ -48,6 +51,7 @@ int main_menu(){
             colors[op-1] = YELLOW;
             op--;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             // Update screen
             redraw_main_menu(op);
           }
@@ -59,12 +63,14 @@ int main_menu(){
             colors[op-1] = YELLOW;
             op++;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             // Update screen
             redraw_main_menu(op);
           }
           break;
         // Confirm selection
         case ALLEGRO_KEY_ENTER:
+          play_sample(MENU_SELECT_SOUND);
           switch (op) {
             // Select game mode
             case 1:
@@ -117,7 +123,10 @@ int mode_selection(){
       return 4;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        play_sample(MENU_BACK_SOUND);
+        return -1;
+      }
       switch (ev.keyboard.keycode) {
         case ALLEGRO_KEY_RIGHT:
         case ALLEGRO_KEY_D:
@@ -125,6 +134,7 @@ int mode_selection(){
             colors[op-1] = YELLOW;
             op++;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_mode_selection(op);
           }
           break;
@@ -134,10 +144,12 @@ int mode_selection(){
             colors[op-1] = YELLOW;
             op--;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_mode_selection(op);
           }
           break;
         case ALLEGRO_KEY_ENTER:
+          play_sample(MENU_SELECT_SOUND);
           switch (op) {
             // Start race
             case 1:
@@ -205,6 +217,7 @@ int* car_selection(){
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
+        play_sample(MENU_BACK_SOUND);
         res[0] = -1;
         return res;
       }
@@ -215,6 +228,7 @@ int* car_selection(){
             colors[op-1] = YELLOW;
             op++;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_car_selection(op);
           }
           break;
@@ -224,6 +238,7 @@ int* car_selection(){
             colors[op-1] = YELLOW;
             op += 2;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_car_selection(op);
           }
           break;
@@ -233,6 +248,7 @@ int* car_selection(){
             colors[op-1] = YELLOW;
             op--;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_car_selection(op);
           }
           break;
@@ -242,10 +258,12 @@ int* car_selection(){
             colors[op-1] = YELLOW;
             op -= 2;
             colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_car_selection(op);
           }
           break;
         case ALLEGRO_KEY_ENTER:
+          play_sample(MENU_SELECT_SOUND);
           res[0] = op;
           color = color_selection();
           if(color == 7) res[0] = 5;
@@ -291,7 +309,10 @@ int color_selection(){
       return 7;
     }
     else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) return -1;
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        play_sample(MENU_BACK_SOUND);
+        return -1;
+      }
       switch (ev.keyboard.keycode) {
         case ALLEGRO_KEY_RIGHT:
         case ALLEGRO_KEY_D:
@@ -299,6 +320,7 @@ int color_selection(){
             colors[op] = YELLOW;
             op++;
             colors[op] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_color_selection(op);
           }
           break;
@@ -308,10 +330,12 @@ int color_selection(){
             colors[op] = YELLOW;
             op--;
             colors[op] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
             redraw_color_selection(op);
           }
           break;
         case ALLEGRO_KEY_ENTER:
+          play_sample(MENU_SELECT_SOUND);
           return op;
       }
     }

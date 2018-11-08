@@ -51,5 +51,5 @@ float max_speed(int gear);
 float speed_increase(int gear, float speed);
 CAR** quick_sort_cars(CAR** cars, int size);
 bool are_cars_aligned(CAR* a, CAR* b);
-bool car_colided(CAR* car, CAR** cars, int car_count);
-void control_ia(CAR* car, CAR** cars, int car_count);
+bool car_colided(CAR* car, CAR** cars, int car_count, bool play_sounds);
+void control_ia(CAR* car, CAR** cars, int car_count, bool play_sounds);

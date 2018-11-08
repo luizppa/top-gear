@@ -55,6 +55,7 @@ int main() {
       }
       // Go to main menu
       else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
+        play_sample(MENU_SELECT_SOUND);
         while(true){
           op = main_menu();
           // Quit game
@@ -86,6 +87,9 @@ int init() {
   al_destroy_path(p);
   p = 0;
 
+  // Sound settings
+  setup_sounds();
+
   // Music setings
   music = set_music(TITLE_MUSIC);
   al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
@@ -115,9 +119,7 @@ int init() {
 // Clear environment
 void deinit() {
   destroy_bitmaps();
-  al_destroy_timer(timer);
-  al_destroy_display(display);
-  al_destroy_event_queue(queue);
-  al_destroy_audio_stream(music);
+  destroy_sounds();
+  destroy_environment();
   clearenv();
 }

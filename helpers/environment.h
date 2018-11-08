@@ -17,13 +17,13 @@ extern bool debug;
 extern bool ai_pilots;
 extern float movement_speed;
 
-extern ALLEGRO_DISPLAY_MODE disp_data;
 extern ALLEGRO_DISPLAY* display;
 extern ALLEGRO_EVENT_QUEUE* queue;
 extern ALLEGRO_TIMER* timer;
-extern ALLEGRO_AUDIO_STREAM* music;
 extern ALLEGRO_KEYBOARD_STATE key_state;
 
 void init_environment();
+void setup_sounds();
 void setup_display();
 void setup_events();
+void destroy_environment();

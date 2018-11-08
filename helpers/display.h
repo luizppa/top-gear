@@ -10,6 +10,8 @@
 extern int sw;
 extern int sh;
 
+extern ALLEGRO_DISPLAY_MODE disp_data;
+
 extern ALLEGRO_BITMAP *GAME_ICON;
 extern ALLEGRO_BITMAP *GAME_TITLE; // 406x182
 extern ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP; // 2600x200

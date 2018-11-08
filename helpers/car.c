@@ -161,7 +161,7 @@ bool are_cars_aligned(CAR* a, CAR* b){
   }
 }
 
-bool car_colided(CAR* car, CAR** cars, int car_count){
+bool car_colided(CAR* car, CAR** cars, int car_count, bool play_sounds){
   float relative_speed, distance;
   bool aligned;
   car->will_colide = false;
@@ -181,6 +181,7 @@ bool car_colided(CAR* car, CAR** cars, int car_count){
         if (distance <= COLISION_DISTANCE && distance > 0) {
           car->speed = max(0, car->speed-(relative_speed*0.8));
           cars[i]->speed += relative_speed*0.8;
+          if(play_sounds) play_sample(COLLISION_SOUND);
           return true;
         }
       }
@@ -219,10 +220,14 @@ float ai_gear_up_point(int gear, int lvl){
   return max_speed(gear)*miss_rate;
 }
 
-void control_ia(CAR* car, CAR** cars, int car_count){
+void control_ia(CAR* car, CAR** cars, int car_count, bool play_sounds){
   float skill_rate = (0.05/12.0)*car->lvl;
   float delta_speed = speed_increase(car->gear, car->speed);
-  if(colisions) car_colided(car, cars, car_count);
+  if(colisions) {
+    if(car_colided(car, cars, car_count, play_sounds) && play_sounds){
+      play_sample(COLLISION_SOUND);
+    }
+  }
   if(ai_pilots){
     // Verify colision
     if (car->will_colide) {

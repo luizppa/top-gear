@@ -7,11 +7,9 @@ bool debug = false; // Debug markers will appear on screen and events will be lo
 bool ai_pilots = true; // Oponent cars will be controlled by AI
 float movement_speed = 22.0; // Lateral movement speed
 
-ALLEGRO_DISPLAY_MODE disp_data;
 ALLEGRO_DISPLAY* display = NULL;
 ALLEGRO_EVENT_QUEUE* queue = NULL;
 ALLEGRO_TIMER* timer = NULL;
-ALLEGRO_AUDIO_STREAM *music = NULL;
 ALLEGRO_KEYBOARD_STATE key_state;
 
 // Install plugins
@@ -28,6 +26,12 @@ void init_environment(){
     printf("Addon init failed.\n");
     exit(5);
   }
+}
+
+// Configure sound assets
+void setup_sounds(){
+  init_sounds();
+  al_reserve_samples(5);
 }
 
 // Configure display
@@ -54,5 +58,11 @@ void setup_events(){
   al_register_event_source(queue, al_get_timer_event_source(timer));
   al_register_event_source(queue, al_get_keyboard_event_source());
   al_start_timer(timer);
-  al_reserve_samples(2);
+}
+
+// Free pointers
+void destroy_environment(){
+  al_destroy_timer(timer);
+  al_destroy_display(display);
+  al_destroy_event_queue(queue);
 }

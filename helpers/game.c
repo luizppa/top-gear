@@ -2,6 +2,8 @@
 
 #include <time.h>
 
+bool finished = false;
+bool engine_runing = false;
 int oponent_count = 7; // Number of AI controlled oponents on the game
 int object_count = 0; // Number of static objects on the map
 float position; // The road center x coordinate on the screen
@@ -19,6 +21,7 @@ CAR* oponents;
 CAR** cars;
 CAR** leaderboard;
 OBJECT* objects;
+ALLEGRO_SAMPLE_INSTANCE *player_engine_sound_instance = NULL;
 
 
 // Distance from the car wheels to the bottom of the screen
@@ -162,7 +165,7 @@ void draw_cars(){
   placement = 1;
   for(int i = 0; i < oponent_count; i++){
     if(distance_from_bottom(i) > 0){
-      placement++;
+      if(!finished) placement++;
       if(is_car_on_sight(i)){
         draw_oponent(i);
         // Uncoment these to see the order in which the cars are being rendered
@@ -229,7 +232,7 @@ void control_gears(){
 // Move the player based on input
 void move(){
   float delta_speed = speed_increase(player.gear, player.speed);
-  if(colisions) car_colided(&player, cars, oponent_count+1);
+  if(colisions) car_colided(&player, cars, oponent_count+1, true);
   al_get_keyboard_state(&key_state);
   // Decrease the speed if the player has gone out of the road
   if(is_car_on_track()){
@@ -249,6 +252,11 @@ void move(){
   }
   // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
+    if(!engine_runing){
+      player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+      engine_runing = true;
+    }
+    set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
     if(delta_speed < 0){
       player.speed = max(0, player.speed + delta_speed);
     }
@@ -261,6 +269,10 @@ void move(){
   }
   // Natural deacceleration
   else {
+    if(engine_runing && player.speed == 0.0){
+      stop_sample(player_engine_sound_instance);
+      engine_runing = false;
+    }
     if(speed_increase(player.gear, player.speed) < 0){
       player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
     }
@@ -282,7 +294,7 @@ int update(){
   move();
   for (int i = 0; i < oponent_count; i++){
     // Controll oponents
-    control_ia(&oponents[i], cars, oponent_count+1);
+    control_ia(&oponents[i], cars, oponent_count+1, is_car_on_sight(i));
   }
   for (int i = 1; i < object_count; i++) {
     if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + street_length;
@@ -312,7 +324,7 @@ int deaccelerate_until_stop(){
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
       for (int i = 0; i < oponent_count; i++){
         // Controll oponents
-        control_ia(&oponents[i], cars, oponent_count+1);
+        control_ia(&oponents[i], cars, oponent_count+1, is_car_on_sight(i));
       }
       player.speed = max(0, player.speed-(800/(fps*3)));
       player.position_y += player.speed * DISTANCE_VARIATION;
@@ -322,6 +334,11 @@ int deaccelerate_until_stop(){
       draw_game();
       // Resume timer
       al_resume_timer(timer);
+      set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
+      if(engine_runing && player.speed <= 0.0){
+        stop_sample(player_engine_sound_instance);
+        engine_runing = false;
+      }
       if(player.speed <= 0){
         al_rest(3);
         al_flush_event_queue(queue);
@@ -439,9 +456,11 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
     draw_game();
     char countdown[4];
     sprintf(countdown, "%d", i);
-    draw_text(DISKUN_FONT, 60, YELLOW, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
+    draw_text(DISKUN_FONT, 60, BLUE, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
+    play_sample(READY_SOUND);
     al_rest(1);
   }
+  play_sample(GO_SOUND);
   al_flush_event_queue(queue);
 
   // Main loop
@@ -460,10 +479,12 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
       result = update();
       if(result == -1){
+        stop_sample(player_engine_sound_instance);
         return -1;
       }
       else if(result == 1){
         end = clock();
+        finished = true;
         race_time = (double)(end-begin)/CLOCKS_PER_SEC;
         // show_leaderboard();
         return deaccelerate_until_stop();
