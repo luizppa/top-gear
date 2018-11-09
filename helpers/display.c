@@ -12,7 +12,8 @@ ALLEGRO_BITMAP *GAME_ICON = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 ALLEGRO_BITMAP *FINISH_LINE = NULL;
-ALLEGRO_BITMAP *ROAD_SIGN_LEFT = NULL;
+ALLEGRO_BITMAP *ROAD_SIGN = NULL;
+ALLEGRO_BITMAP *ROCK_BITMAP = NULL;
 
 // Octane assets
 ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP = NULL;
@@ -53,12 +54,17 @@ ALLEGRO_BITMAP *MAVERICK_YELLOW_BITMAP = NULL;
 
 // Initialize bitmaps
 void init_bitmaps(){
+  // Miscelanious
   GAME_TITLE = al_load_bitmap("assets/images/misc/logo.png");
   GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
   FINISH_LINE = al_load_bitmap("assets/images/misc/finish.png");
-  ROAD_SIGN_LEFT = al_load_bitmap("assets/images/misc/road_sign_left.png");
+  ROAD_SIGN = al_load_bitmap("assets/images/misc/road_sign_left.png");
   LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
+  ROCK_BITMAP = al_load_bitmap("assets/images/misc/rock_1.png");
+
+  // Cars
+  // Octane
   OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("assets/images/cars/octane_icon.png");
   OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
   OCTANE_ZSR_RED_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_red.png");
@@ -67,6 +73,7 @@ void init_bitmaps(){
   OCTANE_ZSR_GREY_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_grey.png");
   OCTANE_ZSR_BLACK_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_black.png");
   OCTANE_ZSR_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_yellow.png");
+  // Dominus
   DOMINUS_GT_ICON_BITMAP = al_load_bitmap("assets/images/cars/dominus_icon.png");
   DOMINUS_GT_BLUE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_blue.png");
   DOMINUS_GT_RED_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_red.png");
@@ -75,6 +82,7 @@ void init_bitmaps(){
   DOMINUS_GT_GREY_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_grey.png");
   DOMINUS_GT_BLACK_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_black.png");
   DOMINUS_GT_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_yellow.png");
+  // Roadhog
   ROADHOG_ICON_BITMAP = al_load_bitmap("assets/images/cars/roadhog_icon.png");
   ROADHOG_BLUE_BITMAP = al_load_bitmap("assets/images/cars/roadhog_blue.png");
   ROADHOG_RED_BITMAP = al_load_bitmap("assets/images/cars/roadhog_red.png");
@@ -83,6 +91,7 @@ void init_bitmaps(){
   ROADHOG_GREY_BITMAP = al_load_bitmap("assets/images/cars/roadhog_grey.png");
   ROADHOG_BLACK_BITMAP = al_load_bitmap("assets/images/cars/roadhog_black.png");
   ROADHOG_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/roadhog_yellow.png");
+  // Maverick
   MAVERICK_ICON_BITMAP = al_load_bitmap("assets/images/cars/maverick_icon.png");
   MAVERICK_BLUE_BITMAP = al_load_bitmap("assets/images/cars/maverick_blue.png");
   MAVERICK_RED_BITMAP = al_load_bitmap("assets/images/cars/maverick_red.png");
@@ -236,7 +245,9 @@ void destroy_bitmaps(){
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ROAD_BITMAP);
   al_destroy_bitmap(FINISH_LINE);
-  al_destroy_bitmap(ROAD_SIGN_LEFT);
+  al_destroy_bitmap(ROAD_SIGN);
+  al_destroy_bitmap(ROCK_BITMAP);
+
   al_destroy_bitmap(OCTANE_ZSR_ICON_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_BLUE_BITMAP);
@@ -245,6 +256,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(OCTANE_ZSR_PURPLE_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_BLACK_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_YELLOW_BITMAP);
+
   al_destroy_bitmap(DOMINUS_GT_ICON_BITMAP);
   al_destroy_bitmap(DOMINUS_GT_RED_BITMAP);
   al_destroy_bitmap(DOMINUS_GT_BLUE_BITMAP);
@@ -253,6 +265,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(DOMINUS_GT_PURPLE_BITMAP);
   al_destroy_bitmap(DOMINUS_GT_BLACK_BITMAP);
   al_destroy_bitmap(DOMINUS_GT_YELLOW_BITMAP);
+
   al_destroy_bitmap(ROADHOG_ICON_BITMAP);
   al_destroy_bitmap(ROADHOG_BLUE_BITMAP);
   al_destroy_bitmap(ROADHOG_RED_BITMAP);
@@ -261,6 +274,7 @@ void destroy_bitmaps(){
   al_destroy_bitmap(ROADHOG_GREY_BITMAP);
   al_destroy_bitmap(ROADHOG_BLACK_BITMAP);
   al_destroy_bitmap(ROADHOG_YELLOW_BITMAP);
+
   al_destroy_bitmap(MAVERICK_ICON_BITMAP);
   al_destroy_bitmap(MAVERICK_BLUE_BITMAP);
   al_destroy_bitmap(MAVERICK_RED_BITMAP);

@@ -1,7 +1,6 @@
 #include "environment.h"
 #include "car.h"
 #include "utils.h"
-#include "object.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_audio.h>

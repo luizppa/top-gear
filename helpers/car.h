@@ -3,6 +3,8 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
 
+#include "object.h"
+
 // Environmental values
 #define GRASS_SLOW_EFFECT 0.13333333333
 #define NO_ACCELERATE_EFFECT 0.05433333333
@@ -51,5 +53,5 @@ float max_speed(int gear);
 float speed_increase(int gear, float speed);
 CAR** quick_sort_cars(CAR** cars, int size);
 bool are_cars_aligned(CAR* a, CAR* b);
-bool car_colided(CAR* car, CAR** cars, int car_count, bool play_sounds);
-void control_ia(CAR* car, CAR** cars, int car_count, bool play_sounds);
+bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);
+void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);

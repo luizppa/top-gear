@@ -119,23 +119,49 @@ float speed_increase(int gear, float speed){
   }
 }
 
+int partition(CAR** cars, int first, int last){
+  CAR *pivot = cars[first], *aux;
+  int left_marker = first+1, right_marker = last;
+  bool done = false;
+  while (!done) {
+    while (left_marker <= right_marker && cars[left_marker]->position_y <= pivot->position_y){
+      left_marker++;
+    }
+    while(cars[right_marker]->position_y >= pivot->position_y && right_marker >= left_marker){
+      right_marker--;
+    }
+    if (right_marker < left_marker) {
+      done = true;
+    }
+    else{
+      aux = cars[left_marker];
+      cars[left_marker] = cars[right_marker];
+      cars[right_marker] = aux;
+    }
+  }
+  aux = cars[first];
+  cars[first] = cars[right_marker];
+  cars[right_marker] = aux;
+  return right_marker;
+}
+
+CAR** quick_sort_helper(CAR** cars, int first, int last){
+  if(first < last){
+    int split_point = partition(cars, first, last);
+    quick_sort_helper(cars, first, split_point-1);
+    quick_sort_helper(cars, split_point+1, last);
+  }
+  else return cars;
+}
+
 // Sort the cars array based on their Y position
 CAR** quick_sort_cars(CAR** cars, int size){
-  int wall = 0, pivot = size-1;
-  CAR* aux;
-  while(pivot > wall){
-    for (int i = wall; i < pivot; i++) {
-      if(cars[i]->position_y < cars[pivot]->position_y){
-        aux = cars[wall];
-        cars[wall] = cars[i];
-        cars[i] = aux;
-        wall++;
-      }
+  quick_sort_helper(cars, 0, size-1);
+  if(debug){
+    printf("----------------------\n");
+    for(int i = 0; i < size; i++){
+      printf("%s: %f\n", cars[i]->name, cars[i]->position_y);
     }
-    aux = cars[wall];
-    cars[wall] = cars[pivot];
-    cars[pivot] = aux;
-    wall++;
   }
   return cars;
 }
@@ -143,7 +169,7 @@ CAR** quick_sort_cars(CAR** cars, int size){
 bool are_cars_aligned(CAR* a, CAR* b){
   float a_x0 = a->screen_position_x - (a->width/2);
   float a_xf = a->screen_position_x + (a->width/2);
-  float b_x0 = b->screen_position_x - (a->width/2);
+  float b_x0 = b->screen_position_x - (b->width/2);
   float b_xf = b->screen_position_x + (b->width/2);
   if(debug){
     al_draw_line(a_x0, 0, a_x0, sh, RED, 1);
@@ -161,10 +187,33 @@ bool are_cars_aligned(CAR* a, CAR* b){
   }
 }
 
-bool car_colided(CAR* car, CAR** cars, int car_count, bool play_sounds){
+bool is_cars_aligned_to_object(CAR* car, OBJECT object){
+  float a_x0 = car->screen_position_x - (car->width/2);
+  float a_xf = car->screen_position_x + (car->width/2);
+  float b_x0 = object.screen_position_x - (object.width/2);
+  float b_xf = object.screen_position_x + (object.width/2);
+  if(debug){
+    al_draw_line(a_x0, 0, a_x0, sh, RED, 1);
+    al_draw_line(a_xf, 0, a_xf, sh, YELLOW, 1);
+    al_draw_line(b_x0, 0, b_x0, sh, BLUE, 1);
+    al_draw_line(b_xf, 0, b_xf, sh, GREEN, 1);
+  }
+  if ((a_xf - a_x0 >= b_x0 - a_x0 && b_x0 - a_x0 >= 0) || (b_xf - b_x0 >= a_x0 - b_x0 && a_x0 - b_x0 >= 0)) {
+    if(debug) printf("aligned\n");
+    return true;
+  }
+  else {
+    if(debug) printf("not aligned\n");
+    return false;
+  }
+}
+
+bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
   float relative_speed, distance;
   bool aligned;
   car->will_colide = false;
+
+  // Collision with other cars
   for(int i = 0; i < car_count; i++){
     relative_speed = car->speed - cars[i]->speed;
     distance = cars[i]->position_y - car->position_y;
@@ -192,6 +241,27 @@ bool car_colided(CAR* car, CAR** cars, int car_count, bool play_sounds){
       }
     }
   }
+
+  // Collision with objects
+  for(int i = 0; i < object_count; i++){
+    distance = objects[i].position_y - car->position_y;
+    aligned = is_cars_aligned_to_object(car, objects[i]);
+    // If the car is aligned to the object
+    if(aligned){
+      // If the car is about to colide, set a warn to steer
+      // if (distance <= COLISION_DISTANCE*1.8 && distance > COLISION_DISTANCE*0.5){
+      //   car->will_colide = true;
+      // }
+      // If the car is less than COLISION_DISTANCE meters away from the object
+      // if (distance <= COLISION_DISTANCE && distance > 0) {
+      //   car->speed = 0;
+      //   car->position_y -= 30.0;
+      //   if(play_sounds) play_sample(COLLISION_SOUND);
+      //   return true;
+      // }
+    }
+  }
+
   return false;
 }
 
@@ -220,11 +290,11 @@ float ai_gear_up_point(int gear, int lvl){
   return max_speed(gear)*miss_rate;
 }
 
-void control_ia(CAR* car, CAR** cars, int car_count, bool play_sounds){
+void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
   float skill_rate = (0.05/12.0)*car->lvl;
   float delta_speed = speed_increase(car->gear, car->speed);
   if(colisions) {
-    if(car_colided(car, cars, car_count, play_sounds) && play_sounds){
+    if(car_colided(car, cars, objects, car_count, object_count, play_sounds) && play_sounds){
       play_sample(COLLISION_SOUND);
     }
   }
