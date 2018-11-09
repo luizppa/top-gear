@@ -12,7 +12,7 @@
 #include <allegro5/allegro_ttf.h>
 
 extern float fps;
-extern bool colisions;
+extern bool collisions;
 extern bool debug;
 extern bool ai_pilots;
 extern float movement_speed;

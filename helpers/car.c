@@ -213,7 +213,7 @@ bool is_cars_aligned_to_object(CAR* car, OBJECT object){
 }
 
 // Returns true if car collided with eithar an object or another car (also impacts speed)
-bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
+bool car_collided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
   float relative_speed, distance;
   bool aligned;
   car->will_colide = false;
@@ -223,16 +223,16 @@ bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int objec
     relative_speed = car->speed - cars[i]->speed;
     distance = cars[i]->position_y - car->position_y;
     aligned = are_cars_aligned(car, cars[i]);
-    // Don't verify colisions of a car with itslef
+    // Don't verify collisions of a car with itslef
     if(cars[i] != car){
       // If the cars are aligned and "car" is getting closer to "cars[i]"
       if(aligned && relative_speed > 0){
         // If the car is about to colide, set a warn to steer
-        if (distance <= COLISION_DISTANCE*1.8 && distance > COLISION_DISTANCE*0.5){
+        if (distance <= COLLISION_DISTANCE*1.8 && distance > COLLISION_DISTANCE*0.5){
           car->will_colide = true;
         }
-        // If the car is less than COLISION_DISTANCE meters away from cars[i]
-        if (distance <= COLISION_DISTANCE && distance > 0) {
+        // If the car is less than COLLISION_DISTANCE meters away from cars[i]
+        if (distance <= COLLISION_DISTANCE && distance > 0) {
           car->speed = max(0, car->speed-(relative_speed*0.8));
           cars[i]->speed += relative_speed*0.8;
           if(play_sounds) play_sample(COLLISION_SOUND);
@@ -240,7 +240,7 @@ bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int objec
         }
       }
       // If "car" is not getting closer to "cars[i]" but has already touched it
-      else if(aligned && (distance <= COLISION_CRITICAL_DISTACE && distance >= 0)){
+      else if(aligned && (distance <= COLLISION_CRITICAL_DISTACE && distance >= 0)){
         car->speed *= 0.4;
         return true;
       }
@@ -255,11 +255,11 @@ bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int objec
       // If the car is aligned to the object
       if(aligned){
         // If the car is about to colide, set a warn to steer
-        if (distance <= COLISION_DISTANCE*2.5 && distance >= 0){
+        if (distance <= COLLISION_DISTANCE*2.5 && distance >= 0){
           car->will_colide = true;
         }
-        // If the car is less than COLISION_DISTANCE meters away from the object
-        if (distance <= COLISION_DISTANCE && distance > 0) {
+        // If the car is less than COLLISION_DISTANCE meters away from the object
+        if (distance <= COLLISION_DISTANCE && distance > 0) {
           car->speed = -15.0;
           if(play_sounds) play_sample(COLLISION_SOUND);
           return true;
@@ -299,13 +299,13 @@ float ai_gear_up_point(int gear, int lvl){
 void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
   float skill_rate = (0.05/12.0)*car->lvl;
   float delta_speed = speed_increase(car->gear, car->speed);
-  if(colisions) {
-    if(car_colided(car, cars, objects, car_count, object_count, play_sounds) && play_sounds){
+  if(collisions) {
+    if(car_collided(car, cars, objects, car_count, object_count, play_sounds) && play_sounds){
       play_sample(COLLISION_SOUND);
     }
   }
   if(ai_pilots){
-    // Verify colision
+    // Verify collision
     if (car->will_colide) {
       // Go left
       if(!car->going_right){

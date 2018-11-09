@@ -237,7 +237,7 @@ void control_gears(){
 // Move the player based on input
 void move(){
   float delta_speed = speed_increase(player.gear, player.speed);
-  if(colisions) car_colided(&player, cars, objects, oponent_count+1, object_count, true);
+  if(collisions) car_collided(&player, cars, objects, oponent_count+1, object_count, true);
   al_get_keyboard_state(&key_state);
   // Decrease the speed if the player has gone out of the road
   if(is_car_on_track()){
@@ -304,8 +304,6 @@ int update(){
   for (int i = 1; i < 11; i++) {
     if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + street_length;
   }
-  // Sort oponents array (reportedly causing rendering issues)
-  // cars = quick_sort_cars(cars, oponent_count+1);
   // Stop timer to avoid flooding the event queue
   al_stop_timer(timer);
   // Update screen

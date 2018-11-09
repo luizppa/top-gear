@@ -12,8 +12,8 @@
 #define WRONG_GEAR_EFFECT 0.00166666666
 #define DISTANCE_VARIATION 0.147778
 #define STARTING_DISTANCE 130
-#define COLISION_DISTANCE 50
-#define COLISION_CRITICAL_DISTACE 30
+#define COLLISION_DISTANCE 50
+#define COLLISION_CRITICAL_DISTACE 30
 
 #define STANDARD_CAR_WIDTH 166.0
 #define STANDARD_CAR_HEIGHT 120.0
@@ -53,5 +53,5 @@ float max_speed(int gear);
 float speed_increase(int gear, float speed);
 CAR** quick_sort_cars(CAR** cars, int size);
 bool are_cars_aligned(CAR* a, CAR* b);
-bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);
+bool car_collided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);
 void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);
