@@ -171,7 +171,6 @@ void draw_hud(){
 // Draw the game cars
 void draw_cars(){
   cars = quick_sort_cars(cars, oponent_count+1);
-  // TODO: Fix the order which oponent cars are rendered
   // Draw cars sorted cars
   if(!finished) placement = 1;
   for(int i = oponent_count; i >= 0; i--){
@@ -190,6 +189,7 @@ void draw_cars(){
 }
 
 // Draw static objects
+// TODO: Fix the order in which the objects are rendered
 void draw_objects(){
   for (int i = 0; i < object_count; i++) {
     if(is_object_visible(i)){
@@ -396,7 +396,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
-  object_count = 26;
+  object_count = 40;
   objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
   oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
   cars = (CAR**) calloc(oponent_count+1, sizeof(CAR*));
@@ -408,7 +408,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
     objects[i+5] = new_object((street_width/2)+120, i*120, 120.0, 120.0, ROAD_SIGN, false);
   }
   for (int i = 11; i < object_count; i++) {
-    float x = (rand()%(int)(street_width))-(street_width/2), y = (rand()%(int)(track_length-999))+1000;
+    float x = (rand()%(int)(street_width-30))-((street_width-30)/2), y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
     objects[i] = get_random_obstacle(x, y);
   }
 

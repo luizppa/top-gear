@@ -119,6 +119,7 @@ float speed_increase(int gear, float speed){
   }
 }
 
+// quick_sort_cars sorting logic
 int partition(CAR** cars, int first, int last){
   CAR *pivot = cars[first], *aux;
   int left_marker = first+1, right_marker = last;
@@ -145,6 +146,7 @@ int partition(CAR** cars, int first, int last){
   return right_marker;
 }
 
+// Recursive call of quick_sort_cars
 CAR** quick_sort_helper(CAR** cars, int first, int last){
   if(first < last){
     int split_point = partition(cars, first, last);
@@ -166,6 +168,7 @@ CAR** quick_sort_cars(CAR** cars, int size){
   return cars;
 }
 
+// Returns true if cars are horizontally aligned
 bool are_cars_aligned(CAR* a, CAR* b){
   float a_x0 = a->screen_position_x - (a->width/2);
   float a_xf = a->screen_position_x + (a->width/2);
@@ -187,6 +190,7 @@ bool are_cars_aligned(CAR* a, CAR* b){
   }
 }
 
+// Returns true if the cars is horizontally aligned with the object
 bool is_cars_aligned_to_object(CAR* car, OBJECT object){
   float a_x0 = car->screen_position_x - (car->width/2);
   float a_xf = car->screen_position_x + (car->width/2);
@@ -208,6 +212,7 @@ bool is_cars_aligned_to_object(CAR* car, OBJECT object){
   }
 }
 
+// Returns true if car collided with eithar an object or another car (also impacts speed)
 bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds){
   float relative_speed, distance;
   bool aligned;
@@ -244,21 +249,22 @@ bool car_colided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int objec
 
   // Collision with objects
   for(int i = 0; i < object_count; i++){
-    distance = objects[i].position_y - car->position_y;
-    aligned = is_cars_aligned_to_object(car, objects[i]);
-    // If the car is aligned to the object
-    if(aligned){
-      // If the car is about to colide, set a warn to steer
-      // if (distance <= COLISION_DISTANCE*1.8 && distance > COLISION_DISTANCE*0.5){
-      //   car->will_colide = true;
-      // }
-      // If the car is less than COLISION_DISTANCE meters away from the object
-      // if (distance <= COLISION_DISTANCE && distance > 0) {
-      //   car->speed = 0;
-      //   car->position_y -= 30.0;
-      //   if(play_sounds) play_sample(COLLISION_SOUND);
-      //   return true;
-      // }
+    if(objects[i].collidable){
+      distance = objects[i].position_y - car->position_y;
+      aligned = is_cars_aligned_to_object(car, objects[i]);
+      // If the car is aligned to the object
+      if(aligned){
+        // If the car is about to colide, set a warn to steer
+        if (distance <= COLISION_DISTANCE*2.5 && distance >= 0){
+          car->will_colide = true;
+        }
+        // If the car is less than COLISION_DISTANCE meters away from the object
+        if (distance <= COLISION_DISTANCE && distance > 0) {
+          car->speed = -15.0;
+          if(play_sounds) play_sample(COLLISION_SOUND);
+          return true;
+        }
+      }
     }
   }
 
@@ -313,8 +319,9 @@ void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object
       }
     }
     else {
-      if(car->position_x >= 0) car->going_right = false;
-      else car->going_right = true;
+      if(car->position_x >= 30) car->going_right = false;
+      else if(car->position_x <= -30) car->going_right = true;
+      else car->going_right = rand()%2;
     }
     // Accelerating
     if(delta_speed < 0){
