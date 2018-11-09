@@ -15,9 +15,8 @@ int redraw_main_menu(int op){
   draw_text(PIXEL_FONT, 28, colors[3], sw/2, (sh/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
 }
 
+int options_menu();
 int mode_selection();
-int* car_selection();
-int color_selection();
 
 // Runs main menu
 int main_menu(){
@@ -76,6 +75,11 @@ int main_menu(){
             case 1:
               op = mode_selection();
               break;
+            // Configure options
+            case 2:
+              op = options_menu();
+              break;
+
           }
           if(op != -1) return op;
           op = 1;
@@ -91,11 +95,106 @@ int main_menu(){
   return 0;
 }
 
+// Update options screen
+void redraw_options_menu(int op){
+  clear_display(BLUE, false);
+
+  // Music
+  draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
+  if(music_on) draw_text(PIXEL_FONT, 28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_FONT, 28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+
+  // Sounds
+  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
+  if(sounds_on) draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+
+  // Collisions
+  draw_text(PIXEL_FONT, 28, colors[2], (sw/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
+  if(collisions) draw_text(PIXEL_FONT, 28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_FONT, 28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+
+  // Debug
+  draw_text(PIXEL_FONT, 28, colors[3], (sw/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
+  if(debug) draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+
+  al_flip_display();
+}
+
+// Configure options
+int options_menu(){
+  int op = 1;
+  colors[0] = WHITE;
+  colors[1] = YELLOW;
+  colors[2] = YELLOW;
+  colors[3] = YELLOW;
+  while (true) {
+    redraw_options_menu(op);
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+      return 4;
+    }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        play_sample(MENU_BACK_SOUND);
+        return -1;
+      }
+      switch (ev.keyboard.keycode) {
+        case ALLEGRO_KEY_UP:
+        case ALLEGRO_KEY_W:
+          if(op > 1){
+            colors[op-1] = YELLOW;
+            op--;
+            colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
+          }
+          break;
+        case ALLEGRO_KEY_DOWN:
+        case ALLEGRO_KEY_S:
+          if(op < 4){
+            colors[op-1] = YELLOW;
+            op++;
+            colors[op-1] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
+          }
+          break;
+        case ALLEGRO_KEY_ENTER:
+          switch (op) {
+            case 1:
+              if(music_on){
+                stop_music(music);
+                music_on = false;
+              }
+              else{
+                music_on = true;
+                music = set_music(TITLE_MUSIC);
+                start_music(music, true);
+              }
+              break;
+            case 2:
+              sounds_on = !sounds_on;
+              break;
+            case 3:
+              collisions = !collisions;
+              break;
+            case 4:
+              debug = !debug;
+              break;
+          }
+          play_sample(MENU_SELECT_SOUND);
+          break;
+      }
+    }
+  }
+}
+
 // Update mode selection screen
 void redraw_mode_selection(int op){
   float square_side = 250.0;
   clear_display(BLUE, false);
-  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
+  draw_text(PIXEL_FONT, 32, YELLOW, sw/2, 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
   al_draw_rounded_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), 0, 0, colors[0], 5);
   draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-25-(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
   al_draw_rounded_rectangle((sw/2)+25, (sh/2)-(square_side/2), (sw/2)+25+square_side, (sh/2)+(square_side/2), 0, 0, colors[1], 5);
@@ -110,13 +209,16 @@ void redraw_mode_selection(int op){
   }
 }
 
+int* car_selection();
+int color_selection();
+
 // Select gamemode
 int mode_selection(){
   int op = 1, *car;
   colors[0] = WHITE;
   colors[1] = YELLOW;
-  redraw_mode_selection(op);
   while (true) {
+    redraw_mode_selection(op);
     ALLEGRO_EVENT ev;
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -135,7 +237,6 @@ int mode_selection(){
             op++;
             colors[op-1] = WHITE;
             play_sample(MENU_MOVE_SOUND);
-            redraw_mode_selection(op);
           }
           break;
         case ALLEGRO_KEY_LEFT:
@@ -145,7 +246,6 @@ int mode_selection(){
             op--;
             colors[op-1] = WHITE;
             play_sample(MENU_MOVE_SOUND);
-            redraw_mode_selection(op);
           }
           break;
         case ALLEGRO_KEY_ENTER:

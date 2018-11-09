@@ -2,6 +2,8 @@
 
 // Setings
 float fps = 60.0; // Not a good ideia to change this, probably
+bool music_on = true; // Turn on game music
+bool sounds_on = true; // Turn off game music
 bool collisions = true; // Cars will colide
 bool debug = false; // Debug markers will appear on screen and events will be logged
 bool ai_pilots = true; // Oponent cars will be controlled by AI

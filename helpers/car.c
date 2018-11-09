@@ -306,7 +306,7 @@ void control_ia(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object
   }
   if(ai_pilots){
     // Verify collision
-    if (car->will_colide) {
+    if (car->will_colide && collisions) {
       // Go left
       if(!car->going_right){
         if(car->position_x > -440) car->position_x -= 20;
