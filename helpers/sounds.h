@@ -3,9 +3,10 @@
 
 #define SAMPLES_PER_BUFFER  1024
 
-// Predefined songs
+// Predefined songs and sounds
 /*
   Special thanks to
+  Juhani Junkala,
   https://downloads.khinsider.com/game-soundtracks/album/top-gear-snes,
   https://www.sounds-resource.com/snes/topgear3000/sound/773/ and
   https://audio.online-convert.com/convert-to-ogg for making this files possible

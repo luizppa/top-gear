@@ -256,7 +256,7 @@ int mode_selection(){
               car = car_selection();
               if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;
-              op = play(get_car(car[0], car[1]), NULL, 11);
+              op = play(get_car(car[0], car[1]), NULL, 11, 3);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);
