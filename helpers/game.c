@@ -171,7 +171,7 @@ void draw_hud(){
 
 // Draw the game cars
 void draw_cars(){
-  cars = quick_sort_cars(cars, oponent_count+1);
+  if(!finished) quick_sort_cars(cars, oponent_count+1);
   // Draw cars sorted cars
   if(!finished) placement = 1;
   for(int i = oponent_count; i >= 0; i--){
@@ -312,7 +312,6 @@ int update(){
   // Resume timer
   al_resume_timer(timer);
   if(player.position_y >= track_length) {
-    quick_sort_cars(cars, oponent_count+1);
     return 1;
   }
   else return 0;
@@ -382,11 +381,10 @@ int show_leaderboard(){
   }
   clear_display(BLUE, false);
   draw_text(PIXEL_FONT, 28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, duration, false);
-  for (int i = 0; i < oponent_count+1; i++) {
-    if(i+1 == placement) sprintf(competitor, "%d: PLAYER", i+1);
-    else sprintf(competitor, "%d: %s", i+1, cars[i]->name);
-    if(i%2 == 1) draw_text(PIXEL_FONT, 22, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
-    else draw_text(PIXEL_FONT, 22, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
+  for (int i = oponent_count; i >= 0; i--) {
+    sprintf(competitor, "%d: %s", i+1, cars[i]->name);
+    if(i%2 == 1) draw_text(PIXEL_FONT, 28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
+    else draw_text(PIXEL_FONT, 28, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
   }
   al_flip_display();
   while (true) {

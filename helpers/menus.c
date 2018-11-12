@@ -211,10 +211,11 @@ void redraw_mode_selection(int op){
 
 int* car_selection();
 int color_selection();
+int map_selection();
 
 // Select gamemode
 int mode_selection(){
-  int op = 1, *car;
+  int op = 1, *car, map;
   colors[0] = WHITE;
   colors[1] = YELLOW;
   while (true) {
@@ -256,7 +257,9 @@ int mode_selection(){
               car = car_selection();
               if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;
-              op = play(get_car(car[0], car[1]), NULL, 11, 3);
+              map = map_selection();
+              if(map == 4 || map == -1) return map;
+              op = play(get_car(car[0], car[1]), NULL, 11, map);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);
@@ -437,6 +440,110 @@ int color_selection(){
         case ALLEGRO_KEY_ENTER:
           play_sample(MENU_SELECT_SOUND);
           return op;
+      }
+    }
+  }
+  return 0;
+}
+
+void redraw_map_selection(int op){
+  int square_w = 500, square_h = 200;
+  clear_display(BLUE, false);
+  draw_text(PIXEL_FONT, 22, YELLOW, (sw/2), 50, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+  al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, (sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
+  al_draw_rounded_rectangle((sw/2)-(square_w/2), (sh/2)-(square_h/2), (sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
+  al_flip_display();
+}
+
+void flip_map_selection(int op, bool go_right){
+  int square_w = 500, square_h = 200;
+  float positions[4];
+  if(go_right) {
+    positions[0] = (sw*(1-op));
+    positions[1] = (sw*(2-op));
+    positions[2] = (sw*(3-op));
+    positions[3] = (sw*(4-op));
+  }
+  else {
+    positions[0] = (sw*(-1-op));
+    positions[1] = (sw*(-op));
+    positions[2] = (sw*(1-op));
+    positions[3] = (sw*(2-op));
+  }
+  al_flush_event_queue(queue);
+  while((go_right && positions[op] > 0) || (!go_right && positions[op] < 0)){
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_TIMER){
+      for (int i = 0; i < 4; i++) {
+        if(go_right) positions[i] -= sw/60;
+        else positions[i] += sw/60;
+      }
+      clear_display(BLUE, false);
+      // Lass Vegas
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[0]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+      al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
+      al_draw_rounded_rectangle(positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[0]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
+      // Bordeaux
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[1]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
+      al_draw_rounded_rectangle(positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[1]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[1], 5);
+      // Hiroshima
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[2]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
+      al_draw_rounded_rectangle(positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[2]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[2], 5);
+      // Frankfurt
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[3]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
+      al_draw_bitmap(FRANKFURT_ICON_BITMAP, positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
+      al_draw_rounded_rectangle(positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[3]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[3], 5);
+      al_flip_display();
+    }
+  }
+}
+
+int map_selection(){
+  int op = 0;
+  // Selected option = WHITE
+  colors[0] = WHITE;
+  colors[1] = YELLOW;
+  colors[2] = YELLOW;
+  colors[3] = YELLOW;
+  redraw_map_selection(op);
+  while (true) {
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+      return 4;
+    }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        play_sample(MENU_BACK_SOUND);
+        return -1;
+      }
+      switch (ev.keyboard.keycode) {
+        case ALLEGRO_KEY_RIGHT:
+        case ALLEGRO_KEY_D:
+          if(op < 3){
+            colors[op] = YELLOW;
+            op++;
+            colors[op] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
+            flip_map_selection(op, true);
+          }
+          break;
+        case ALLEGRO_KEY_LEFT:
+        case ALLEGRO_KEY_A:
+          if(op > 0){
+            colors[op] = YELLOW;
+            op--;
+            colors[op] = WHITE;
+            play_sample(MENU_MOVE_SOUND);
+            flip_map_selection(op, false);
+          }
+          break;
+        case ALLEGRO_KEY_ENTER:
+          if(op == 0 || op == 3){
+            play_sample(MENU_SELECT_SOUND);
+            return op;
+          }
       }
     }
   }

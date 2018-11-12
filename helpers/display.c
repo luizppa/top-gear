@@ -16,9 +16,11 @@ ALLEGRO_BITMAP *ROCK_BITMAP = NULL;
 
 // landscapes
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
+ALLEGRO_BITMAP *LAS_VEGAS_ICON_BITMAP = NULL;
 ALLEGRO_BITMAP *HIROSHIMA_LANDSCAPE_BITMAP = NULL;
-ALLEGRO_BITMAP *FRANKFURT_LANDSCAPE_BITMAP = NULL;
 ALLEGRO_BITMAP *BORDEAUX_LANDSCAPE_BITMAP = NULL;
+ALLEGRO_BITMAP *FRANKFURT_LANDSCAPE_BITMAP = NULL;
+ALLEGRO_BITMAP *FRANKFURT_ICON_BITMAP = NULL;
 
 // Octane assets
 ALLEGRO_BITMAP *OCTANE_ZSR_ICON_BITMAP = NULL;
@@ -69,9 +71,11 @@ void init_bitmaps(){
 
   // Landscapes
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
+  LAS_VEGAS_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_icon.png");
   // HIROSHIMA_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/hiroshima_landscape.png");
-  FRANKFURT_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/frankfurt_landscape.png");
   // BORDEAUX_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/bordeaux_landscape.png");
+  FRANKFURT_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/frankfurt_landscape.png");
+  FRANKFURT_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/frankfurt_icon.png");
 
   // Cars
   // Octane
@@ -258,9 +262,11 @@ void destroy_bitmaps(){
   al_destroy_bitmap(ROCK_BITMAP);
 
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
+  al_destroy_bitmap(LAS_VEGAS_ICON_BITMAP);
   al_destroy_bitmap(BORDEAUX_LANDSCAPE_BITMAP);
   al_destroy_bitmap(HIROSHIMA_LANDSCAPE_BITMAP);
   al_destroy_bitmap(FRANKFURT_LANDSCAPE_BITMAP);
+  al_destroy_bitmap(FRANKFURT_ICON_BITMAP);
 
   al_destroy_bitmap(OCTANE_ZSR_ICON_BITMAP);
   al_destroy_bitmap(OCTANE_ZSR_RED_BITMAP);
