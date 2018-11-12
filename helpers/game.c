@@ -381,8 +381,8 @@ int show_leaderboard(){
   }
   clear_display(BLUE, false);
   draw_text(PIXEL_FONT, 28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, duration, false);
-  for (int i = oponent_count; i >= 0; i--) {
-    sprintf(competitor, "%d: %s", i+1, cars[i]->name);
+  for (int i = 0; i < oponent_count+1; i++) {
+    sprintf(competitor, "%d: %s", i+1, cars[oponent_count-i]->name);
     if(i%2 == 1) draw_text(PIXEL_FONT, 28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
     else draw_text(PIXEL_FONT, 28, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
   }

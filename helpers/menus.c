@@ -387,8 +387,8 @@ void redraw_color_selection(int op){
   clear_display(BLUE, false);
   draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR COLOR", false);
   for(int i = -3; i < 4; i++){
-    al_draw_filled_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 10, 10, options[i+3]);
-    al_draw_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 10, 10, colors[i+3], 5);
+    al_draw_filled_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 0, 0, options[i+3]);
+    al_draw_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 0, 0, colors[i+3], 5);
   }
   al_flip_display();
 }
