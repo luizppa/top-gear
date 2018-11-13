@@ -489,6 +489,7 @@ void flip_map_selection(int op, bool go_right){
       al_draw_rounded_rectangle(positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[1]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[1], 5);
       // Hiroshima
       draw_text(PIXEL_FONT, 22, YELLOW, positions[2]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
+      al_draw_bitmap(HIROSHIMA_ICON_BITMAP, positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[2]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[2], 5);
       // Frankfurt
       draw_text(PIXEL_FONT, 22, YELLOW, positions[3]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
@@ -540,7 +541,7 @@ int map_selection(){
           }
           break;
         case ALLEGRO_KEY_ENTER:
-          if(op == 0 || op == 3){
+          if(op != 1){
             play_sample(MENU_SELECT_SOUND);
             return op;
           }

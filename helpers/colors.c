@@ -32,7 +32,7 @@ void init_colors(){
   YELLOW_ORANGE = rgb(247, 165, 0);
   YELLOW = rgb(255, 193, 30);
   GREEN = rgb(77, 158, 19);
-  LAS_VEGAS_SOIL = rgb(180, 184, 72);
+  LAS_VEGAS_SOIL = rgb(152, 184, 72);
   FRANKFURT_SOIL = rgb(9, 84, 8);
-  HIROSHIMA_SOIL = rgb(68, 186, 118);
+  HIROSHIMA_SOIL = rgb(113, 148, 70);
 }
