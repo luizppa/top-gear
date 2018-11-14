@@ -361,7 +361,7 @@ int show_leaderboard(){
   sprintf(duration, "RACE DURATION: %.2fs", race_time);
   stop_music(music);
   if(placement <= 3) music = set_music(QUALIFIED_MUSIC);
-  else music = set_music(FRANKFURT_MUSIC);
+  else music = set_music(DISQUALIFIED_MUSIC);
   start_music(music, false);
   clear_display(BLUE, false);
   if(placement <= 3){

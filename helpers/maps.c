@@ -33,7 +33,7 @@ ALLEGRO_COLOR get_map_color(int map){
   switch (map) {
     case 0: return LAS_VEGAS_SOIL;
     case 1: return GREEN;
-      case 2: return HIROSHIMA_SOIL;
+    case 2: return HIROSHIMA_SOIL;
     case 3: return FRANKFURT_SOIL;
   }
 }

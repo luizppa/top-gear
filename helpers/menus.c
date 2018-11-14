@@ -449,7 +449,8 @@ int color_selection(){
 void redraw_map_selection(int op){
   int square_w = 500, square_h = 200;
   clear_display(BLUE, false);
-  draw_text(PIXEL_FONT, 22, YELLOW, (sw/2), 50, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+  draw_text(PIXEL_FONT, 28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
+  draw_text(PIXEL_FONT, 22, YELLOW, (sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
   al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, (sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
   al_draw_rounded_rectangle((sw/2)-(square_w/2), (sh/2)-(square_h/2), (sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
   al_flip_display();
@@ -480,19 +481,21 @@ void flip_map_selection(int op, bool go_right){
         else positions[i] += sw/60;
       }
       clear_display(BLUE, false);
+      draw_text(PIXEL_FONT, 28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
       // Lass Vegas
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[0]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[0]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
       al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[0]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
       // Bordeaux
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[1]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[1]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
+      al_draw_bitmap(BORDEAUX_ICON_BITMAP, positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[1]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[1], 5);
       // Hiroshima
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[2]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[2]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
       al_draw_bitmap(HIROSHIMA_ICON_BITMAP, positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[2]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[2], 5);
       // Frankfurt
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[3]+(sw/2), 50, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
+      draw_text(PIXEL_FONT, 22, YELLOW, positions[3]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
       al_draw_bitmap(FRANKFURT_ICON_BITMAP, positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[3]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[3], 5);
       al_flip_display();
@@ -541,10 +544,8 @@ int map_selection(){
           }
           break;
         case ALLEGRO_KEY_ENTER:
-          if(op != 1){
-            play_sample(MENU_SELECT_SOUND);
-            return op;
-          }
+          play_sample(MENU_SELECT_SOUND);
+          return op;
       }
     }
   }

@@ -18,6 +18,7 @@
 #define FRANKFURT_MUSIC "assets/music/05_frankfurt.ogg"
 #define QUALIFIED_MUSIC "assets/music/06_qualified.ogg"
 #define ENDING_MUSIC "assets/music/07_ending_theme.ogg"
+#define DISQUALIFIED_MUSIC "assets/music/08_disqualified.ogg"
 
 extern ALLEGRO_SAMPLE *COLLISION_SOUND;
 extern ALLEGRO_SAMPLE *READY_SOUND;
