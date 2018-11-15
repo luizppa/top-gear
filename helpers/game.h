@@ -2,6 +2,7 @@
 #include "car.h"
 #include "maps.h"
 #include "utils.h"
+#include "menus.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_audio.h>

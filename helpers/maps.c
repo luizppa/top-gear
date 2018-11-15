@@ -18,6 +18,16 @@ ALLEGRO_AUDIO_STREAM* get_map_music(int map){
   }
 }
 
+// Returns the file name to the map music asset
+char* get_map_music_title(int map){
+  switch (map) {
+    case 0: return LAS_VEGAS_MUSIC;
+    case 1: return BORDEAUX_MUSIC;
+    case 2: return HIROSHIMA_MUSIC;
+    case 3: return FRANKFURT_MUSIC;
+  }
+}
+
 // Returns the map landscape asset
 ALLEGRO_BITMAP* get_map_landscape(int map){
   switch (map) {

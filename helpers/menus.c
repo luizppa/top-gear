@@ -15,7 +15,7 @@ int redraw_main_menu(int op){
   draw_text(PIXEL_FONT, 28, colors[3], sw/2, (sh/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
 }
 
-int options_menu();
+int options_menu(ALLEGRO_AUDIO_STREAM* resume_music);
 int mode_selection();
 
 // Runs main menu
@@ -77,7 +77,7 @@ int main_menu(){
               break;
             // Configure options
             case 2:
-              op = options_menu();
+              op = options_menu(set_music(TITLE_MUSIC));
               break;
 
           }
@@ -123,7 +123,7 @@ void redraw_options_menu(int op){
 }
 
 // Configure options
-int options_menu(){
+int options_menu(ALLEGRO_AUDIO_STREAM* resume_music){
   int op = 1;
   colors[0] = WHITE;
   colors[1] = YELLOW;
@@ -169,7 +169,7 @@ int options_menu(){
               }
               else{
                 music_on = true;
-                music = set_music(TITLE_MUSIC);
+                music = resume_music;
                 start_music(music, true);
               }
               break;

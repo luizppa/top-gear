@@ -11,4 +11,4 @@
 #include <allegro5/allegro_ttf.h>
 
 int main_menu();
-// int show_leaderboard(CAR** leaderboard, float race_time, int size, int player_position);
+int options_menu(ALLEGRO_AUDIO_STREAM* resume_music);

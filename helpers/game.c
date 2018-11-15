@@ -4,6 +4,8 @@
 
 bool finished = false;
 bool engine_runing = false;
+int map; // The map code
+int placement = 1; // Player race position
 int oponent_count = 7; // Number of AI controlled oponents on the game
 int object_count = 0; // Number of static objects on the map
 float position; // The road center x coordinate on the screen
@@ -14,7 +16,7 @@ float street_left_limit; // Street border
 float track_length = 50000.0; // Standart at 60000.0
 float paralax = 1.3;
 double race_time;
-int placement = 1;
+char* map_music_title;
 ALLEGRO_EVENT ev;
 CAR player;
 CAR* oponents;
@@ -213,6 +215,33 @@ void draw_game(){
   al_flip_display();
 }
 
+// Draw game screen on pause
+void draw_paused_game(int op){
+  ALLEGRO_COLOR colors[4];
+  colors[0] = YELLOW;
+  colors[1] = YELLOW;
+  colors[2] = YELLOW;
+  colors[3] = YELLOW;
+  colors[op] = WHITE;
+  al_clear_to_color(map_soil);
+  // Draw track boundaries
+  draw_track();
+  // Draw static objects
+  draw_objects();
+  // Draw player and oponents
+  draw_cars();
+  // Draw screen stats
+  draw_hud();
+  // Draw dialog box
+  al_draw_filled_rectangle((sw/2)-300, (sh/2)-200, (sw/2)+300, (sh/2)+200, BLUE);
+  al_draw_rectangle((sw/2)-300, (sh/2)-200, (sw/2)+300, (sh/2)+200, YELLOW, 5);
+  draw_text(PIXEL_FONT, 28, colors[0], sw/2, (sh/2)-71, ALLEGRO_ALIGN_CENTRE, "RESUME", false);
+  draw_text(PIXEL_FONT, 28, colors[1], sw/2, (sh/2)-33, ALLEGRO_ALIGN_CENTRE, "RESTART", false);
+  draw_text(PIXEL_FONT, 28, colors[2], sw/2, (sh/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
+  draw_text(PIXEL_FONT, 28, colors[3], sw/2, (sh/2)+38, ALLEGRO_ALIGN_CENTRE, "MAIN MENU", true);
+  al_flip_display();
+}
+
 // Set gear to a specifc value if the numeric key corresponding to the gear is pressed
 void control_gears(){
   if (al_key_down(&key_state, ALLEGRO_KEY_1)) {
@@ -295,8 +324,7 @@ void move(){
 int update(){
   control_gears();
   al_get_keyboard_state(&key_state);
-  // Return to menu
-  if(al_key_down(&key_state, ALLEGRO_KEY_ESCAPE)) return -1;  // Control player
+  // Control player
   move();
   for (int i = 0; i < oponent_count; i++){
     // Controll oponents
@@ -315,6 +343,72 @@ int update(){
     return 1;
   }
   else return 0;
+}
+
+// Handle paused game
+int pause(){
+  int op = 0;
+  draw_paused_game(op);
+  while (true) {
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    // Quit game
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+      return 4;
+    }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+      // Return to title
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
+        play_sample(MENU_BACK_SOUND);
+        break;
+      }
+      switch (ev.keyboard.keycode) {
+        // Selection UP
+        case ALLEGRO_KEY_UP:
+        case ALLEGRO_KEY_W:
+          if(op > 0){
+            op--;
+            play_sample(MENU_MOVE_SOUND);
+            // Update screen
+            draw_paused_game(op);
+          }
+          break;
+        // Selection DOWN
+        case ALLEGRO_KEY_DOWN:
+        case ALLEGRO_KEY_S:
+          if(op < 3){
+            op++;
+            play_sample(MENU_MOVE_SOUND);
+            // Update screen
+            draw_paused_game(op);
+          }
+          break;
+        // Confirm selection
+        case ALLEGRO_KEY_ENTER:
+          play_sample(MENU_SELECT_SOUND);
+          switch (op) {
+            case 0:
+              // Resume
+              return 0;
+              break;
+            case 1:
+              // Restart race
+              break;
+            case 2:
+              // Configure options
+              if(options_menu(set_music(map_music_title)) == 4) return 4;
+              op = 0;
+              break;
+            case 3:
+              // Quit to title
+              return -1;
+          }
+          draw_paused_game(op);
+      }
+    }
+  }
+  play_sample(MENU_BACK_SOUND);
+  return 0;
 }
 
 // Deaccelerate and stop
@@ -398,7 +492,7 @@ int show_leaderboard(){
 }
 
 // Setup game environment
-void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int map){
+void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
@@ -437,6 +531,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int map){
 
   // Change track to Las Vegas theme
   stop_music(music);
+  map_music_title = get_map_music_title(map);
   music = get_map_music(map);
   start_music(music, true);
 
@@ -466,12 +561,13 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int map){
 }
 
 // Main
-int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amount, int map){
+int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amount, int choosen_map){
   int result;
+  map = choosen_map;
   clock_t begin, end;
   oponent_count = oponents_amount;
 
-  setup(player_texture, tournament_cars, map);
+  setup(player_texture, tournament_cars);
 
   // Countdown
   for (int i = 3; i > 0; i--) {
@@ -489,11 +585,17 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
   while (true) {
     begin = clock();
     al_wait_for_event(queue, &ev);
-    if(ev.type == ALLEGRO_EVENT_KEY_UP){
+    if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
       // Gear up
       if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
       // Gear down
       else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
+      // Pause
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        int res = pause();
+        if(res == -1 || res == 4) return res;
+        if(res == 0) draw_game();
+      }
     }
     // Quit game
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
