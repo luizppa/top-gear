@@ -3,7 +3,7 @@
 #include <time.h>
 
 bool finished = false;
-bool engine_runing = false;
+bool engine_running = false;
 int map; // The map code
 int placement = 1; // Player race position
 int oponent_count = 7; // Number of AI controlled oponents on the game
@@ -13,7 +13,7 @@ float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
 float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
 float street_left_limit; // Street border
-float track_length = 50000.0; // Standart at 60000.0
+float track_length = 50000.0; // Standart at 50000.0
 float paralax = 1.3;
 double race_time;
 char* map_music_title;
@@ -287,9 +287,9 @@ void move(){
   }
   // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
-    if(!engine_runing){
+    if(!engine_running){
       player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
-      engine_runing = true;
+      engine_running = true;
     }
     set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
     if(delta_speed < 0){
@@ -304,9 +304,9 @@ void move(){
   }
   // Natural deacceleration
   else {
-    if(engine_runing && player.speed == 0.0){
+    if(engine_running && player.speed == 0.0){
       stop_sample(player_engine_sound_instance);
-      engine_runing = false;
+      engine_running = false;
     }
     if(speed_increase(player.gear, player.speed) < 0){
       player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
@@ -432,9 +432,9 @@ int deaccelerate_until_stop(){
       // Resume timer
       al_resume_timer(timer);
       set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
-      if(engine_runing && player.speed <= 0.0){
+      if(engine_running && player.speed <= 0.0){
         stop_sample(player_engine_sound_instance);
-        engine_runing = false;
+        engine_running = false;
       }
       if(player.speed <= 0){
         al_rest(3);
@@ -451,6 +451,8 @@ int show_leaderboard(){
   char result[50];
   char duration[50];
   char competitor[50];
+  float landscape_position = 0.0;
+  bool going_right = true;
   sprintf(result, "YOU FINISHED %dth", placement);
   sprintf(duration, "RACE DURATION: %.2fs", race_time);
   stop_music(music);
@@ -459,16 +461,25 @@ int show_leaderboard(){
   start_music(music, false);
   clear_display(BLUE, false);
   if(placement <= 3){
-    draw_text(PIXEL_FONT, 32, YELLOW, sw/2, (sh/2)-32, ALLEGRO_ALIGN_CENTER, "CONGRATULATIONS", false);
-    draw_text(PIXEL_FONT, 32, YELLOW, sw/2, (sh/2)+10, ALLEGRO_ALIGN_CENTER, result, false);
+    draw_text(PIXEL_FONT, 32, YELLOW, sw/2, 25, ALLEGRO_ALIGN_CENTER, "CONGRATULATIONS", false);
+    draw_text(PIXEL_FONT, 32, YELLOW, sw/2, 67, ALLEGRO_ALIGN_CENTER, result, false);
   }
-  else draw_text(PIXEL_FONT, 32, YELLOW, sw/2, (sh/2)-32, ALLEGRO_ALIGN_CENTER, "YOU DID NOT QUALIFIED", false);
-  draw_text(PIXEL_FONT, 22, ORANGE, sw/2, (sh/2)+100, ALLEGRO_ALIGN_CENTER, "Press enter to continue", false);
-  al_flip_display();
+  else draw_text(PIXEL_FONT, 32, YELLOW, sw/2, 25, ALLEGRO_ALIGN_CENTER, "YOU DID NOT QUALIFIED", false);
+  draw_text(PIXEL_FONT, 22, ORANGE, sw/2, 150, ALLEGRO_ALIGN_CENTER, "Press enter to continue", false);
   while (true) {
     al_wait_for_event(queue, &ev);
+    // Continue
     if(ev.type == ALLEGRO_EVENT_KEY_UP){
       if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER || ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
+    }
+    // Update screen
+    else if(ev.type == ALLEGRO_EVENT_TIMER){
+      al_draw_bitmap(map_landscape, (sw/2)-1500+landscape_position, sh-250, 0);
+      if(going_right && (sw/2)-1500+landscape_position >= 0) going_right = false;
+      else if(!going_right && (sw/2)-1500+landscape_position <= -3000+sw) going_right = true;
+      if(going_right) landscape_position += 15.0/60.0;
+      else landscape_position -= 15.0/60.0;
+      al_flip_display();
     }
     // Quit game
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
@@ -483,8 +494,18 @@ int show_leaderboard(){
   al_flip_display();
   while (true) {
     al_wait_for_event(queue, &ev);
+    // Continue
     if(ev.type == ALLEGRO_EVENT_KEY_UP){
       if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER || ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
+    }
+    // Update screen
+    else if(ev.type == ALLEGRO_EVENT_TIMER){
+      al_draw_bitmap(map_landscape, (sw/2)-1500+landscape_position, sh-250, 0);
+      if(going_right && (sw/2)-1500+landscape_position >= 0) going_right = false;
+      else if(!going_right && (sw/2)-1500+landscape_position <= -3000+sw) going_right = true;
+      if(going_right) landscape_position += 15.0/60.0;
+      else landscape_position -= 15.0/60.0;
+      al_flip_display();
     }
     // Quit game
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
@@ -496,7 +517,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
-  object_count = 40;
+  object_count = 30;
   objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
   oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
   cars = (CAR**) calloc(oponent_count+1, sizeof(CAR*));
@@ -592,9 +613,17 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
       else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
       // Pause
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-        int res = pause();
-        if(res == -1 || res == 4) return res;
-        if(res == 0) draw_game();
+        if(engine_running){
+          stop_sample(player_engine_sound_instance);
+          engine_running = false;
+        }
+        result = pause();
+        if(result == -1 || result == 4) return result;
+        if(result == 0) {
+          player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+          engine_running = true;
+          draw_game();
+        }
       }
     }
     // Quit game
@@ -603,7 +632,7 @@ int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amo
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
       result = update();
       if(result == -1){
-        if(engine_runing) stop_sample(player_engine_sound_instance);
+        if(engine_running) stop_sample(player_engine_sound_instance);
         return -1;
       }
       else if(result == 1){
