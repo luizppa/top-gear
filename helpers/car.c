@@ -119,6 +119,11 @@ float speed_increase(int gear, float speed){
   }
 }
 
+int get_gear_progress(CAR car){
+  float progress = 10*car.speed/max_speed(car.gear);
+  return (int)progress;
+}
+
 // quick_sort_cars sorting logic
 int partition(CAR** cars, int first, int last){
   CAR *pivot = cars[first], *aux;

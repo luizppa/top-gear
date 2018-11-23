@@ -51,6 +51,7 @@ void gear_down(CAR *car);
 void set_gear(CAR *car, int gear);
 float max_speed(int gear);
 float speed_increase(int gear, float speed);
+int get_gear_progress(CAR car);
 CAR** quick_sort_cars(CAR** cars, int size);
 bool are_cars_aligned(CAR* a, CAR* b);
 bool car_collided(CAR* car, CAR** cars, OBJECT* objects, int car_count, int object_count, bool play_sounds);
