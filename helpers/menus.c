@@ -266,25 +266,9 @@ int mode_selection(){
               break;
             case 2:
               car = car_selection();
-              CAR *cars = (CAR*) calloc(11, sizeof(CAR));
               if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;
-              int car_type, car_color;
-              for (int i = 0; i < 11; i++) {
-                car_type = (rand()%4)+1;
-                car_color = rand()%7;
-                cars[i] = new_oponent(i+1, get_car(car_type, car_color));
-              }
-              for (int i = 0; i < 4; i++) {
-                op = play(get_car(car[0], car[1]), cars, 11, i);
-                restart_positions(cars, 11);
-                if(op == 4 || op == -1) {
-                  stop_music(music);
-                  music = set_music(TITLE_MUSIC);
-                  start_music(music, true);
-                  return op;
-                }
-              }
+              op = tournament(get_car(car[0], car[1]), 11);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);

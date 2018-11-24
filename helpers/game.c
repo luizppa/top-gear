@@ -654,3 +654,18 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
   }
   return 0;
 }
+
+int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
+  CAR *cars = (CAR*) calloc(oponents_amount, sizeof(CAR));
+  int car_type, car_color, op;
+  for (int i = 0; i < oponents_amount; i++) {
+    car_type = (rand()%4)+1;
+    car_color = rand()%7;
+    cars[i] = new_oponent(i+1, get_car(car_type, car_color));
+  }
+  for (int i = 0; i < 4; i++) {
+    op = play(player_texture, cars, oponents_amount, i);
+    restart_positions(cars, oponents_amount);
+    if(op == 4 || op == -1) return op;
+  }
+}
