@@ -46,6 +46,7 @@ typedef struct CAR_TYPE CAR;
 
 CAR new_car(ALLEGRO_BITMAP* texture);
 CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture);
+void restart_positions(CAR* cars, int count);
 void gear_up(CAR *car);
 void gear_down(CAR *car);
 void set_gear(CAR *car, int gear);

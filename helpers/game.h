@@ -21,4 +21,4 @@ extern int placement;
 extern double race_time;
 extern CAR** leaderboard;
 
-int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amount, int map);
+int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int map);

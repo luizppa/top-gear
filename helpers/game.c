@@ -166,7 +166,7 @@ void draw_hud(){
   sprintf(gear, "%d", player.gear);
   draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
   draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
-  al_draw_filled_rounded_rectangle(15, 15, 258, 85, 5.0, 5.0, rgb(190, 190, 190));
+  al_draw_filled_rounded_rectangle(15, 15, 258, 85, 5.0, 5.0, YELLOW);
   al_draw_filled_rounded_rectangle(20, 20, 253, 80, 3.0, 3.0, rgb(50, 50, 50));
   for (int i = 1; i <= gear_progress; i++) {
     int red = (int)(200*(i/10.0));
@@ -521,13 +521,12 @@ int show_leaderboard(){
 }
 
 // Setup game environment
-void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
+void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars){
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
   object_count = 30;
   objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
-  oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
   cars = (CAR**) calloc(oponent_count+1, sizeof(CAR*));
 
   // Initialize objects
@@ -543,6 +542,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
 
   // Initialize oponents
   if(tournament_cars == NULL){
+    oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
     int car_type, car_color;
     for (int i = 0; i < oponent_count; i++) {
       car_type = (rand()%4)+1;
@@ -552,8 +552,8 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
     }
   }
   else{
+    oponents = tournament_cars;
     for (int i = 0; i < oponent_count; i++) {
-      oponents[i] = *tournament_cars[i];
       cars[i] = &oponents[i];
     }
   }
@@ -589,8 +589,8 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars){
 
 }
 
-// Main
-int play(ALLEGRO_BITMAP* player_texture, CAR** tournament_cars, int oponents_amount, int choosen_map){
+// Single match
+int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int choosen_map){
   int result;
   map = choosen_map;
   clock_t begin, end;
