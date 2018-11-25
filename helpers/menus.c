@@ -259,7 +259,7 @@ int mode_selection(){
               if(car[0] == -1) return -1;
               map = map_selection();
               if(map == 4 || map == -1) return map;
-              op = play(get_car(car[0], car[1]), NULL, 11, map);
+              op = play(get_car(car[0], car[1]), NULL, 11, map, true);
               stop_music(music);
               music = set_music(TITLE_MUSIC);
               start_music(music, true);

@@ -6,7 +6,7 @@ bool finished = false;
 bool engine_running = false;
 int map; // The map code
 int placement = 1; // Player race position
-int oponent_count = 7; // Number of AI controlled oponents on the game
+int oponent_count; // Number of AI controlled oponents on the game
 int object_count = 0; // Number of static objects on the map
 float position; // The road center x coordinate on the screen
 float street_width = 1300.0; // Street base width
@@ -155,7 +155,7 @@ void draw_hud(){
   al_draw_filled_circle(30, sh-250, 9, ORANGE);
   al_draw_filled_circle(30, (sh-250)-minimap_heigth, 9, ORANGE);
   for (int i = 0; i < oponent_count; i++) {
-    al_draw_filled_circle(30, (sh-250)-(min(oponents[i].position_y, track_length)/300), 8, RED);
+    al_draw_filled_circle(30, (sh-250)-(min(oponents[i].position_y, track_length)/300), 9, RED);
   }
   al_draw_filled_circle(30, (sh-250)-player_minimap_position, 9, BLUE);
   // Position
@@ -521,7 +521,7 @@ int show_leaderboard(){
 }
 
 // Setup game environment
-void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars){
+void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_match){
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
@@ -554,7 +554,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars){
   else{
     oponents = tournament_cars;
     for (int i = 0; i < oponent_count; i++) {
-      cars[i] = &oponents[i];
+      cars[i] = &tournament_cars[i];
     }
   }
 
@@ -571,6 +571,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars){
   // Initialize player
   player = new_car(player_texture);
   cars[oponent_count] = &player;
+  quick_sort_cars(cars, oponent_count+1);
   if(player_position < 4){
     player.position_y = (3*STARTING_DISTANCE);
   }
@@ -586,24 +587,25 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars){
   float x = (player_position%3)-1;
   player.position_x = (x*25)+(x*400);
   position = (sw/2)-player.position_x;
-
 }
 
+void clear_game();
+
 // Single match
-int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int choosen_map){
+int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int choosen_map, bool single_match){
   int result;
   map = choosen_map;
   clock_t begin, end;
   oponent_count = oponents_amount;
 
-  setup(player_texture, tournament_cars);
+  setup(player_texture, tournament_cars, single_match);
 
   // Countdown
   for (int i = 3; i > 0; i--) {
     draw_game();
     char countdown[4];
     sprintf(countdown, "%d", i);
-    draw_text(DISKUN_FONT, 60, BLUE, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
+    draw_text(DISKUN_FONT, 60, YELLOW, sw/2, sh/3, ALLEGRO_ALIGN_CENTRE, countdown, true);
     play_sample(READY_SOUND);
     al_rest(1);
   }
@@ -648,7 +650,13 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
         finished = true;
         race_time = (double)(end-begin)/CLOCKS_PER_SEC;
         deaccelerate_until_stop();
-        return show_leaderboard();
+        // if(tournament_cars == NULL) free(oponents);
+        if(single_match){
+          result = show_leaderboard();
+          clear_game();
+          return result;
+        }
+        else return 0;
       }
     }
   }
@@ -656,16 +664,27 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
 }
 
 int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
-  CAR *cars = (CAR*) calloc(oponents_amount, sizeof(CAR));
+  CAR *tournament_cars = (CAR*) calloc(oponents_amount, sizeof(CAR));
   int car_type, car_color, op;
   for (int i = 0; i < oponents_amount; i++) {
     car_type = (rand()%4)+1;
     car_color = rand()%7;
-    cars[i] = new_oponent(i+1, get_car(car_type, car_color));
+    tournament_cars[i] = new_oponent(i+1, get_car(car_type, car_color));
   }
   for (int i = 0; i < 4; i++) {
-    op = play(player_texture, cars, oponents_amount, i);
-    restart_positions(cars, oponents_amount);
+    op = play(player_texture, tournament_cars, oponents_amount, i, (i==3));
+    restart_positions(tournament_cars, oponents_amount);
     if(op == 4 || op == -1) return op;
   }
+  free(tournament_cars);
+  return 0;
+}
+
+void clear_game(){
+  // printf("freeing cars array\n");
+  // free(cars);
+  // printf("done\n");
+  // printf("freeing oponents\n");
+  // free(oponents);
+  // printf("done\n");
 }

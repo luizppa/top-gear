@@ -58,20 +58,22 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
 
 // Replace the cars at the begginig of the road based on their position on the last match
 void restart_positions(CAR* cars, int count){
-  for (int i = 1; i <= count; i++) {
-    if(i < 4){
+  for (int i = 0; i < count; i++) {
+    cars[i].speed = 0.0;
+    cars[i].gear = 1;
+    if(i+1 < 4){
       cars[i].position_y = (3*STARTING_DISTANCE);
     }
-    else if(i < 7){
+    else if(i+1 < 7){
       cars[i].position_y = (2*STARTING_DISTANCE);
     }
-    else if(i < 10){
+    else if(i+1 < 10){
       cars[i].position_y = (1*STARTING_DISTANCE);
     }
-    else if(i < 13){
+    else if(i+1 < 13){
       cars[i].position_y = (0*STARTING_DISTANCE);
     }
-    float x = ((i%3)-1);
+    float x = (((i+1)%3)-1);
     cars[i].position_x = (x*25)+(x*400);
   }
 }
