@@ -341,11 +341,10 @@ int update(){
   for (int i = 1; i < 11; i++) {
     if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + street_length;
   }
-  // Stop timer to avoid flooding the event queue
+  // Stop timer untill game is redrawn to avoid flooding the event queue (causes fps loss, but life goes on)
   al_stop_timer(timer);
   // Update screen
   draw_game();
-  // Resume timer
   al_resume_timer(timer);
   if(player.position_y >= track_length) {
     return 1;

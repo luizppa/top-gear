@@ -85,7 +85,9 @@ int init() {
   ALLEGRO_PATH* p = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
   al_change_directory(al_path_cstr(p, '\\'));
   al_destroy_path(p);
-  p = 0;
+
+  // Display settings
+  setup_display();
 
   // Sound settings
   setup_sounds();
@@ -94,9 +96,6 @@ int init() {
   music = set_music(TITLE_MUSIC);
   al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
   start_music(music, true);
-
-  // Display settings
-  setup_display();
 
   // Events setings
   setup_events();

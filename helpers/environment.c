@@ -20,7 +20,7 @@ void init_environment(){
     printf("Allegro init failed.\n");
     exit(1);
   }
-  if (!al_install_audio() || !al_install_keyboard() || !al_install_mouse() || !al_reserve_samples(3)) {
+  if (!al_install_audio() || !al_install_keyboard()) {
     printf("Install failed.\n");
     exit(2);
   }
