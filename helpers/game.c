@@ -144,12 +144,12 @@ void draw_object(int i){
 
 // Draw screen info
 void draw_hud(){
-  char position[8];
-  char gear[8];
-  char speed[16];
   float minimap_heigth = track_length/300;
   float player_minimap_position = min(player.position_y, track_length)/300;
   int gear_progress = min(10, get_gear_progress(player));
+  ALLEGRO_FONT* diskun_100 = font(DISKUN_FONT, 100);
+  ALLEGRO_FONT* diskun_60 = font(DISKUN_FONT, 60);
+  ALLEGRO_FONT* diskun_80 = font(DISKUN_FONT, 80);
   // Minimap
   al_draw_line(30, sh-250, 30, (sh-250)-minimap_heigth, YELLOW, 6);
   al_draw_filled_circle(30, sh-250, 9, ORANGE);
@@ -159,13 +159,11 @@ void draw_hud(){
   }
   al_draw_filled_circle(30, (sh-250)-player_minimap_position, 9, BLUE);
   // Position
-  sprintf(position, "%dth", placement);
-  draw_text(DISKUN_FONT, 60, YELLOW, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION", false);
-  draw_text(DISKUN_FONT, 100, YELLOW, 30, sh-100, ALLEGRO_ALIGN_LEFT, position, false);
+  al_draw_text(diskun_60, YELLOW, 30, sh-160, ALLEGRO_ALIGN_LEFT, "POSITION");
+  al_draw_textf(diskun_100, YELLOW, 30, sh-100, ALLEGRO_ALIGN_LEFT, "%dth", placement);
   // Gears
-  sprintf(gear, "%d", player.gear);
-  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, gear, false);
+  al_draw_text(diskun_60, YELLOW, sw-30, sh-280, ALLEGRO_ALIGN_RIGHT, "GEAR");
+  al_draw_textf(diskun_80, YELLOW, sw-30, sh-220, ALLEGRO_ALIGN_RIGHT, "%d", player.gear);
   al_draw_filled_rounded_rectangle(15, 15, 258, 85, 5.0, 5.0, YELLOW);
   al_draw_filled_rounded_rectangle(20, 20, 253, 80, 3.0, 3.0, rgb(50, 50, 50));
   for (int i = 1; i <= gear_progress; i++) {
@@ -174,9 +172,11 @@ void draw_hud(){
     al_draw_filled_rectangle(i*23, 23, (i*23)+20, 77, rgb(red, green, 40));
   }
   // Speed
-  sprintf(speed, "%.0f Km/h", max(0, player.speed));
-  draw_text(DISKUN_FONT, 60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED", false);
-  draw_text(DISKUN_FONT, 80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, speed, false);
+  al_draw_text(diskun_60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED");
+  al_draw_textf(diskun_80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, "%.0f Km/h", max(0, player.speed));
+  al_destroy_font(diskun_100);
+  al_destroy_font(diskun_80);
+  al_destroy_font(diskun_60);
 }
 
 // Draw the game cars
