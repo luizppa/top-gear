@@ -337,8 +337,11 @@ int update(){
     // Controll oponents
     control_ia(&oponents[i], cars, objects, oponent_count+1, object_count, is_car_on_sight(&oponents[i]));
   }
-  for (int i = 1; i < 11; i++) {
-    if(object_distance(i) < -objects[i].height) objects[i].position_y = player.position_y + street_length;
+  for (int i = 0; i < 5; i++) {
+    if(object_distance(i) < -objects[i].height){
+      objects[i].position_y = player.position_y + street_length;
+      objects[i+5].position_y = player.position_y + street_length;
+    }
   }
   // Update screen
   draw_game();
@@ -369,8 +372,15 @@ void restart(){
   position = (sw/2)-player.position_x;
   player.gear = 1;
   player.speed = 0.0;
+  for (int i = 0; i < 5; i++) {
+    objects[i].position_x = -(street_width/2)-120;
+    objects[i].position_y = i*120;
+    objects[i+5].position_x = (street_width/2)+120;
+    objects[i+5].position_y = i*120;
+  }
   restart_music(music);
   countdown();
+  al_set_timer_count(timer, 0);
 }
 
 // Handle paused game
@@ -484,8 +494,7 @@ int show_leaderboard(){
   char competitor[50];
   float landscape_position = 0.0;
   bool going_right = true;
-  sprintf(result, "YOU FINISHED %dth", placement);
-  sprintf(duration, "RACE DURATION: %.2fs", race_time);
+  int race_time_minutes = (int)(race_time/60);
   stop_music(music);
   if(placement <= 3) music = set_music(QUALIFIED_MUSIC);
   else music = set_music(DISQUALIFIED_MUSIC);
@@ -493,7 +502,7 @@ int show_leaderboard(){
   clear_display(BLUE, false);
   if(placement <= 3){
     draw_text(PIXEL_32, YELLOW, sw/2, 25, ALLEGRO_ALIGN_CENTER, "CONGRATULATIONS", false);
-    draw_text(PIXEL_32, YELLOW, sw/2, 67, ALLEGRO_ALIGN_CENTER, result, false);
+    al_draw_textf(PIXEL_32, YELLOW, sw/2, 67, ALLEGRO_ALIGN_CENTER, "YOU FINISHED %dth", placement);
   }
   else draw_text(PIXEL_32, YELLOW, sw/2, 25, ALLEGRO_ALIGN_CENTER, "YOU DID NOT QUALIFIED", false);
   draw_text(PIXEL_22, ORANGE, sw/2, 150, ALLEGRO_ALIGN_CENTER, "Press enter to continue", false);
@@ -516,7 +525,7 @@ int show_leaderboard(){
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
   }
   clear_display(BLUE, false);
-  draw_text(PIXEL_28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, duration, false);
+  al_draw_textf(PIXEL_28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, "RACE DURATION: %d:%.2f", race_time_minutes, race_time-(race_time_minutes*60));
   for (int i = 0; i < oponent_count+1; i++) {
     sprintf(competitor, "%d: %s", i+1, cars[oponent_count-i]->name);
     if(i%2 == 1) draw_text(PIXEL_28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
@@ -553,12 +562,12 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   cars = (CAR**) malloc((oponent_count+1)*sizeof(CAR*));
 
   // Initialize objects
-  objects[0] = new_object(0, track_length, 1295.0, 691.0, FINISH_LINE, false);
-  for (int i = 1; i < 6; i++) {
+  objects[object_count-1] = new_object(0, track_length, 1295.0, 691.0, FINISH_LINE, false);
+  for (int i = 0; i < 5; i++) {
     objects[i] = new_object(-(street_width/2)-120, i*120, 120.0, 120.0, ROAD_SIGN, false);
     objects[i+5] = new_object((street_width/2)+120, i*120, 120.0, 120.0, ROAD_SIGN, false);
   }
-  for (int i = 11; i < object_count; i++) {
+  for (int i = 10; i < object_count-1; i++) {
     float x = (rand()%(int)(street_width-30))-((street_width-30)/2), y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
     objects[i] = get_random_obstacle(x, y);
   }
@@ -629,15 +638,14 @@ void countdown(){
 int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int choosen_map, bool single_match){
   int result;
   map = choosen_map;
-  clock_t begin, end;
   oponent_count = oponents_amount;
 
   setup(player_texture, tournament_cars, single_match);
 
   countdown();
+  al_set_timer_count(timer, 0);
   // Main loop
   while (true) {
-    begin = clock();
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
       // Gear up
@@ -650,7 +658,9 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
           stop_sample(player_engine_sound_instance);
           engine_running = false;
         }
+        al_stop_timer(timer);
         result = pause();
+        al_resume_timer(timer);
         set_music_volume(music, 1.0);
         if(result == -1 || result == 4) return result;
         if(result == 0) {
@@ -671,9 +681,8 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
         return -1;
       }
       else if(result == 1){
-        end = clock();
         finished = true;
-        race_time = (double)(end-begin)/CLOCKS_PER_SEC;
+        race_time = al_get_timer_count(timer)/fps;
         deaccelerate_until_stop();
         // if(tournament_cars == NULL) free(oponents);
         if(single_match){
