@@ -339,8 +339,8 @@ int update(){
   }
   for (int i = 0; i < 5; i++) {
     if(object_distance(i) < -objects[i].height){
-      objects[i].position_y = player.position_y + street_length;
-      objects[i+5].position_y = player.position_y + street_length;
+      objects[i].position_y = objects[i].position_y + ((5-1)*120) + objects[i].height;
+      objects[i+5].position_y = objects[i+5].position_y + ((5-1)*120) + objects[i].height;
     }
   }
   // Update screen
