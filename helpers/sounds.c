@@ -46,6 +46,16 @@ ALLEGRO_AUDIO_STREAM* set_music(char* file){
   else return NULL;
 }
 
+// Play music from the begginig
+void restart_music(ALLEGRO_AUDIO_STREAM* music){
+  if(music_on) al_rewind_audio_stream(music);
+}
+
+// Set the music volume
+void set_music_volume(ALLEGRO_AUDIO_STREAM* music, float gain){
+  if(music_on) al_set_audio_stream_gain(music, gain);
+}
+
 // Play a sample once
 void play_sample(ALLEGRO_SAMPLE *sample){
   if(sounds_on) al_play_sample(sample, 0.8, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);

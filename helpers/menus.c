@@ -9,10 +9,10 @@ ALLEGRO_COLOR colors[7];
 int redraw_main_menu(int op){
   clear_display(BLUE, false);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-250, 0);
-  draw_text(PIXEL_FONT, 28, colors[0], sw/2, (sh/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
-  draw_text(PIXEL_FONT, 28, colors[1], sw/2, (sh/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
-  draw_text(PIXEL_FONT, 28, colors[2], sw/2, (sh/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
-  draw_text(PIXEL_FONT, 28, colors[3], sw/2, (sh/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
+  draw_text(PIXEL_28, colors[0], sw/2, (sh/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
+  draw_text(PIXEL_28, colors[1], sw/2, (sh/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
+  draw_text(PIXEL_28, colors[2], sw/2, (sh/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
+  draw_text(PIXEL_28, colors[3], sw/2, (sh/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
 }
 
 int options_menu(ALLEGRO_AUDIO_STREAM* resume_music);
@@ -100,24 +100,24 @@ void redraw_options_menu(int op){
   clear_display(BLUE, false);
 
   // Music
-  draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
-  if(music_on) draw_text(PIXEL_FONT, 28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-  else draw_text(PIXEL_FONT, 28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+  draw_text(PIXEL_28, colors[0], (sw/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
+  if(music_on) draw_text(PIXEL_28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_28, colors[0], (sw/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
 
   // Sounds
-  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
-  if(sounds_on) draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-  else draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+  draw_text(PIXEL_28, colors[1], (sw/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
+  if(sounds_on) draw_text(PIXEL_28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_28, colors[1], (sw/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
 
   // Collisions
-  draw_text(PIXEL_FONT, 28, colors[2], (sw/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
-  if(collisions) draw_text(PIXEL_FONT, 28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-  else draw_text(PIXEL_FONT, 28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+  draw_text(PIXEL_28, colors[2], (sw/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
+  if(collisions) draw_text(PIXEL_28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_28, colors[2], (sw/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
 
   // Debug
-  draw_text(PIXEL_FONT, 28, colors[3], (sw/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
-  if(debug) draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-  else draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+  draw_text(PIXEL_28, colors[3], (sw/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
+  if(debug) draw_text(PIXEL_28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "ON", false);
+  else draw_text(PIXEL_28, colors[3], (sw/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
 
   al_flip_display();
 }
@@ -194,17 +194,17 @@ int options_menu(ALLEGRO_AUDIO_STREAM* resume_music){
 void redraw_mode_selection(int op){
   float square_side = 250.0;
   clear_display(BLUE, false);
-  draw_text(PIXEL_FONT, 32, YELLOW, sw/2, 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
+  draw_text(PIXEL_32, YELLOW, sw/2, 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
   al_draw_rounded_rectangle((sw/2)-25-square_side, (sh/2)-(square_side/2), (sw/2)-25, (sh/2)+(square_side/2), 0, 0, colors[0], 5);
-  draw_text(PIXEL_FONT, 28, colors[0], (sw/2)-25-(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
+  draw_text(PIXEL_28, colors[0], (sw/2)-25-(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
   al_draw_rounded_rectangle((sw/2)+25, (sh/2)-(square_side/2), (sw/2)+25+square_side, (sh/2)+(square_side/2), 0, 0, colors[1], 5);
-  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
+  draw_text(PIXEL_28, colors[1], (sw/2)+25+(square_side/2), (sh/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
   switch (op) {
     case 1:
-      draw_text(PIXEL_FONT, 22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "A single race to test your skills", true);
+      draw_text(PIXEL_22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "A single race to test your skills", true);
       break;
     case 2:
-      draw_text(PIXEL_FONT, 22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "Join a series of races and make your way to the top!", true);
+      draw_text(PIXEL_22, WHITE, 30, sh-37, ALLEGRO_ALIGN_LEFT, "Join a series of races and make your way to the top!", true);
       break;
   }
 }
@@ -291,25 +291,25 @@ void redraw_car_selection(int op){
   clear_display(BLUE, false);
   // Dominus
   al_draw_rectangle((sw/2)-25-square_width, (sh/2)-25-square_height, (sw/2)-25, (sh/2)-25, colors[0], 5);
-  draw_text(PIXEL_FONT, 22, colors[0], (sw/2)-25-(square_width/2), (sh/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
+  draw_text(PIXEL_22, colors[0], (sw/2)-25-(square_width/2), (sh/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
   al_draw_bitmap(DOMINUS_GT_ICON_BITMAP, (sw/2)-25-((square_width-dominus_w)/2)-dominus_w, (sh/2)-25-35-dominus_h, 0);
 
   // Octane
   al_draw_rectangle((sw/2)+25, (sh/2)-25-square_height, (sw/2)+25+square_width, (sh/2)-25, colors[1], 5);
-  draw_text(PIXEL_FONT, 28, colors[1], (sw/2)+25+(square_width/2), (sh/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
+  draw_text(PIXEL_28, colors[1], (sw/2)+25+(square_width/2), (sh/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
   al_draw_bitmap(OCTANE_ZSR_ICON_BITMAP, (sw/2)+25+((square_width-octane_w)/2), (sh/2)-25-35-octane_h, 0);
 
   // Roadhog
   al_draw_rectangle((sw/2)-25-square_width, (sh/2)+25, (sw/2)-25, (sh/2)+25+square_height, colors[2], 5);
-  draw_text(PIXEL_FONT, 28, colors[2], (sw/2)-25-(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
+  draw_text(PIXEL_28, colors[2], (sw/2)-25-(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
   al_draw_bitmap(ROADHOG_ICON_BITMAP, (sw/2)-25-(square_width/2)-(roadhog_w/2), (sh/2)+25+square_height-35-roadhog_h, 0);
 
   // Maverick
   al_draw_rectangle((sw/2)+25, (sh/2)+25, (sw/2)+25+square_width, (sh/2)+25+square_height, colors[3], 5);
-  draw_text(PIXEL_FONT, 28, colors[3], (sw/2)+25+(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
+  draw_text(PIXEL_28, colors[3], (sw/2)+25+(square_width/2), (sh/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
   al_draw_bitmap(MAVERICK_ICON_BITMAP, (sw/2)+25+(square_width/2)-(maverick_w/2), (sh/2)+25+square_height-35-maverick_h, 0);
 
-  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 30, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", true);
+  draw_text(PIXEL_32, YELLOW, (sw/2), 30, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", true);
 }
 
 // Select car
@@ -394,7 +394,7 @@ void redraw_color_selection(int op){
   float block_size = 150.0;
   ALLEGRO_COLOR options[7] = {rgb(255, 0, 0), rgb(0, 0, 255), rgb(0, 255, 0), rgb(100, 100, 100), rgb(170, 0, 240), rgb(247, 165, 0), rgb(0, 0, 0)};
   clear_display(BLUE, false);
-  draw_text(PIXEL_FONT, 32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR COLOR", false);
+  draw_text(PIXEL_32, YELLOW, (sw/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR COLOR", false);
   for(int i = -3; i < 4; i++){
     al_draw_filled_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 0, 0, options[i+3]);
     al_draw_rounded_rectangle((sw/2)+(i*(block_size+25.0))-(block_size/2), (sh/2)-(block_size/2), (sw/2)+(i*(block_size+25))+(block_size/2), (sh/2)+(block_size/2), 0, 0, colors[i+3], 5);
@@ -458,8 +458,8 @@ int color_selection(){
 void redraw_map_selection(int op){
   int square_w = 500, square_h = 200;
   clear_display(BLUE, false);
-  draw_text(PIXEL_FONT, 28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
-  draw_text(PIXEL_FONT, 22, YELLOW, (sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+  draw_text(PIXEL_28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
+  draw_text(PIXEL_22, YELLOW, (sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
   al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, (sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
   al_draw_rounded_rectangle((sw/2)-(square_w/2), (sh/2)-(square_h/2), (sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
   al_flip_display();
@@ -490,21 +490,21 @@ void flip_map_selection(int op, bool go_right){
         else positions[i] += sw/60;
       }
       clear_display(BLUE, false);
-      draw_text(PIXEL_FONT, 28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
+      draw_text(PIXEL_28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
       // Lass Vegas
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[0]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+      draw_text(PIXEL_22, YELLOW, positions[0]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
       al_draw_bitmap(LAS_VEGAS_ICON_BITMAP, positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[0]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[0]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[0], 5);
       // Bordeaux
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[1]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
+      draw_text(PIXEL_22, YELLOW, positions[1]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
       al_draw_bitmap(BORDEAUX_ICON_BITMAP, positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[1]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[1]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[1], 5);
       // Hiroshima
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[2]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
+      draw_text(PIXEL_22, YELLOW, positions[2]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
       al_draw_bitmap(HIROSHIMA_ICON_BITMAP, positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[2]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[2]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[2], 5);
       // Frankfurt
-      draw_text(PIXEL_FONT, 22, YELLOW, positions[3]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
+      draw_text(PIXEL_22, YELLOW, positions[3]+(sw/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
       al_draw_bitmap(FRANKFURT_ICON_BITMAP, positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), 0);
       al_draw_rounded_rectangle(positions[3]+(sw/2)-(square_w/2), (sh/2)-(square_h/2), positions[3]+(sw/2)+(square_w/2), (sh/2)+(square_h/2), 0, 0, colors[3], 5);
       al_flip_display();

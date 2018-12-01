@@ -7,7 +7,7 @@ bool sounds_on = true; // Turn off game music
 bool collisions = true; // Cars will colide
 bool debug = false; // Debug markers will appear on screen and events will be logged
 bool ai_pilots = true; // Oponent cars will be controlled by AI
-float movement_speed = 22.0; // Lateral movement speed
+float movement_speed = 18.0; // Lateral movement speed
 
 ALLEGRO_DISPLAY* display = NULL;
 ALLEGRO_EVENT_QUEUE* queue = NULL;
@@ -40,14 +40,12 @@ void setup_sounds(){
 void setup_display(){
   init_colors();
   init_bitmaps();
+  init_fonts();
+
   // windowed
   al_set_new_display_flags(ALLEGRO_WINDOWED);
+  // al_set_new_display_flags(ALLEGRO_RESIZABLE);
   display = al_create_display(sw, sh);
-  // fullscreen
-  // TODO: fix fullscreen renderization
-  // al_get_display_mode(al_get_num_display_modes() - 1, &disp_data);
-  // al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-  // display = al_create_display(disp_data.width, disp_data.height);
   al_set_window_title(display, "Top Gear");
   al_set_display_icon(display, GAME_ICON);
 }

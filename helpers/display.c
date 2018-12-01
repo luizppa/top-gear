@@ -122,28 +122,18 @@ void init_bitmaps(){
 
 // Returns the width of a car bitmap
 float get_bitmap_width(ALLEGRO_BITMAP* bitmap){
-  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP || bitmap == OCTANE_ZSR_BLACK_BITMAP || bitmap == OCTANE_ZSR_YELLOW_BITMAP) return 166.0;
-  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP || bitmap == DOMINUS_GT_BLACK_BITMAP || bitmap == DOMINUS_GT_YELLOW_BITMAP) return 166.0;
-  else if(bitmap == ROADHOG_BLUE_BITMAP || bitmap == ROADHOG_RED_BITMAP || bitmap == ROADHOG_GREEN_BITMAP || bitmap == ROADHOG_PURPLE_BITMAP || bitmap == ROADHOG_GREY_BITMAP || bitmap == ROADHOG_BLACK_BITMAP || bitmap == ROADHOG_YELLOW_BITMAP) return 166.0;
-  else if(bitmap == MAVERICK_BLUE_BITMAP || bitmap == MAVERICK_RED_BITMAP || bitmap == MAVERICK_GREEN_BITMAP || bitmap == MAVERICK_PURPLE_BITMAP || bitmap == MAVERICK_GREY_BITMAP || bitmap == MAVERICK_BLACK_BITMAP || bitmap == MAVERICK_YELLOW_BITMAP) return 166.0;
-  else return 0.0;
+  return al_get_bitmap_width(bitmap);
 }
 
 // Returns the height of a car bitmap
 float get_bitmap_height(ALLEGRO_BITMAP* bitmap){
-  if(bitmap == OCTANE_ZSR_BLUE_BITMAP || bitmap == OCTANE_ZSR_RED_BITMAP || bitmap == OCTANE_ZSR_GREEN_BITMAP || bitmap == OCTANE_ZSR_PURPLE_BITMAP || bitmap == OCTANE_ZSR_GREY_BITMAP || bitmap == OCTANE_ZSR_BLACK_BITMAP || bitmap == OCTANE_ZSR_YELLOW_BITMAP) return 120.0;
-  else if(bitmap == DOMINUS_GT_BLUE_BITMAP || bitmap == DOMINUS_GT_RED_BITMAP || bitmap == DOMINUS_GT_GREEN_BITMAP || bitmap == DOMINUS_GT_PURPLE_BITMAP || bitmap == DOMINUS_GT_GREY_BITMAP || bitmap == DOMINUS_GT_BLACK_BITMAP || bitmap == DOMINUS_GT_YELLOW_BITMAP) return 103.0;
-  else if(bitmap == ROADHOG_BLUE_BITMAP || bitmap == ROADHOG_RED_BITMAP || bitmap == ROADHOG_GREEN_BITMAP || bitmap == ROADHOG_PURPLE_BITMAP || bitmap == ROADHOG_GREY_BITMAP || bitmap == ROADHOG_BLACK_BITMAP || bitmap == ROADHOG_YELLOW_BITMAP) return 131.0;
-  else if(bitmap == MAVERICK_BLUE_BITMAP || bitmap == MAVERICK_RED_BITMAP || bitmap == MAVERICK_GREEN_BITMAP || bitmap == MAVERICK_PURPLE_BITMAP || bitmap == MAVERICK_GREY_BITMAP || bitmap == MAVERICK_BLACK_BITMAP || bitmap == MAVERICK_YELLOW_BITMAP) return 102.0;
-  else return 0.0;
+  return al_get_bitmap_height(bitmap);
 }
 
 // Draw a message to the screen
-void draw_text(char* font_name, int size, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text, bool flip){
-  ALLEGRO_FONT *selected_font = font(font_name, size);
+void draw_text(ALLEGRO_FONT *selected_font, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text, bool flip){
   al_draw_text(selected_font, color, position_x, position_y, align, text);
   if(flip) al_flip_display();
-  al_destroy_font(selected_font);
 }
 
 // Clear the display to a given color
@@ -156,10 +146,10 @@ void clear_display(ALLEGRO_COLOR color, bool flip){
 void draw_title(){
   clear_display(BLUE, false);
   al_draw_bitmap(GAME_TITLE, (sw/2)-203, (sh/2)-182, 0);
-  draw_text(PIXEL_FONT, 22, YELLOW, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
-  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+85, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
-  draw_text(PIXEL_FONT, 22, WHITE, sw/2, sh/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
-  draw_text(PIXEL_FONT, 16, WHITE, 10, sh-26, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
+  draw_text(PIXEL_22, YELLOW, sw/2, sh/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
+  draw_text(PIXEL_22, WHITE, sw/2, sh/2+85, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
+  draw_text(PIXEL_22, WHITE, sw/2, sh/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
+  draw_text(PIXEL_14, WHITE, 10, sh-24, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
 }
 
 // Get car bitmap
