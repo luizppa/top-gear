@@ -36,6 +36,8 @@ void stop_music(ALLEGRO_AUDIO_STREAM* music);
 ALLEGRO_AUDIO_STREAM* set_music(char* file);
 void restart_music(ALLEGRO_AUDIO_STREAM* music);
 void set_music_volume(ALLEGRO_AUDIO_STREAM* music, float gain);
+void turn_of_music(ALLEGRO_AUDIO_STREAM* music);
+void turn_on_music(ALLEGRO_AUDIO_STREAM* music);
 void play_sample(ALLEGRO_SAMPLE *sample);
 ALLEGRO_SAMPLE_INSTANCE* continuously_play_sample(ALLEGRO_SAMPLE *sample);
 void stop_sample(ALLEGRO_SAMPLE_INSTANCE* instance);

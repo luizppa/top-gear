@@ -453,7 +453,7 @@ int pause(){
               return 0;
             case 2:
               // Configure options
-              if(options_menu(set_music(map_music_title)) == 4) return 4;
+              if(options_menu() == 4) return 4;
               op = 0;
               break;
             case 3:

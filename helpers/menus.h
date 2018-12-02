@@ -11,4 +11,4 @@
 #include <allegro5/allegro_ttf.h>
 
 int main_menu();
-int options_menu(ALLEGRO_AUDIO_STREAM* resume_music);
+int options_menu();

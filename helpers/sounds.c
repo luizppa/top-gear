@@ -24,11 +24,14 @@ void init_sounds(){
 
 // Play music from the beginning
 void start_music(ALLEGRO_AUDIO_STREAM* music, bool loop){
+  if(loop) al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_LOOP);
+  else al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_ONCE);
+  al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
   if(music_on){
-    if(loop) al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_LOOP);
-    else al_set_audio_stream_playmode(music, ALLEGRO_PLAYMODE_ONCE);
-    al_attach_audio_stream_to_mixer(music, al_get_default_mixer());
     al_set_audio_stream_playing(music, true);
+  }
+  else{
+    al_set_audio_stream_playing(music, false);
   }
 }
 
@@ -36,24 +39,33 @@ void start_music(ALLEGRO_AUDIO_STREAM* music, bool loop){
 void stop_music(ALLEGRO_AUDIO_STREAM* music){
   if(music_on){
     al_set_audio_stream_playing(music, false);
-    al_destroy_audio_stream(music);
   }
+  al_destroy_audio_stream(music);
 }
 
 // Set the music to be played
 ALLEGRO_AUDIO_STREAM* set_music(char* file){
-  if(music_on) return al_load_audio_stream(file, 4, SAMPLES_PER_BUFFER);
-  else return NULL;
+  return al_load_audio_stream(file, 4, SAMPLES_PER_BUFFER);
 }
 
 // Play music from the begginig
 void restart_music(ALLEGRO_AUDIO_STREAM* music){
-  if(music_on) al_rewind_audio_stream(music);
+  al_rewind_audio_stream(music);
 }
 
 // Set the music volume
 void set_music_volume(ALLEGRO_AUDIO_STREAM* music, float gain){
-  if(music_on) al_set_audio_stream_gain(music, gain);
+  al_set_audio_stream_gain(music, gain);
+}
+
+void turn_of_music(ALLEGRO_AUDIO_STREAM* music){
+  music_on = false;
+  al_set_audio_stream_playing(music, false);
+}
+
+void turn_on_music(ALLEGRO_AUDIO_STREAM* music){
+  music_on = true;
+  al_set_audio_stream_playing(music, true);
 }
 
 // Play a sample once
@@ -75,7 +87,7 @@ ALLEGRO_SAMPLE_INSTANCE* continuously_play_sample(ALLEGRO_SAMPLE *sample){
 
 // Stop playing a sample
 void stop_sample(ALLEGRO_SAMPLE_INSTANCE* instance){
-  if(instance != NULL){
+  if(instance){
     al_stop_sample_instance(instance);
     al_detach_sample_instance(instance);
   }
@@ -83,12 +95,12 @@ void stop_sample(ALLEGRO_SAMPLE_INSTANCE* instance){
 
 // Set the gain value of a sample
 void set_sample_volume(ALLEGRO_SAMPLE_INSTANCE* instance, float volume){
-  if(instance != NULL) al_set_sample_instance_gain(instance, volume);
+  if(instance) al_set_sample_instance_gain(instance, volume);
 }
 
 // Free pointers
 void destroy_sounds(){
-  if(music_on) al_destroy_audio_stream(music);
+  al_destroy_audio_stream(music);
   al_destroy_sample(COLLISION_SOUND);
   al_destroy_sample(CAR_ENGINE_SOUND);
   al_destroy_sample(READY_SOUND);
