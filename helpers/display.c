@@ -13,6 +13,10 @@ ALLEGRO_BITMAP *LAS_VEGAS_ROAD_BITMAP = NULL;
 ALLEGRO_BITMAP *FINISH_LINE = NULL;
 ALLEGRO_BITMAP *ROAD_SIGN = NULL;
 ALLEGRO_BITMAP *ROCK_BITMAP = NULL;
+ALLEGRO_BITMAP *TIRES_1_BITMAP = NULL;
+ALLEGRO_BITMAP *TIRES_2_BITMAP = NULL;
+ALLEGRO_BITMAP *BOX_1_BITMAP = NULL;
+ALLEGRO_BITMAP *BOX_2_BITMAP = NULL;
 
 // landscapes
 ALLEGRO_BITMAP *LAS_VEGAS_LANDSCAPE_BITMAP = NULL;
@@ -70,6 +74,10 @@ void init_bitmaps(){
   ROAD_SIGN = al_load_bitmap("assets/images/misc/road_sign_left.png");
   LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
   ROCK_BITMAP = al_load_bitmap("assets/images/misc/rock_1.png");
+  TIRES_1_BITMAP = al_load_bitmap("assets/images/misc/tires_1.png");
+  TIRES_2_BITMAP = al_load_bitmap("assets/images/misc/tires_2.png");
+  BOX_1_BITMAP = al_load_bitmap("assets/images/misc/box_1.png");
+  BOX_2_BITMAP = al_load_bitmap("assets/images/misc/box_2.png");
 
   // Landscapes
   LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
@@ -254,6 +262,10 @@ void destroy_bitmaps(){
   al_destroy_bitmap(FINISH_LINE);
   al_destroy_bitmap(ROAD_SIGN);
   al_destroy_bitmap(ROCK_BITMAP);
+  al_destroy_bitmap(TIRES_1_BITMAP);
+  al_destroy_bitmap(TIRES_2_BITMAP);
+  al_destroy_bitmap(BOX_1_BITMAP);
+  al_destroy_bitmap(BOX_2_BITMAP);
 
   al_destroy_bitmap(LAS_VEGAS_LANDSCAPE_BITMAP);
   al_destroy_bitmap(LAS_VEGAS_ICON_BITMAP);

@@ -16,5 +16,5 @@ struct object {
 };
 typedef struct object OBJECT;
 
-OBJECT new_object(float x, float y, float width, float height, ALLEGRO_BITMAP* texture, bool collidable);
+OBJECT new_object(float x, float y, ALLEGRO_BITMAP* texture, bool collidable);
 OBJECT get_random_obstacle(float x, float y);

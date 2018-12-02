@@ -284,10 +284,10 @@ int mode_selection(){
 // Update car selection screen
 void redraw_car_selection(int op){
   float square_width = 340.0, square_height = 220;
-  float dominus_w = 239.0, dominus_h = 70.0;
-  float octane_w = 187.0, octane_h = 88.0;
-  float roadhog_w = 233.0, roadhog_h = 116.0;
-  float maverick_w = 269.0, maverick_h = 108.0;
+  float dominus_w = get_bitmap_width(DOMINUS_GT_ICON_BITMAP), dominus_h = get_bitmap_height(DOMINUS_GT_ICON_BITMAP);
+  float octane_w = get_bitmap_width(OCTANE_ZSR_ICON_BITMAP), octane_h = get_bitmap_height(OCTANE_ZSR_ICON_BITMAP);
+  float roadhog_w = get_bitmap_width(ROADHOG_ICON_BITMAP), roadhog_h = get_bitmap_height(ROADHOG_ICON_BITMAP);
+  float maverick_w = get_bitmap_width(MAVERICK_ICON_BITMAP), maverick_h = get_bitmap_height(MAVERICK_ICON_BITMAP);
   clear_display(BLUE, false);
   // Dominus
   al_draw_rectangle((sw/2)-25-square_width, (sh/2)-25-square_height, (sw/2)-25, (sh/2)-25, colors[0], 5);

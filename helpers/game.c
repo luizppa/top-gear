@@ -525,12 +525,12 @@ int show_leaderboard(){
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
   }
   clear_display(BLUE, false);
-  al_draw_textf(PIXEL_28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, "RACE DURATION: %d:%.2f", race_time_minutes, race_time-(race_time_minutes*60));
+  al_draw_textf(PIXEL_28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, "RACE DURATION: %d min %.0f sec", race_time_minutes, race_time-(race_time_minutes*60));
   for (int i = 0; i < oponent_count+1; i++) {
-    sprintf(competitor, "%d: %s", i+1, cars[oponent_count-i]->name);
-    if(i%2 == 1) draw_text(PIXEL_28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
-    else draw_text(PIXEL_28, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, competitor, false);
+    if(i%2 == 1) al_draw_textf(PIXEL_28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, "%d: %s", i+1, cars[oponent_count-i]->name);
+    else al_draw_textf(PIXEL_28, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, "%d: %s", i+1, cars[oponent_count-i]->name);
   }
+  al_draw_bitmap(map_landscape, (sw/2)-1500+landscape_position, sh-250, 0);
   al_flip_display();
   while (true) {
     al_wait_for_event(queue, &ev);
@@ -562,10 +562,10 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   cars = (CAR**) malloc((oponent_count+1)*sizeof(CAR*));
 
   // Initialize objects
-  objects[object_count-1] = new_object(0, track_length, 1295.0, 691.0, FINISH_LINE, false);
+  objects[object_count-1] = new_object(0, track_length, FINISH_LINE, false);
   for (int i = 0; i < 5; i++) {
-    objects[i] = new_object(-(street_width/2)-120, i*120, 120.0, 120.0, ROAD_SIGN, false);
-    objects[i+5] = new_object((street_width/2)+120, i*120, 120.0, 120.0, ROAD_SIGN, false);
+    objects[i] = new_object(-(street_width/2)-120, i*120, ROAD_SIGN, false);
+    objects[i+5] = new_object((street_width/2)+120, i*120, ROAD_SIGN, false);
   }
   for (int i = 10; i < object_count-1; i++) {
     float x = (rand()%(int)(street_width-30))-((street_width-30)/2), y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
