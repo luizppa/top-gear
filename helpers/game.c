@@ -328,7 +328,7 @@ void move(){
   // Boost
   if(al_key_down(&key_state, ALLEGRO_KEY_LSHIFT)){
     if(player.nitrox > 33.333/60.0){
-      player.speed = min(max_speed(player.gear), player.speed+(15.0/60.0));
+      player.speed += (15.0/60.0);
       player.nitrox = max(0, player.nitrox-(33.333/60.0));
     }
   }
