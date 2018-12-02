@@ -15,7 +15,7 @@ CAR new_car(ALLEGRO_BITMAP* texture){
   car.position_y = 0.0;
   car.screen_position_x = sw/2;
   car.screen_position_y = 0;
-  car.fuel = 100.0;
+  car.nitrox = 100.0;
   car.gear = 1;
   car.max_gear = 6;
   car.will_colide = false;
@@ -32,7 +32,7 @@ CAR new_oponent(int lvl, ALLEGRO_BITMAP *texture){
   car.width = get_bitmap_width(texture);
   car.height = get_bitmap_height(texture);
   car.speed = 0.0;
-  car.fuel = 100.0;
+  car.nitrox = 100.0;
   car.gear = 1;
   car.max_gear = 6;
   car.texture = texture;

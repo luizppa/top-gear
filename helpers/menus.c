@@ -253,7 +253,7 @@ int mode_selection(){
           play_sample(MENU_SELECT_SOUND);
           switch (op) {
             // Start race
-            case 1:
+            case 1: // Single race
               car = car_selection();
               if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;
@@ -264,7 +264,7 @@ int mode_selection(){
               music = set_music(TITLE_MUSIC);
               start_music(music, true);
               break;
-            case 2:
+            case 2: // Tournament
               car = car_selection();
               if(car[0] == 5) return 4;
               if(car[0] == -1) return -1;

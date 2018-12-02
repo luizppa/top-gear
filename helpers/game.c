@@ -176,6 +176,11 @@ void draw_hud(){
   // Speed
   al_draw_text(DISKUN_60, YELLOW, sw-30, sh-140, ALLEGRO_ALIGN_RIGHT, "SPEED");
   al_draw_textf(DISKUN_80, YELLOW, sw-30, sh-80, ALLEGRO_ALIGN_RIGHT, "%.0f Km/h", max(0, player.speed));
+  // Nitrox
+  al_draw_text(DISKUN_60, YELLOW, sw-30, 20, ALLEGRO_ALIGN_RIGHT, "NITROX");
+  al_draw_filled_rounded_rectangle(sw-60, 90, sw-30, 300, 5.0, 5.0, YELLOW);
+  al_draw_filled_rounded_rectangle(sw-55, 95, sw-35, 295, 3.0, 3.0, rgb(50, 50, 50));
+  al_draw_filled_rectangle(sw-53, 293-(196*(player.nitrox/100)), sw-37, 293, RED);
 }
 
 // Draw the game cars
@@ -319,6 +324,18 @@ void move(){
       player.speed = max(0, player.speed + speed_increase(player.gear, player.speed));
     }
     player.speed = max(0, player.speed - NO_ACCELERATE_EFFECT);
+  }
+  // Boost
+  if(al_key_down(&key_state, ALLEGRO_KEY_LSHIFT)){
+    if(player.nitrox > 33.333/60.0){
+      player.speed = min(max_speed(player.gear), player.speed+(15.0/60.0));
+      player.nitrox = max(0, player.nitrox-(33.333/60.0));
+    }
+  }
+  else{
+    if(player.nitrox < 100.0){
+      player.nitrox = min(100.0, player.nitrox+(4.0/60.0));
+    }
   }
   // Break
   if (al_key_down(&key_state, ALLEGRO_KEY_S)){
@@ -558,7 +575,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
   object_count = 30;
-  objects = (OBJECT*) calloc(object_count, sizeof(OBJECT));
+  objects = (OBJECT*) malloc(object_count*sizeof(OBJECT));
   cars = (CAR**) malloc((oponent_count+1)*sizeof(CAR*));
 
   // Initialize objects
@@ -573,21 +590,20 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   }
 
   // Initialize oponents
-  if(tournament_cars == NULL){
-    oponents = (CAR*) calloc(oponent_count, sizeof(CAR));
+  if(tournament_cars){
+    oponents = tournament_cars;
+  }
+  else{
+    oponents = (CAR*) malloc(oponent_count*sizeof(CAR));
     int car_type, car_color;
     for (int i = 0; i < oponent_count; i++) {
       car_type = (rand()%4)+1;
       car_color = rand()%7;
       oponents[i] = new_oponent(i+1, get_car(car_type, car_color));
-      cars[i] = &oponents[i];
     }
   }
-  else{
-    oponents = tournament_cars;
-    for (int i = 0; i < oponent_count; i++) {
-      cars[i] = &tournament_cars[i];
-    }
+  for (int i = 0; i < oponent_count; i++) {
+    cars[i] = &oponents[i];
   }
 
   // Change track to Las Vegas theme
@@ -707,6 +723,7 @@ int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
   }
   for (int i = 0; i < 4; i++) {
     op = play(player_texture, tournament_cars, oponents_amount, i, (i==3));
+    clear_game();
     restart_positions(tournament_cars, oponents_amount);
     if(op == 4 || op == -1) return op;
   }

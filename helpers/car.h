@@ -35,7 +35,7 @@ struct CAR_TYPE {
   float screen_position_x; // The car center x coordinate (on the screen, where 0 is the left border of the window)
   float position_y; // The car bottom y coordinate (on the road, a virtual environment)
   float screen_position_y; // The car center y coordinate (on the screen, where 0 is the top of the window)
-  float fuel;
+  float nitrox;
   int gear;
   int max_gear;
   bool will_colide;
