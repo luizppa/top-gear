@@ -5,6 +5,7 @@ ALLEGRO_SAMPLE *COLLISION_SOUND = NULL;
 ALLEGRO_SAMPLE *READY_SOUND = NULL;
 ALLEGRO_SAMPLE *GO_SOUND = NULL;
 ALLEGRO_SAMPLE *CAR_ENGINE_SOUND = NULL;
+ALLEGRO_SAMPLE *CAR_BOOST_SOUND = NULL;
 ALLEGRO_SAMPLE *MENU_MOVE_SOUND = NULL;
 ALLEGRO_SAMPLE *MENU_SELECT_SOUND = NULL;
 ALLEGRO_SAMPLE *MENU_BACK_SOUND = NULL;
@@ -17,6 +18,7 @@ void init_sounds(){
   READY_SOUND = al_load_sample("assets/sounds/ready.ogg");
   GO_SOUND = al_load_sample("assets/sounds/go.ogg");
   CAR_ENGINE_SOUND = al_load_sample("assets/sounds/car_engine.ogg");
+  CAR_BOOST_SOUND = al_load_sample("assets/sounds/boost.ogg");
   MENU_MOVE_SOUND = al_load_sample("assets/sounds/menu_move.ogg");
   MENU_SELECT_SOUND = al_load_sample("assets/sounds/menu_select.ogg");
   MENU_BACK_SOUND = al_load_sample("assets/sounds/menu_back.ogg");
@@ -103,6 +105,7 @@ void destroy_sounds(){
   al_destroy_audio_stream(music);
   al_destroy_sample(COLLISION_SOUND);
   al_destroy_sample(CAR_ENGINE_SOUND);
+  al_destroy_sample(CAR_BOOST_SOUND);
   al_destroy_sample(READY_SOUND);
   al_destroy_sample(GO_SOUND);
   al_destroy_sample(MENU_MOVE_SOUND);

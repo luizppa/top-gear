@@ -4,6 +4,7 @@
 
 bool finished = false;
 bool engine_running = false;
+bool boosting = false;
 int map; // The map code
 int placement = 1; // Player race position
 int oponent_count; // Number of AI controlled oponents on the game
@@ -328,11 +329,21 @@ void move(){
   // Boost
   if(al_key_down(&key_state, ALLEGRO_KEY_LSHIFT)){
     if(player.nitrox > 33.333/60.0){
+      if(!boosting) {
+        play_sample(CAR_BOOST_SOUND);
+        boosting = true;
+      }
       player.speed += (15.0/60.0);
       player.nitrox = max(0, player.nitrox-(33.333/60.0));
     }
+    else if(boosting){
+      boosting = false;
+    }
   }
   else{
+    if(boosting){
+      boosting = false;
+    }
     if(player.nitrox < 100.0){
       player.nitrox = min(100.0, player.nitrox+(4.0/60.0));
     }
@@ -389,6 +400,7 @@ void restart(){
   position = (sw/2)-player.position_x;
   player.gear = 1;
   player.speed = 0.0;
+  player.nitrox = 100.0;
   for (int i = 0; i < 5; i++) {
     objects[i].position_x = -(street_width/2)-120;
     objects[i].position_y = i*120;
@@ -672,7 +684,6 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
         if(engine_running){
           stop_sample(player_engine_sound_instance);
-          engine_running = false;
         }
         al_stop_timer(timer);
         result = pause();
@@ -680,15 +691,19 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
         set_music_volume(music, 1.0);
         if(result == -1 || result == 4) return result;
         if(result == 0) {
-          player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
-          set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
-          engine_running = true;
+          if(engine_running){
+            player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+            set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
+          }
           draw_game();
         }
       }
     }
     // Quit game
-    else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
+    else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+      if(engine_running && player_engine_sound_instance) stop_sample(player_engine_sound_instance);
+      return 4;
+    }
     // Each 1/fps seconds
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
       result = update();
@@ -698,9 +713,10 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
       }
       else if(result == 1){
         finished = true;
+        boosting = false;
         race_time = al_get_timer_count(timer)/fps;
         deaccelerate_until_stop();
-        // if(tournament_cars == NULL) free(oponents);
+        if(tournament_cars == NULL) free(oponents);
         if(single_match){
           result = show_leaderboard();
           clear_game();

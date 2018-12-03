@@ -483,8 +483,8 @@ void flip_map_selection(int op, bool go_right){
     al_wait_for_event(queue, &ev);
     if(ev.type == ALLEGRO_EVENT_TIMER){
       for (int i = 0; i < 4; i++) {
-        if(go_right) positions[i] -= sw/60;
-        else positions[i] += sw/60;
+        if(go_right) positions[i] -= (sw*1.3)/60;
+        else positions[i] += (sw*1.3)/60;
       }
       clear_display(BLUE, false);
       draw_text(PIXEL_28, YELLOW, sw/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
