@@ -5,10 +5,12 @@
 bool finished = false;
 bool engine_running = false;
 bool boosting = false;
+bool best_time = false;
 int map; // The map code
 int placement = 1; // Player race position
 int oponent_count; // Number of AI controlled oponents on the game
 int object_count = 0; // Number of static objects on the map
+int record = 0;
 float position; // The road center x coordinate on the screen
 float street_width = 1300.0; // Street base width
 float street_length = 500.0; // Street visible spam
@@ -379,6 +381,7 @@ int update(){
   else return 0;
 }
 
+// Reinicia a corrida
 void restart(){
   restart_positions(oponents, oponent_count);
   quick_sort_cars(cars, oponent_count+1);
@@ -555,6 +558,7 @@ int show_leaderboard(){
   }
   clear_display(BLUE, false);
   al_draw_textf(PIXEL_28, ORANGE, 30, 10, ALLEGRO_ALIGN_LEFT, "RACE DURATION: %d min %.0f sec", race_time_minutes, race_time-(race_time_minutes*60));
+  if(best_time) al_draw_text(PIXEL_28, YELLOW, sw-30, 10, ALLEGRO_ALIGN_RIGHT, "NEW BEST TIME!");
   for (int i = 0; i < oponent_count+1; i++) {
     if(i%2 == 1) al_draw_textf(PIXEL_28, YELLOW, (sw/2)+30, ((i)*28)+38, ALLEGRO_ALIGN_LEFT, "%d: %s", i+1, cars[oponent_count-i]->name);
     else al_draw_textf(PIXEL_28, YELLOW, 30, ((i+1)*28)+38, ALLEGRO_ALIGN_LEFT, "%d: %s", i+1, cars[oponent_count-i]->name);
@@ -583,6 +587,9 @@ int show_leaderboard(){
 
 // Setup game environment
 void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_match){
+  FILE *save = fopen("saves/record.tg", "r");
+  fscanf(save, "%d", &record);
+  fclose(save);
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
@@ -667,6 +674,7 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
   int result;
   map = choosen_map;
   oponent_count = oponents_amount;
+  if(single_match) best_time = false;
 
   setup(player_texture, tournament_cars, single_match);
 
@@ -680,6 +688,10 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
       if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
       // Gear down
       else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
+      else if(ev.keyboard.keycode == ALLEGRO_KEY_R){
+        int new_position = rand()%(int)(street_width + 1);
+        position = (float)new_position;
+      }
       // Pause
       if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
         if(engine_running){
@@ -715,6 +727,13 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
         finished = true;
         boosting = false;
         race_time = al_get_timer_count(timer)/fps;
+        if(al_get_timer_count(timer) < record){
+          best_time = true;
+          record = al_get_timer_count(timer);
+          FILE *save = fopen("saves/record.tg", "w");
+          fprintf(save, "%d", record);
+          fclose(save);
+        }
         deaccelerate_until_stop();
         if(tournament_cars == NULL) free(oponents);
         if(single_match){
@@ -732,6 +751,7 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
 int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
   CAR *tournament_cars = (CAR*) calloc(oponents_amount, sizeof(CAR));
   int car_type, car_color, op;
+  best_time = false;
   for (int i = 0; i < oponents_amount; i++) {
     car_type = (rand()%4)+1;
     car_color = rand()%7;
