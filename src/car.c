@@ -1,6 +1,6 @@
-#include "car.h"
-#include "utils.h"
-#include "environment.h"
+#include "../include/car.h"
+#include "../include/utils.h"
+#include "../include/environment.h"
 
 // Return a player car
 CAR new_car(ALLEGRO_BITMAP* texture){

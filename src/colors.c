@@ -1,4 +1,4 @@
-#include "colors.h"
+#include "../include/colors.h"
 
 // Predefined colors
 ALLEGRO_COLOR BLACK;

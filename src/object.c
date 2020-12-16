@@ -1,5 +1,5 @@
-#include "object.h"
-#include "environment.h"
+#include "./include/object.h"
+#include "./include/environment.h"
 
 OBJECT new_object(float x, float y, ALLEGRO_BITMAP* texture, bool collidable){
   OBJECT object;

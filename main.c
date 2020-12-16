@@ -11,8 +11,8 @@
  *    Author: Luiz Philippe (https://github.com/luizppa & https://luizppa.com)
  */
 
-#include "helpers/environment.h"
-#include "helpers/menus.h"
+#include "include/environment.h"
+#include "include/menus.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,50 +32,6 @@
 #include <allegro5/allegro_ttf.h>
 
 // Initialize environment
-int init();
-// Clear environment
-void deinit();
-
-int main() {
-  init();
-  int op;
-  while (true) {
-    ALLEGRO_EVENT ev;
-    al_wait_for_event(queue, &ev);
-    // Events handling
-    // Close window
-    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      break;
-    }
-    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-      // Quit game
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-        deinit();
-        return 0;
-      }
-      // Go to main menu
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
-        play_sample(MENU_SELECT_SOUND);
-        while(true){
-          op = main_menu();
-          // Quit game
-          if(op == 4){
-            deinit();
-            return 0;
-          }
-          // Back to title
-          else if(op == -1){
-            draw_title();
-            break;
-          }
-        }
-      }
-    }
-  }
-  deinit();
-  return 0;
-}
-
 int init() {
   srand(time(NULL));
   // Instaling plugins
@@ -122,3 +78,44 @@ void deinit() {
   destroy_environment();
   clearenv();
 }
+
+int main() {
+  init();
+  int op;
+  while (true) {
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(queue, &ev);
+    // Events handling
+    // Close window
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+      break;
+    }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+      // Quit game
+      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+        deinit();
+        return 0;
+      }
+      // Go to main menu
+      else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER){
+        play_sample(MENU_SELECT_SOUND);
+        while(true){
+          op = main_menu();
+          // Quit game
+          if(op == 4){
+            deinit();
+            return 0;
+          }
+          // Back to title
+          else if(op == -1){
+            draw_title();
+            break;
+          }
+        }
+      }
+    }
+  }
+  deinit();
+  return 0;
+}
+END_OF_MAIN();

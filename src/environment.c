@@ -1,4 +1,4 @@
-#include "environment.h"
+#include "./include/environment.h"
 
 // Setings
 float fps = 60.0; // Not a good ideia to change this, probably

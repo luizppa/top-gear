@@ -2,3 +2,4 @@
 **/*.zip
 top_gear
 **/*.out
+**/allegro-5.0.10

@@ -1,4 +1,4 @@
-#include "display.h"
+#include "../include/display.h"
 
 // Screen dimensions
 int sw = 1300;

@@ -14,7 +14,7 @@ $ sudo apt-get update
 $ sudo apt-get install liballegro5-dev
 ```
 
-Once you have allegro installed, clone the project into your computer. On the root directory you will find a ```compile``` file which contains the script you need to compile the code (it is possible that I will make a makefile for this in the future, but it is not likely, feel free to pull a request if you are feeling generous). With the code compiled run the executable ```top_gear.tp``` output file to start the game.
+Once you have allegro installed, clone the project into your computer. On the root directory you will find a ```compile``` file which contains the script you need to compile the code (~~it is possible that I will make a makefile for this in the future, but it is not likely, feel free to pull a request if you are feeling generous~~ it turns out I did put up a makefile). With the code compiled run the executable ```top_gear.tp``` output file to start the game.
 
 ## Contribute
 Bug reports, suggestions (please [create an issue](https://github.com/LuizPPA/TopGear/issues/new)) and pull requests are welcome.
