@@ -1,7 +1,7 @@
-#include "./include/menus.h"
-#include "./include/game.h"
-#include "./include/sounds.h"
-#include "./include/environment.h"
+#include "../include/menus.h"
+#include "../include/game.h"
+#include "../include/sounds.h"
+#include "../include/environment.h"
 
 ALLEGRO_COLOR colors[7];
 

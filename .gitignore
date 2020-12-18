@@ -1,5 +1,10 @@
-**/*.tp
+**/*.top-gear
 **/*.zip
-top_gear
+top-gear
 **/*.out
-**/allegro-5.0.10
+**/allegro
+build/*
+!build/.gitkeep
+
+# Both windows and linux makefile are listed
+makefile

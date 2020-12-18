@@ -68,6 +68,7 @@ int init() {
 
   // Title screen
   draw_title();
+  return 0;
 
 }
 
@@ -118,4 +119,3 @@ int main() {
   deinit();
   return 0;
 }
-END_OF_MAIN();

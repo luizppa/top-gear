@@ -1,4 +1,4 @@
-#include "./include/environment.h"
+#include "../include/environment.h"
 
 // Setings
 float fps = 60.0; // Not a good ideia to change this, probably
@@ -24,7 +24,7 @@ void init_environment(){
     printf("Install failed.\n");
     exit(2);
   }
-  if (!al_init_font_addon() || !al_init_ttf_addon() || !al_init_acodec_addon() || !al_init_video_addon() || !al_init_image_addon() || !al_init_primitives_addon()) {
+  if (!al_init_font_addon() || !al_init_ttf_addon() || !al_init_acodec_addon() || !al_init_image_addon() || !al_init_primitives_addon()) {
     printf("Addon init failed.\n");
     exit(5);
   }

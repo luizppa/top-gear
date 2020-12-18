@@ -1,4 +1,4 @@
-#include "./include/fonts.h"
+#include "../include/fonts.h"
 
 ALLEGRO_FONT* DISKUN_60;
 ALLEGRO_FONT* DISKUN_80;

@@ -1,4 +1,4 @@
-#include "./include/game.h"
+#include "../include/game.h"
 
 #include <time.h>
 
@@ -521,9 +521,6 @@ int deaccelerate_until_stop(){
 
 // Show match leaderboards
 int show_leaderboard(){
-  char result[50];
-  char duration[50];
-  char competitor[50];
   float landscape_position = 0.0;
   bool going_right = true;
   int race_time_minutes = (int)(race_time/60);
@@ -583,6 +580,7 @@ int show_leaderboard(){
     // Quit game
     else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
   }
+  return 0;
 }
 
 // Setup game environment

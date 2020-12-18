@@ -1,6 +1,6 @@
-#include "./include/utils.h"
+#include "../include/utils.h"
 
-char names[50][] = {"Jack", "Bruce", "Hammond", "Alice", "Ana", "Vincent", "Robert", "Patrick", "Beatrice", "Viktor", "Gregory", "Mordecai", "Marjore", "Otis", "Damian"};
+char* names[50] = {"Jack", "Bruce", "Hammond", "Alice", "Ana", "Vincent", "Robert", "Patrick", "Beatrice", "Viktor", "Gregory", "Mordecai", "Marjore", "Otis", "Damian"};
 
 // Returns the biggest number in [a, b]
 float max(float a, float b){

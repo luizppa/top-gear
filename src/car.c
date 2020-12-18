@@ -108,6 +108,8 @@ float max_speed(int gear){
       return 210.0;
     case 6:
       return 290.0;
+    default:
+      return 0.0;
   }
 }
 
@@ -138,6 +140,8 @@ float speed_increase(int gear, float speed){
     case 6:
       if(speed > 0.8*max_speed(gear-1)) return 8.6/fps;
       else return 0.4*speed_increase(gear-1, speed);
+    default:
+      return 0.0;
   }
 }
 
@@ -180,7 +184,7 @@ CAR** quick_sort_helper(CAR** cars, int first, int last){
     quick_sort_helper(cars, first, split_point-1);
     quick_sort_helper(cars, split_point+1, last);
   }
-  else return cars;
+  return cars;
 }
 
 // Sort the cars array based on their Y position

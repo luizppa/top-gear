@@ -252,6 +252,7 @@ ALLEGRO_BITMAP* get_car(int car, int color){
       }
       break;
   }
+  return MAVERICK_BLACK_BITMAP;
 }
 
 // Free pointers

@@ -1,5 +1,5 @@
-#include "./include/sounds.h"
-#include "./include/environment.h"
+#include "../include/sounds.h"
+#include "../include/environment.h"
 
 ALLEGRO_SAMPLE *COLLISION_SOUND = NULL;
 ALLEGRO_SAMPLE *READY_SOUND = NULL;

@@ -1,0 +1,38 @@
+CC=gcc
+CFLAGS=-Wall
+
+TARGET_NAME=./top-gear
+BUILD_PATH=./build
+SOURCE_PATH=./src
+LIB_PATH=./include
+OUTPUT_PATH=./output
+
+SOURCE_EXT := c
+SOURCES := $(shell find $(SOURCE_PATH) -path '*.$(SOURCE_EXT)')
+OBJECTS := $(patsubst $(SOURCE_PATH)/%,$(BUILD_PATH)/%,$(SOURCES:.$(SOURCE_EXT)=.o))
+
+ALLEGRO_PATH=./allegro
+ALLEGRO_LIBS=-lallegro_monolith-static -static -lallegro -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_image -lallegro_main -lallegro_memfile -lallegro_physfs -lallegro_primitives -lallegro_ttf -lallegro_font -lallegro
+ALLEGRO_CONFIG=$(ALLEGRO_LIBS)
+
+all: $(TARGET_NAME)
+
+$(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.h
+	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -o $@ $<
+
+$(TARGET_NAME): $(OBJECTS) main.c
+	$(CC) $(CFLAGS) $(ALLEGRO_CONFIG) -o $(TARGET_NAME) main.c $(OBJECTS)
+
+setup:
+	cp $(ALLEGRO_PATH)/bin/* $(BUILD_PATH)/
+	pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_color-5 allegro_dialog-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_memfile-5 allegro_physfs-5 allegro_primitives-5 allegro_ttf-5 allegro_video-5
+
+run:
+	$(TARGET_NAME)
+
+clean:
+	rm -rf $(BUILD_PATH)/*
+	rm $(TARGET_NAME)
+
+mem:
+	valgrind --leak-check=full --show-leak-kinds=all $(TARGET_NAME) > ./output/mem.log

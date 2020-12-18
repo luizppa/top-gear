@@ -1,4 +1,4 @@
-#include "./include/maps.h"
+#include "../include/maps.h"
 
 /*
   maps:
