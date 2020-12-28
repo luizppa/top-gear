@@ -424,7 +424,7 @@ int pause(){
   set_music_volume(music, 0.6);
   while (true) {
     ALLEGRO_EVENT ev;
-    al_wait_for_event(queue, &ev);
+    al_wait_for_event(priority_queue, &ev);
     // Quit game
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       return 4;
@@ -698,6 +698,7 @@ void countdown(){
   }
   play_sample(GO_SOUND);
   al_flush_event_queue(queue);
+  al_flush_event_queue(priority_queue);
   al_set_timer_count(timer, 0);
 }
 
@@ -713,17 +714,21 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
   countdown();
   // Main loop
   while (true) {
+    while(!al_is_event_queue_empty(priority_queue)){
+      al_wait_for_event(priority_queue, &ev);
+      // Quit game
+      if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+        if(engine_running && player_engine_sound_instance) stop_sample(player_engine_sound_instance);
+        return 4;
+      }
+      // Handle input
+      else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
+        result = handle_key_events();
+      }
+    }
     al_wait_for_event(queue, &ev);
-    // Quit game
-    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-      if(engine_running && player_engine_sound_instance) stop_sample(player_engine_sound_instance);
-      return 4;
-    }
-    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
-      result = handle_key_events();
-    }
     // Each 1/fps seconds
-    else if(ev.type == ALLEGRO_EVENT_TIMER) {
+    if(ev.type == ALLEGRO_EVENT_TIMER) {
       al_flush_event_queue(queue);
       result = update();
       if(result == -1){

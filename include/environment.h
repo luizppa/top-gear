@@ -20,6 +20,7 @@ extern float movement_speed;
 
 extern ALLEGRO_DISPLAY* display;
 extern ALLEGRO_EVENT_QUEUE* queue;
+extern ALLEGRO_EVENT_QUEUE* priority_queue;
 extern ALLEGRO_TIMER* timer;
 extern ALLEGRO_KEYBOARD_STATE key_state;
 
