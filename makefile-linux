@@ -1,8 +1,9 @@
-CC=gcc
-CFLAGS=-Wall
+CC=g++
+STD=c++11
+CFLAGS=-W --std=$(STD) -Wno-write-strings
 
-TARGET_NAME=./top-gear
 BUILD_PATH=./build
+TARGET_NAME=$(BUILD_PATH)/top-gear
 SOURCE_PATH=./src
 LIB_PATH=./include
 OUTPUT_PATH=./output
@@ -12,13 +13,13 @@ SOURCES := $(shell find $(SOURCE_PATH) -path '*.$(SOURCE_EXT)')
 OBJECTS := $(patsubst $(SOURCE_PATH)/%,$(BUILD_PATH)/%,$(SOURCES:.$(SOURCE_EXT)=.o))
 
 ALLEGRO_PATH=./allegro
-ALLEGRO_LIBS=-lallegro_monolith-static -static -lallegro -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_image -lallegro_main -lallegro_memfile -lallegro_physfs -lallegro_primitives -lallegro_ttf -lallegro_font -lallegro
+ALLEGRO_LIBS=-lallegro -lallegro_acodec -lallegro_audio -lallegro_color -lallegro_dialog -lallegro_image -lallegro_main -lallegro_memfile -lallegro_physfs -lallegro_primitives -lallegro_ttf -lallegro_font
 ALLEGRO_CONFIG=$(ALLEGRO_LIBS)
 
 all: $(TARGET_NAME)
 
 $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.h
-	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -o $@ $<
+	$(CC) -c $(CFLAGS) -lm $(ALLEGRO_CONFIG) -o $@ $<
 
 $(TARGET_NAME): $(OBJECTS) main.c
 	$(CC) $(CFLAGS) $(ALLEGRO_CONFIG) -o $(TARGET_NAME) main.c $(OBJECTS)

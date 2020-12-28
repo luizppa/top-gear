@@ -1,6 +1,6 @@
 CC=g++
 STD=c++11
-CFLAGS=-std=$(STD)
+CFLAGS=-W --std=$(STD) -Wno-write-strings
 
 TARGET_NAME=./top-gear
 BUILD_PATH=./build
@@ -23,13 +23,13 @@ ALEGRO_MONOLITH=$(ALLEGRO_PATH)/lib/liballegro-5.0.10-monolith-mt.a
 all: $(TARGET_NAME)
 
 $(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.h
-	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -o $@ $<
+	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -lm -o $@ $<
 
 $(TARGET_NAME): $(OBJECTS) main.c
-	$(CC) $(CFLAGS) -o $(TARGET_NAME) main.c $(OBJECTS) $(ALEGRO_MONOLITH)
+	$(CC) $(CFLAGS) -o $(BUILD_PATH)$(TARGET_NAME) main.c $(OBJECTS) $(ALEGRO_MONOLITH)
 
 setup:
 	cp $(ALLEGRO_PATH)/bin/* $(BUILD_PATH)/
 
 run:
-	$(TARGET_NAME)
+	$(BUILD_PATH)$(TARGET_NAME)
