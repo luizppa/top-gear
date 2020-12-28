@@ -4,10 +4,10 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-#define NINTENDO_FONT     "assets/fonts/nintendo.ttf"
-#define PRESS_START_FONT  "assets/fonts/press_start.ttf"
-#define PIXEL_FONT        "assets/fonts/pixel.otf"
-#define DISKUN_FONT       "assets/fonts/diskun.ttf"
+#define NINTENDO_FONT     "../assets/fonts/nintendo.ttf"
+#define PRESS_START_FONT  "../assets/fonts/press_start.ttf"
+#define PIXEL_FONT        "../assets/fonts/pixel.otf"
+#define DISKUN_FONT       "../assets/fonts/diskun.ttf"
 
 extern ALLEGRO_FONT* DISKUN_60;
 extern ALLEGRO_FONT* DISKUN_80;

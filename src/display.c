@@ -68,64 +68,64 @@ ALLEGRO_BITMAP *MAVERICK_YELLOW_BITMAP = NULL;
 // Initialize bitmaps
 void init_bitmaps(){
   // Miscelanious
-  GAME_TITLE = al_load_bitmap("assets/images/misc/logo.png");
-  GAME_ICON = al_load_bitmap("assets/icons/top-gear-icon.jpg");
-  FINISH_LINE = al_load_bitmap("assets/images/misc/finish.png");
-  ROAD_SIGN = al_load_bitmap("assets/images/misc/road_sign_left.png");
-  LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("assets/images/misc/road.png");
-  ROCK_BITMAP = al_load_bitmap("assets/images/misc/rock_1.png");
-  TIRES_1_BITMAP = al_load_bitmap("assets/images/misc/tires_1.png");
-  TIRES_2_BITMAP = al_load_bitmap("assets/images/misc/tires_2.png");
-  BOX_1_BITMAP = al_load_bitmap("assets/images/misc/box_1.png");
-  BOX_2_BITMAP = al_load_bitmap("assets/images/misc/box_2.png");
+  GAME_TITLE = al_load_bitmap("../assets/images/misc/logo.png");
+  GAME_ICON = al_load_bitmap("../assets/icons/top-gear-icon.jpg");
+  FINISH_LINE = al_load_bitmap("../assets/images/misc/finish.png");
+  ROAD_SIGN = al_load_bitmap("../assets/images/misc/road_sign_left.png");
+  LAS_VEGAS_ROAD_BITMAP = al_load_bitmap("../assets/images/misc/road.png");
+  ROCK_BITMAP = al_load_bitmap("../assets/images/misc/rock_1.png");
+  TIRES_1_BITMAP = al_load_bitmap("../assets/images/misc/tires_1.png");
+  TIRES_2_BITMAP = al_load_bitmap("../assets/images/misc/tires_2.png");
+  BOX_1_BITMAP = al_load_bitmap("../assets/images/misc/box_1.png");
+  BOX_2_BITMAP = al_load_bitmap("../assets/images/misc/box_2.png");
 
   // Landscapes
-  LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_landscape.png");
-  LAS_VEGAS_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/las_vegas_icon.png");
-  HIROSHIMA_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/hiroshima_landscape.png");
-  HIROSHIMA_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/hiroshima_icon.png");
-  BORDEAUX_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/bordeaux_landscape.png");
-  BORDEAUX_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/bordeaux_icon.png");
-  FRANKFURT_LANDSCAPE_BITMAP = al_load_bitmap("assets/images/landscapes/frankfurt_landscape.png");
-  FRANKFURT_ICON_BITMAP = al_load_bitmap("assets/images/landscapes/frankfurt_icon.png");
+  LAS_VEGAS_LANDSCAPE_BITMAP = al_load_bitmap("../assets/images/landscapes/las_vegas_landscape.png");
+  LAS_VEGAS_ICON_BITMAP = al_load_bitmap("../assets/images/landscapes/las_vegas_icon.png");
+  HIROSHIMA_LANDSCAPE_BITMAP = al_load_bitmap("../assets/images/landscapes/hiroshima_landscape.png");
+  HIROSHIMA_ICON_BITMAP = al_load_bitmap("../assets/images/landscapes/hiroshima_icon.png");
+  BORDEAUX_LANDSCAPE_BITMAP = al_load_bitmap("../assets/images/landscapes/bordeaux_landscape.png");
+  BORDEAUX_ICON_BITMAP = al_load_bitmap("../assets/images/landscapes/bordeaux_icon.png");
+  FRANKFURT_LANDSCAPE_BITMAP = al_load_bitmap("../assets/images/landscapes/frankfurt_landscape.png");
+  FRANKFURT_ICON_BITMAP = al_load_bitmap("../assets/images/landscapes/frankfurt_icon.png");
 
   // Cars
   // Octane
-  OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("assets/images/cars/octane_icon.png");
-  OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_blue.png");
-  OCTANE_ZSR_RED_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_red.png");
-  OCTANE_ZSR_GREEN_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_green.png");
-  OCTANE_ZSR_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_purple.png");
-  OCTANE_ZSR_GREY_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_grey.png");
-  OCTANE_ZSR_BLACK_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_black.png");
-  OCTANE_ZSR_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/octane_zsr_yellow.png");
+  OCTANE_ZSR_ICON_BITMAP = al_load_bitmap("../assets/images/cars/octane_icon.png");
+  OCTANE_ZSR_BLUE_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_blue.png");
+  OCTANE_ZSR_RED_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_red.png");
+  OCTANE_ZSR_GREEN_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_green.png");
+  OCTANE_ZSR_PURPLE_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_purple.png");
+  OCTANE_ZSR_GREY_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_grey.png");
+  OCTANE_ZSR_BLACK_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_black.png");
+  OCTANE_ZSR_YELLOW_BITMAP = al_load_bitmap("../assets/images/cars/octane_zsr_yellow.png");
   // Dominus
-  DOMINUS_GT_ICON_BITMAP = al_load_bitmap("assets/images/cars/dominus_icon.png");
-  DOMINUS_GT_BLUE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_blue.png");
-  DOMINUS_GT_RED_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_red.png");
-  DOMINUS_GT_GREEN_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_green.png");
-  DOMINUS_GT_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_purple.png");
-  DOMINUS_GT_GREY_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_grey.png");
-  DOMINUS_GT_BLACK_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_black.png");
-  DOMINUS_GT_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/dominus_gt_yellow.png");
+  DOMINUS_GT_ICON_BITMAP = al_load_bitmap("../assets/images/cars/dominus_icon.png");
+  DOMINUS_GT_BLUE_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_blue.png");
+  DOMINUS_GT_RED_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_red.png");
+  DOMINUS_GT_GREEN_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_green.png");
+  DOMINUS_GT_PURPLE_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_purple.png");
+  DOMINUS_GT_GREY_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_grey.png");
+  DOMINUS_GT_BLACK_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_black.png");
+  DOMINUS_GT_YELLOW_BITMAP = al_load_bitmap("../assets/images/cars/dominus_gt_yellow.png");
   // Roadhog
-  ROADHOG_ICON_BITMAP = al_load_bitmap("assets/images/cars/roadhog_icon.png");
-  ROADHOG_BLUE_BITMAP = al_load_bitmap("assets/images/cars/roadhog_blue.png");
-  ROADHOG_RED_BITMAP = al_load_bitmap("assets/images/cars/roadhog_red.png");
-  ROADHOG_GREEN_BITMAP = al_load_bitmap("assets/images/cars/roadhog_green.png");
-  ROADHOG_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/roadhog_purple.png");
-  ROADHOG_GREY_BITMAP = al_load_bitmap("assets/images/cars/roadhog_grey.png");
-  ROADHOG_BLACK_BITMAP = al_load_bitmap("assets/images/cars/roadhog_black.png");
-  ROADHOG_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/roadhog_yellow.png");
+  ROADHOG_ICON_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_icon.png");
+  ROADHOG_BLUE_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_blue.png");
+  ROADHOG_RED_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_red.png");
+  ROADHOG_GREEN_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_green.png");
+  ROADHOG_PURPLE_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_purple.png");
+  ROADHOG_GREY_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_grey.png");
+  ROADHOG_BLACK_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_black.png");
+  ROADHOG_YELLOW_BITMAP = al_load_bitmap("../assets/images/cars/roadhog_yellow.png");
   // Maverick
-  MAVERICK_ICON_BITMAP = al_load_bitmap("assets/images/cars/maverick_icon.png");
-  MAVERICK_BLUE_BITMAP = al_load_bitmap("assets/images/cars/maverick_blue.png");
-  MAVERICK_RED_BITMAP = al_load_bitmap("assets/images/cars/maverick_red.png");
-  MAVERICK_GREEN_BITMAP = al_load_bitmap("assets/images/cars/maverick_green.png");
-  MAVERICK_PURPLE_BITMAP = al_load_bitmap("assets/images/cars/maverick_purple.png");
-  MAVERICK_GREY_BITMAP = al_load_bitmap("assets/images/cars/maverick_grey.png");
-  MAVERICK_BLACK_BITMAP = al_load_bitmap("assets/images/cars/maverick_black.png");
-  MAVERICK_YELLOW_BITMAP = al_load_bitmap("assets/images/cars/maverick_yellow.png");
+  MAVERICK_ICON_BITMAP = al_load_bitmap("../assets/images/cars/maverick_icon.png");
+  MAVERICK_BLUE_BITMAP = al_load_bitmap("../assets/images/cars/maverick_blue.png");
+  MAVERICK_RED_BITMAP = al_load_bitmap("../assets/images/cars/maverick_red.png");
+  MAVERICK_GREEN_BITMAP = al_load_bitmap("../assets/images/cars/maverick_green.png");
+  MAVERICK_PURPLE_BITMAP = al_load_bitmap("../assets/images/cars/maverick_purple.png");
+  MAVERICK_GREY_BITMAP = al_load_bitmap("../assets/images/cars/maverick_grey.png");
+  MAVERICK_BLACK_BITMAP = al_load_bitmap("../assets/images/cars/maverick_black.png");
+  MAVERICK_YELLOW_BITMAP = al_load_bitmap("../assets/images/cars/maverick_yellow.png");
 }
 
 // Returns the width of a car bitmap

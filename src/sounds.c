@@ -14,14 +14,14 @@ ALLEGRO_AUDIO_STREAM *music = NULL;
 
 // Initialize sound effects
 void init_sounds(){
-  COLLISION_SOUND = al_load_sample("assets/sounds/collision.ogg");
-  READY_SOUND = al_load_sample("assets/sounds/ready.ogg");
-  GO_SOUND = al_load_sample("assets/sounds/go.ogg");
-  CAR_ENGINE_SOUND = al_load_sample("assets/sounds/car_engine.ogg");
-  CAR_BOOST_SOUND = al_load_sample("assets/sounds/boost.ogg");
-  MENU_MOVE_SOUND = al_load_sample("assets/sounds/menu_move.ogg");
-  MENU_SELECT_SOUND = al_load_sample("assets/sounds/menu_select.ogg");
-  MENU_BACK_SOUND = al_load_sample("assets/sounds/menu_back.ogg");
+  COLLISION_SOUND = al_load_sample("../assets/sounds/collision.ogg");
+  READY_SOUND = al_load_sample("../assets/sounds/ready.ogg");
+  GO_SOUND = al_load_sample("../assets/sounds/go.ogg");
+  CAR_ENGINE_SOUND = al_load_sample("../assets/sounds/car_engine.ogg");
+  CAR_BOOST_SOUND = al_load_sample("../assets/sounds/boost.ogg");
+  MENU_MOVE_SOUND = al_load_sample("../assets/sounds/menu_move.ogg");
+  MENU_SELECT_SOUND = al_load_sample("../assets/sounds/menu_select.ogg");
+  MENU_BACK_SOUND = al_load_sample("../assets/sounds/menu_back.ogg");
 }
 
 // Play music from the beginning

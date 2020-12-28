@@ -11,14 +11,14 @@
   https://www.sounds-resource.com/snes/topgear3000/sound/773/ and
   https://audio.online-convert.com/convert-to-ogg for making this files possible
 */
-#define TITLE_MUSIC "assets/music/01_title.ogg"
-#define LAS_VEGAS_MUSIC "assets/music/02_las_vegas.ogg"
-#define HIROSHIMA_MUSIC "assets/music/03_hiroshima.ogg"
-#define BORDEAUX_MUSIC "assets/music/04_bordeaux.ogg"
-#define FRANKFURT_MUSIC "assets/music/05_frankfurt.ogg"
-#define QUALIFIED_MUSIC "assets/music/06_qualified.ogg"
-#define ENDING_MUSIC "assets/music/07_ending_theme.ogg"
-#define DISQUALIFIED_MUSIC "assets/music/08_disqualified.ogg"
+#define TITLE_MUSIC "../assets/music/01_title.ogg"
+#define LAS_VEGAS_MUSIC "../assets/music/02_las_vegas.ogg"
+#define HIROSHIMA_MUSIC "../assets/music/03_hiroshima.ogg"
+#define BORDEAUX_MUSIC "../assets/music/04_bordeaux.ogg"
+#define FRANKFURT_MUSIC "../assets/music/05_frankfurt.ogg"
+#define QUALIFIED_MUSIC "../assets/music/06_qualified.ogg"
+#define ENDING_MUSIC "../assets/music/07_ending_theme.ogg"
+#define DISQUALIFIED_MUSIC "../assets/music/08_disqualified.ogg"
 
 extern ALLEGRO_SAMPLE *COLLISION_SOUND;
 extern ALLEGRO_SAMPLE *READY_SOUND;

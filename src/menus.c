@@ -77,7 +77,8 @@ int main_menu(){
               break;
             // Configure options
             case 2:
-              op = options_menu(set_music(TITLE_MUSIC));
+              op = options_menu();
+              set_music(TITLE_MUSIC);
               break;
 
           }

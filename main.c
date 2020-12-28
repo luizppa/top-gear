@@ -1,4 +1,6 @@
-/*         ______   ___    ___
+/*
+ *  Made with
+ *         ______   ___    ___
  *        /\  _  \ /\_ \  /\_ \
  *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
  *         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
@@ -8,11 +10,9 @@
  *                                           /\____/
  *                                           \_/__/
  *    By Elias Pschernig and Trent Gamblin.
+ *
  *    Author: Luiz Philippe (https://github.com/luizppa & https://luizppa.com)
  */
-
-#include "include/environment.h"
-#include "include/menus.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,11 +25,13 @@
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
-#include <allegro5/allegro_video.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+
+#include "include/environment.h"
+#include "include/menus.h"
 
 // Initialize environment
 int init() {
@@ -69,7 +71,6 @@ int init() {
   // Title screen
   draw_title();
   return 0;
-
 }
 
 // Clear environment
@@ -77,7 +78,6 @@ void deinit() {
   destroy_bitmaps();
   destroy_sounds();
   destroy_environment();
-  clearenv();
 }
 
 int main() {

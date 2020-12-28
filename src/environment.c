@@ -1,7 +1,7 @@
 #include "../include/environment.h"
 
 // Setings
-float fps = 60.0; // Not a good ideia to change this, probably
+float fps = 30.0; // Not a good ideia to change this, probably
 bool music_on = true; // Turn on game music
 bool sounds_on = true; // Turn off game music
 bool collisions = true; // Cars will colide
@@ -18,16 +18,15 @@ ALLEGRO_KEYBOARD_STATE key_state;
 void init_environment(){
   if (!al_init()) {
     printf("Allegro init failed.\n");
-    exit(1);
   }
   if (!al_install_audio() || !al_install_keyboard()) {
     printf("Install failed.\n");
-    exit(2);
   }
-  if (!al_init_font_addon() || !al_init_ttf_addon() || !al_init_acodec_addon() || !al_init_image_addon() || !al_init_primitives_addon()) {
-    printf("Addon init failed.\n");
-    exit(5);
-  }
+  al_init_font_addon();
+  al_init_ttf_addon();
+  al_init_acodec_addon();
+  al_init_image_addon();
+  al_init_primitives_addon();
 }
 
 // Configure sound assets

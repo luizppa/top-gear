@@ -330,13 +330,13 @@ void move(){
   }
   // Boost
   if(al_key_down(&key_state, ALLEGRO_KEY_LSHIFT)){
-    if(player.nitrox > 33.333/60.0){
+    if(player.nitrox > 33.333/fps){
       if(!boosting) {
         play_sample(CAR_BOOST_SOUND);
         boosting = true;
       }
-      player.speed += (15.0/60.0);
-      player.nitrox = max(0, player.nitrox-(33.333/60.0));
+      player.speed += (15.0/fps);
+      player.nitrox = max(0, player.nitrox-(33.333/fps));
     }
     else if(boosting){
       boosting = false;
@@ -347,7 +347,7 @@ void move(){
       boosting = false;
     }
     if(player.nitrox < 100.0){
-      player.nitrox = min(100.0, player.nitrox+(4.0/60.0));
+      player.nitrox = min(100.0, player.nitrox+(4.0/fps));
     }
   }
   // Break
@@ -374,7 +374,9 @@ int update(){
     }
   }
   // Update screen
+  // al_stop_timer(timer);
   draw_game();
+  // al_start_timer(timer);
   if(player.position_y >= track_length) {
     return 1;
   }
@@ -503,7 +505,7 @@ int deaccelerate_until_stop(){
       // Update screen
       draw_game();
       // Resume timer
-      al_resume_timer(timer);
+      al_start_timer(timer);
       set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
       if(engine_running && player.speed <= 0.0){
         stop_sample(player_engine_sound_instance);
@@ -585,7 +587,7 @@ int show_leaderboard(){
 
 // Setup game environment
 void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_match){
-  FILE *save = fopen("saves/record.tg", "r");
+  FILE *save = fopen("../saves/record.tg", "r");
   fscanf(save, "%d", &record);
   fclose(save);
   // Initialize environment
@@ -654,6 +656,37 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   position = (sw/2)-player.position_x;
 }
 
+int handle_key_events(){
+  int result;
+  // Gear up
+  if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
+  // Gear down
+  else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
+  // Reset position
+  else if(ev.keyboard.keycode == ALLEGRO_KEY_R){
+    int new_position = rand()%(int)(street_width + 1);
+    position = (float)new_position;
+  }
+  // Pause
+  if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+    if(engine_running){
+      stop_sample(player_engine_sound_instance);
+    }
+    al_stop_timer(timer);
+    result = pause();
+    al_start_timer(timer);
+    set_music_volume(music, 1.0);
+    if(result == -1 || result == 4) return result;
+    if(result == 0) {
+      if(engine_running){
+        player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+        set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
+      }
+      draw_game();
+    }
+  }
+}
+
 // Countdown to race start
 void countdown(){
   for (int i = 3; i > 0; i--) {
@@ -665,6 +698,7 @@ void countdown(){
   }
   play_sample(GO_SOUND);
   al_flush_event_queue(queue);
+  al_set_timer_count(timer, 0);
 }
 
 // Single match
@@ -675,47 +709,22 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
   if(single_match) best_time = false;
 
   setup(player_texture, tournament_cars, single_match);
-
+  
   countdown();
-  al_set_timer_count(timer, 0);
   // Main loop
   while (true) {
     al_wait_for_event(queue, &ev);
-    if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
-      // Gear up
-      if(ev.keyboard.keycode == ALLEGRO_KEY_E) gear_up(&player);
-      // Gear down
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) gear_down(&player);
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_R){
-        int new_position = rand()%(int)(street_width + 1);
-        position = (float)new_position;
-      }
-      // Pause
-      if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-        if(engine_running){
-          stop_sample(player_engine_sound_instance);
-        }
-        al_stop_timer(timer);
-        result = pause();
-        al_resume_timer(timer);
-        set_music_volume(music, 1.0);
-        if(result == -1 || result == 4) return result;
-        if(result == 0) {
-          if(engine_running){
-            player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
-            set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
-          }
-          draw_game();
-        }
-      }
-    }
     // Quit game
-    else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+    if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
       if(engine_running && player_engine_sound_instance) stop_sample(player_engine_sound_instance);
       return 4;
     }
+    else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
+      result = handle_key_events();
+    }
     // Each 1/fps seconds
     else if(ev.type == ALLEGRO_EVENT_TIMER) {
+      al_flush_event_queue(queue);
       result = update();
       if(result == -1){
         if(engine_running) stop_sample(player_engine_sound_instance);
