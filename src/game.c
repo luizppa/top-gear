@@ -1,6 +1,7 @@
 #include "../include/game.h"
 
 #include <time.h>
+#include <unistd.h>
 
 bool finished = false;
 bool engine_running = false;
@@ -587,9 +588,17 @@ int show_leaderboard(){
 
 // Setup game environment
 void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_match){
-  FILE *save = fopen("../saves/record.tg", "r");
-  fscanf(save, "%d", &record);
-  fclose(save);
+  if(access(SAVE_FILE, F_OK) == 0){
+    FILE *save = fopen(SAVE_FILE, "r");
+    fscanf(save, "%d", &record);
+    fclose(save);
+  }
+  else{
+    record = 0;
+    FILE *save = fopen(SAVE_FILE, "w");
+    fprintf(save, "%d", record);
+    fclose(save);
+  }
   // Initialize environment
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
@@ -729,7 +738,6 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
     al_wait_for_event(queue, &ev);
     // Each 1/fps seconds
     if(ev.type == ALLEGRO_EVENT_TIMER) {
-      al_flush_event_queue(queue);
       result = update();
       if(result == -1){
         if(engine_running) stop_sample(player_engine_sound_instance);
@@ -739,10 +747,10 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
         finished = true;
         boosting = false;
         race_time = al_get_timer_count(timer)/fps;
-        if(al_get_timer_count(timer) < record){
+        if(al_get_timer_count(timer) < record || record == 0){
           best_time = true;
           record = al_get_timer_count(timer);
-          FILE *save = fopen("saves/record.tg", "w");
+          FILE *save = fopen(SAVE_FILE, "w");
           fprintf(save, "%d", record);
           fclose(save);
         }

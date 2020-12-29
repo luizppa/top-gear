@@ -10,6 +10,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
+#define SAVE_FILE "../saves/record.tg"
+
 extern float fps;
 extern bool music_on;
 extern bool sounds_on;
