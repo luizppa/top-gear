@@ -8,3 +8,4 @@ build/*
 
 # Both windows and linux makefile are listed
 makefile
+saves/record.tg
