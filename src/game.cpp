@@ -22,10 +22,10 @@ float paralax = 1.3;
 double race_time;
 char* map_music_title;
 ALLEGRO_EVENT ev;
-CAR player;
-CAR* oponents;
-CAR** cars;
-OBJECT* objects;
+Car* player;
+Car** oponents;
+Car** cars;
+Object** objects;
 ALLEGRO_COLOR map_soil;
 ALLEGRO_BITMAP* map_landscape = NULL;
 ALLEGRO_SAMPLE_INSTANCE *player_engine_sound_instance = NULL;
@@ -34,17 +34,17 @@ void countdown();
 void clear_game();
 
 // Distance from the car wheels to the bottom of the screen
-float distance_from_bottom(CAR* oponent){
-  return oponent->position_y-player.position_y;
+float distance_from_bottom(Car* oponent){
+  return oponent->get_y() - player->get_y();
 }
 
 // Distance from the car wheels to static object
 float object_distance(int i){
-  return objects[i].position_y-player.position_y;
+  return objects[i]->get_y() - player->get_y();
 }
 
 // Verify if the car should be rendered
-bool is_car_on_sight(CAR* car){
+bool is_car_visible(Car* car){
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(car));
   float apparent_height = car->height*delta;
   return (distance_from_bottom(car) <= street_length-8 && distance_from_bottom(car) >= -apparent_height-(20*delta));
@@ -65,39 +65,29 @@ bool is_car_on_track(){
 
 // Draw the scenario
 void draw_track(){
-  // Street center
-  if(debug) al_draw_filled_circle(position, sh-60, 1, BLUE);
-  // Landscape
   al_draw_bitmap(map_landscape, -(2600/2)+(position/paralax), 0, 0);
-  // Road
   al_draw_bitmap(LAS_VEGAS_ROAD_BITMAP, position-(street_width/2), sh-street_length, 0);
   if(debug){
-    // Left road border
+    al_draw_filled_circle(position, sh-60, 1, BLUE);
     al_draw_line(position-(street_width/2), sh, position-((street_width/view_angle)/2), sh-street_length, BLUE, 1);
-    // Right road border
     al_draw_line(position+(street_width/2), sh, position+((street_width/view_angle)/2), sh-street_length, BLUE, 1);
   }
 }
 
 // Draw player's car
 void draw_player(){
-  // Car texture
   al_draw_bitmap(player.texture, (sw/2)-(player.width/2), sh-player.height, 0);
   if(debug) {
-    // Car boundaries
     al_draw_rectangle((sw/2)-(player.width/2), sh-player.height, (sw/2)+(player.width/2), sh, BLUE, 1);
-    // Car center
     al_draw_filled_circle(sw/2, sh-(player.height/2), 1, BLUE);
-    // Sideline
     al_draw_line(player.screen_position_x-(player.width/2), 0, player.screen_position_x-(player.width/2), sh, BLUE, 1);
     al_draw_line(player.screen_position_x+(player.width/2), 0, player.screen_position_x+(player.width/2), sh, BLUE, 1);
-    // Center line
     al_draw_line(0, sh-(player.height/2), sw, sh-(player.height/2), BLUE, 1);
   }
 }
 
 // Draw oponent's cars
-void draw_oponent(CAR* oponent){
+void draw_oponent(Car* oponent){
   float distance = distance_from_bottom(oponent);
   // Perspective rate
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance);
@@ -106,7 +96,6 @@ void draw_oponent(CAR* oponent){
   oponent->screen_position_x = position+oponent->position_x;
   oponent->screen_position_y = sh-distance-(oponent->height/2);
   float height_variation = oponent->height-oponent->apparent_height;
-  // Oponent name
   ALLEGRO_FONT *name_font = font(PIXEL_FONT, 14*delta);
   draw_text(name_font, WHITE, position+(oponent->position_x*delta), sh-distance-(20*delta)-oponent->height+height_variation, ALLEGRO_ALIGN_CENTRE, oponent->name, false);
   al_destroy_font(name_font);
@@ -127,7 +116,7 @@ void draw_oponent(CAR* oponent){
 
 // Draw a static object to the screen
 void draw_object(int i){
-  OBJECT* object = &objects[i];
+  Object* object = &objects[i];
   float distance = object_distance(i);
   // Perspective rate
   float delta = get_delta(street_width, street_width/view_angle, street_length, distance);
@@ -304,7 +293,7 @@ void move(){
   // Accelerating
   if (al_key_down(&key_state, ALLEGRO_KEY_W)){
     if(!engine_running){
-      player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+      player_engine_sound_instance = continuously_play_sample(Car_ENGINE_SOUND);
       engine_running = true;
     }
     set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
@@ -333,7 +322,7 @@ void move(){
   if(al_key_down(&key_state, ALLEGRO_KEY_LSHIFT)){
     if(player.nitrox > 33.333/fps){
       if(!boosting) {
-        play_sample(CAR_BOOST_SOUND);
+        play_sample(Car_BOOST_SOUND);
         boosting = true;
       }
       player.speed += (15.0/fps);
@@ -587,7 +576,7 @@ int show_leaderboard(){
 }
 
 // Setup game environment
-void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_match){
+void setup(ALLEGRO_BITMAP* player_texture, Car* tournament_cars, bool single_match){
   if(access(SAVE_FILE, F_OK) == 0){
     FILE *save = fopen(SAVE_FILE, "r");
     fscanf(save, "%d", &record);
@@ -603,8 +592,8 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
   int player_position = oponent_count+1;
   street_left_limit = (sw-street_width)/2;
   object_count = 30;
-  objects = (OBJECT*) malloc(object_count*sizeof(OBJECT));
-  cars = (CAR**) malloc((oponent_count+1)*sizeof(CAR*));
+  objects = (Object*) malloc(object_count*sizeof(Object));
+  cars = (Car**) malloc((oponent_count+1)*sizeof(Car*));
 
   // Initialize objects
   objects[object_count-1] = new_object(0, track_length, FINISH_LINE, false);
@@ -622,7 +611,7 @@ void setup(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, bool single_mat
     oponents = tournament_cars;
   }
   else{
-    oponents = (CAR*) malloc(oponent_count*sizeof(CAR));
+    oponents = (Car*) malloc(oponent_count*sizeof(Car));
     int car_type, car_color;
     for (int i = 0; i < oponent_count; i++) {
       car_type = (rand()%4)+1;
@@ -688,7 +677,7 @@ int handle_key_events(){
     if(result == -1 || result == 4) return result;
     if(result == 0) {
       if(engine_running){
-        player_engine_sound_instance = continuously_play_sample(CAR_ENGINE_SOUND);
+        player_engine_sound_instance = continuously_play_sample(Car_ENGINE_SOUND);
         set_sample_volume(player_engine_sound_instance, player.speed/max_speed(player.max_gear));
       }
       draw_game();
@@ -712,7 +701,7 @@ void countdown(){
 }
 
 // Single match
-int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amount, int choosen_map, bool single_match){
+int play(ALLEGRO_BITMAP* player_texture, Car* tournament_cars, int oponents_amount, int choosen_map, bool single_match){
   int result;
   map = choosen_map;
   oponent_count = oponents_amount;
@@ -769,7 +758,7 @@ int play(ALLEGRO_BITMAP* player_texture, CAR* tournament_cars, int oponents_amou
 }
 
 int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
-  CAR *tournament_cars = (CAR*) calloc(oponents_amount, sizeof(CAR));
+  Car *tournament_cars = (Car*) calloc(oponents_amount, sizeof(Car));
   int car_type, car_color, op;
   best_time = false;
   for (int i = 0; i < oponents_amount; i++) {

@@ -69,7 +69,7 @@ void Car::set_gear(int gear){
   if(gear > 0 && gear <= this->max_gear) this->gear = gear;
 }
 
-void Car::control_ia(Car** cars, OBJECT** objects, int car_count, int object_count, bool play_sounds){
+void Car::control_ia(Car** cars, Object** objects, int car_count, int object_count, bool play_sounds){
   float skill_rate = (0.05/12.0)*this->lvl;
   float delta_speed = speed_increase(car->gear, car->speed);
   if(collisions) {
@@ -124,7 +124,7 @@ int Car::get_gear_progress(){
 }
 
 // Returns true if car collided with eithar an object or another car (also impacts speed)
-bool Car::car_collided(Car** cars, OBJECT** objects, int car_count, int object_count){
+bool Car::car_collided(Car** cars, Object** objects, int car_count, int object_count){
   float relative_speed, distance;
   bool aligned;
   this->will_colide = false;
@@ -156,7 +156,7 @@ bool Car::car_collided(Car** cars, OBJECT** objects, int car_count, int object_c
   // Collision with objects
   for(int i = 0; i < object_count; i++){
     if(objects[i]->collidable){
-      distance = objects[i]->position_y - this->position_y;
+      distance = objects[i]->get_y(); - this->position_y;
       aligned = this->is_aligned_to(objects[i]);
       if(aligned){
         if (distance <= COLLISION_DISTANCE*2.5 && distance >= 0){
@@ -174,11 +174,11 @@ bool Car::car_collided(Car** cars, OBJECT** objects, int car_count, int object_c
 }
 
 // Returns true if the cars is horizontally aligned with the object
-bool Car::is_aligned_to(OBJECT* object){
+bool Car::is_aligned_to(Object* object){
   float car_x0 = this->screen_position_x - (this->width/2);
   float car_xf = this->screen_position_x + (this->width/2);
-  float object_x0 = object.screen_position_x - (object.width/2);
-  float object_xf = object.screen_position_x + (object.width/2);
+  float object_x0 = object->get_screen_x() - (object->get_width()/2);
+  float object_xf = object->get_screen_x() + (object->get_width()/2);
   if(debug){
     al_draw_line(car_x0, 0, car_x0, sh, RED, 1);
     al_draw_line(car_xf, 0, car_xf, sh, YELLOW, 1);
