@@ -1,5 +1,8 @@
+#ifndef ENVIRONMENT_H
+#define ENVIRONMENT_H
+
 #include "sounds.h"
-#include "display.h"
+#include "display.hpp"
 
 #include <stdio.h>
 #include <allegro5/allegro5.h>
@@ -12,22 +15,32 @@
 
 #define SAVE_FILE "../saves/record.tg"
 
-extern float fps;
-extern bool music_on;
-extern bool sounds_on;
-extern bool collisions;
-extern bool debug;
-extern bool ai_pilots;
-extern float movement_speed;
+namespace top_gear {
 
-extern ALLEGRO_DISPLAY* display;
-extern ALLEGRO_EVENT_QUEUE* queue;
-extern ALLEGRO_EVENT_QUEUE* priority_queue;
-extern ALLEGRO_TIMER* timer;
-extern ALLEGRO_KEYBOARD_STATE key_state;
+    namespace environment {
 
-void init_environment();
-void setup_sounds();
-void setup_display();
-void setup_events();
-void destroy_environment();
+        extern float fps;
+        extern bool music_on;
+        extern bool sounds_on;
+        extern bool collisions;
+        extern bool debug;
+        extern bool ai_pilots;
+        extern float movement_speed;
+
+        extern ALLEGRO_DISPLAY* display;
+        extern ALLEGRO_EVENT_QUEUE* queue;
+        extern ALLEGRO_EVENT_QUEUE* priority_queue;
+        extern ALLEGRO_TIMER* timer;
+        extern ALLEGRO_KEYBOARD_STATE key_state;
+
+        void init_environment();
+        void setup_sounds();
+        void setup_display();
+        void setup_events();
+        void destroy_environment();
+
+    }
+
+}
+
+#endif
