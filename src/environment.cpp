@@ -1,4 +1,8 @@
 #include "../include/environment.hpp"
+#include "../include/colors.hpp"
+#include "../include/display.hpp"
+#include "../include/fonts.hpp"
+#include "../include/sounds.hpp"
 
 namespace top_gear {
 
@@ -13,10 +17,10 @@ namespace top_gear {
     bool ai_pilots = true; // Oponent cars will be controlled by AI
     float movement_speed = 18.0; // Lateral movement speed
 
-    ALLEGRO_DISPLAY* display = NULL;
-    ALLEGRO_EVENT_QUEUE* queue = NULL;
-    ALLEGRO_EVENT_QUEUE* priority_queue = NULL;
-    ALLEGRO_TIMER* timer = NULL;
+    ALLEGRO_DISPLAY* display = nullptr;
+    ALLEGRO_EVENT_QUEUE* queue = nullptr;
+    ALLEGRO_EVENT_QUEUE* priority_queue = nullptr;
+    ALLEGRO_TIMER* timer = nullptr;
     ALLEGRO_KEYBOARD_STATE key_state;
 
     // Install plugins
@@ -36,22 +40,22 @@ namespace top_gear {
 
     // Configure sound assets
     void setup_sounds(){
-      init_sounds();
+      sounds::init_sounds();
       al_reserve_samples(5);
     }
 
     // Configure display
     void setup_display(){
-      init_colors();
-      init_bitmaps();
-      init_fonts();
+      colors::init_colors();
+      display::init_bitmaps();
+      fonts::init_fonts();
 
       // windowed
       al_set_new_display_flags(ALLEGRO_WINDOWED);
       // al_set_new_display_flags(ALLEGRO_RESIZABLE);
-      display = al_create_display(sw, sh);
+      display = al_create_display(SCREEN_WIDTH, SCREEN_HEIGHT);
       al_set_window_title(display, "Top Gear");
-      al_set_display_icon(display, GAME_ICON);
+      al_set_display_icon(display, display::GAME_ICON);
     }
 
     // Configure event listeners

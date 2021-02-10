@@ -1,3 +1,6 @@
+#ifndef COLORS_H
+#define COLORS_H
+
 #include <allegro5/allegro5.h>
 
 namespace top_gear{
@@ -25,3 +28,5 @@ namespace top_gear{
     }
 
 }
+
+#endif

@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "fonts.h"
+#include "./car.hpp"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
@@ -90,7 +90,7 @@ namespace top_gear {
         void clear_display(ALLEGRO_COLOR color, bool flip);
         void draw_title();
         void destroy_bitmaps();
-        ALLEGRO_BITMAP* get_car(int car, int color);
+        ALLEGRO_BITMAP* get_car(CarsTypes car, int color);
 
     }
 

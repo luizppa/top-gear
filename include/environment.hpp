@@ -1,9 +1,6 @@
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
-#include "sounds.h"
-#include "display.hpp"
-
 #include <stdio.h>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_audio.h>

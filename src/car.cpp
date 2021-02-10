@@ -1,6 +1,9 @@
 #include "../include/car.hpp"
-#include "../include/utils.h"
+#include "../include/utils.hpp"
 #include "../include/environment.hpp"
+#include "../include/display.hpp"
+#include "../include/colors.hpp"
+#include "../include/sounds.hpp"
 
 #include<iostream>
 
@@ -11,13 +14,13 @@ namespace top_gear {
     this->lvl = 0;
     this->name = "Player";
     this->points = 0;
-    this->width = get_bitmap_width(texture);
-    this->height = get_bitmap_height(texture);
+    this->width = display::get_bitmap_width(texture);
+    this->height = display::get_bitmap_height(texture);
     this->speed = 0.0;
-    this->position_x = -425;
-    this->position_y = 0.0;
-    this->screen_position_x = SCREEN_WIDTH/2;
-    this->screen_position_y = 0;
+    this->x = -425;
+    this->y = 0.0;
+    this->screen_x = SCREEN_WIDTH/2;
+    this->screen_y = 0;
     this->nitrox = 100.0;
     this->gear = 1;
     this->max_gear = 6;
@@ -28,32 +31,32 @@ namespace top_gear {
   // Return a AI car
   Car::Car(int lvl, ALLEGRO_BITMAP *texture){
     this->lvl = lvl;
-    this->name = names[lvl];
+    this->name = utils::names[lvl];
     this->points = 0;
-    this->width = get_bitmap_width(texture);
-    this->height = get_bitmap_height(texture);
+    this->width = display::get_bitmap_width(texture);
+    this->height = display::get_bitmap_height(texture);
     this->speed = 0.0;
     this->nitrox = 100.0;
     this->gear = 1;
     this->max_gear = 6;
     this->texture = texture;
-    if(lvl % 3 == 0) car.will_colide = false;
+    if(lvl % 3 == 0) this->will_colide = false;
     else this->will_colide = true;
     this->going_right = false;
     if(lvl < 4){
-      this->position_y = (3*STARTING_DISTANCE);
+      this->y = (3*STARTING_DISTANCE);
     }
     else if(lvl < 7){
-      this->position_y = (2*STARTING_DISTANCE);
+      this->y = (2*STARTING_DISTANCE);
     }
     else if(lvl < 10){
-      this->position_y = (1*STARTING_DISTANCE);
+      this->y = (1*STARTING_DISTANCE);
     }
     else if(lvl < 13){
-      this->position_y = (0*STARTING_DISTANCE);
+      this->y = (0*STARTING_DISTANCE);
     }
     float x = ((lvl%3)-1);
-    this->position_x = (x*25)+(x*400);
+    this->x = (x*25)+(x*400);
   }
 
   // Gear up
@@ -73,36 +76,35 @@ namespace top_gear {
 
   void Car::control_ia(Car** cars, Object** objects, int car_count, int object_count, bool play_sounds){
     float skill_rate = (0.05/12.0)*this->lvl;
-    float delta_speed = speed_increase(car->gear, car->speed);
+    float delta_speed = speed_increase(this->gear, this->speed);
     if(environment::collisions) {
       if(this->car_collided(cars, objects, car_count, object_count) && play_sounds){
-        play_sample(COLLISION_SOUND);
+        sounds::play_sample(sounds::COLLISION_SOUND);
       }
     }
     if(environment::ai_pilots){
-      // Verify collision
       if (this->will_colide && environment::collisions) {
-        // Go left
+        
         if(!this->going_right){
-          if(this->position_x > -440) this->position_x -= 20;
+          if(this->x > -440) this->x -= 20;
           else this->going_right = true;
         }
-        // Go right
+        
         if(this->going_right){
-          if(this->position_x < 440) this->position_x += 20;
+          if(this->x < 440) this->x += 20;
           else this->going_right = false;
         }
       }
       else {
-        if(this->position_x >= 30) this->going_right = false;
-        else if(this->position_x <= -30) this->going_right = true;
+        if(this->x >= 30) this->going_right = false;
+        else if(this->x <= -30) this->going_right = true;
         else this->going_right = rand()%2;
       }
-      // Accelerating
+      
       if(delta_speed < 0){
         if(this->speed != (0.8 * Car::max_speed(this->max_gear-1))) this->gear_down();
         delta_speed = Car::speed_increase(this->gear, this->speed);
-        this->speed = max(0, this->speed + delta_speed);
+        this->speed = utils::max(0, this->speed + delta_speed);
       }
       else {
         if(this->gear > 1 && this->speed < 0.8 * Car::max_speed(this->gear-1)){
@@ -113,11 +115,12 @@ namespace top_gear {
         }
         this->speed += delta_speed*(1-skill_rate);
       }
+
     }
     else {
-      this->speed = max(0, car->speed - NO_ACCELERATE_EFFECT);
+      this->speed = utils::max(0, this->speed - NO_ACCELERATE_EFFECT);
     }
-    this->position_y += this->speed*DISTANCE_VARIATION;
+    this->y += this->speed*DISTANCE_VARIATION;
   }
 
   int Car::get_gear_progress(){
@@ -125,7 +128,7 @@ namespace top_gear {
     return (int)progress;
   }
 
-  // Returns true if car collided with eithar an object or another car (also impacts speed)
+  // Returns true if car collided with either an object or another car (also impacts speed)
   bool Car::car_collided(Car** cars, Object** objects, int car_count, int object_count){
     float relative_speed, distance;
     bool aligned;
@@ -134,7 +137,7 @@ namespace top_gear {
     // Collision with other cars
     for(int i = 0; i < car_count; i++){
       relative_speed = this->speed - cars[i]->speed;
-      distance = cars[i]->position_y - this->position_y;
+      distance = cars[i]->y - this->y;
       aligned = this->is_aligned_to(cars[i]);
       // Don't verify collisions of a car with itslef
       if(cars[i] != this){
@@ -157,8 +160,8 @@ namespace top_gear {
 
     // Collision with objects
     for(int i = 0; i < object_count; i++){
-      if(objects[i]->collidable){
-        distance = objects[i]->get_y(); - this->position_y;
+      if(objects[i]->is_collidable()){
+        distance = objects[i]->get_y(); - this->y;
         aligned = this->is_aligned_to(objects[i]);
         if(aligned){
           if (distance <= COLLISION_DISTANCE*2.5 && distance >= 0){
@@ -177,15 +180,15 @@ namespace top_gear {
 
   // Returns true if the cars is horizontally aligned with the object
   bool Car::is_aligned_to(Object* object){
-    float car_x0 = this->screen_position_x - (this->width/2);
-    float car_xf = this->screen_position_x + (this->width/2);
+    float car_x0 = this->screen_x - (this->width/2);
+    float car_xf = this->screen_x + (this->width/2);
     float object_x0 = object->get_screen_x() - (object->get_width()/2);
     float object_xf = object->get_screen_x() + (object->get_width()/2);
     if(environment::debug){
-      al_draw_line(car_x0, 0, car_x0, sh, RED, 1);
-      al_draw_line(car_xf, 0, car_xf, sh, YELLOW, 1);
-      al_draw_line(object_x0, 0, object_x0, sh, BLUE, 1);
-      al_draw_line(object_xf, 0, object_xf, sh, GREEN, 1);
+      al_draw_line(car_x0, 0, car_x0, SCREEN_HEIGHT, colors::RED, 1);
+      al_draw_line(car_xf, 0, car_xf, SCREEN_HEIGHT, colors::YELLOW, 1);
+      al_draw_line(object_x0, 0, object_x0, SCREEN_HEIGHT, colors::BLUE, 1);
+      al_draw_line(object_xf, 0, object_xf, SCREEN_HEIGHT, colors::GREEN, 1);
     }
     if ((car_xf - car_x0 >= object_x0 - car_x0 && object_x0 - car_x0 >= 0) || (object_xf - object_x0 >= car_x0 - object_x0 && car_x0 - object_x0 >= 0)) {
       if(environment::debug) std::cout << "aligned" << std::endl;
@@ -199,15 +202,15 @@ namespace top_gear {
 
   // Returns true if cars are horizontally aligned
   bool Car::is_aligned_to(Car* car){
-    float a_x0 = this->screen_position_x - (this->width/2);
-    float a_xf = this->screen_position_x + (this->width/2);
-    float b_x0 = car->screen_position_x - (car->width/2);
-    float b_xf = car->screen_position_x + (car->width/2);
+    float a_x0 = this->screen_x - (this->width/2);
+    float a_xf = this->screen_x + (this->width/2);
+    float b_x0 = car->screen_x - (car->width/2);
+    float b_xf = car->screen_x + (car->width/2);
     if(environment::debug){
-      al_draw_line(a_x0, 0, a_x0, sh, RED, 1);
-      al_draw_line(a_xf, 0, a_xf, sh, YELLOW, 1);
-      al_draw_line(b_x0, 0, b_x0, sh, BLUE, 1);
-      al_draw_line(b_xf, 0, b_xf, sh, GREEN, 1);
+      al_draw_line(a_x0, 0, a_x0, SCREEN_HEIGHT, colors::RED, 1);
+      al_draw_line(a_xf, 0, a_xf, SCREEN_HEIGHT, colors::YELLOW, 1);
+      al_draw_line(b_x0, 0, b_x0, SCREEN_HEIGHT, colors::BLUE, 1);
+      al_draw_line(b_xf, 0, b_xf, SCREEN_HEIGHT, colors::GREEN, 1);
     }
     if ((a_xf - a_x0 >= b_x0 - a_x0 && b_x0 - a_x0 >= 0) || (b_xf - b_x0 >= a_x0 - b_x0 && a_x0 - b_x0 >= 0)) {
       if(environment::debug) std::cout << "aligned" << std::endl;
@@ -249,19 +252,19 @@ namespace top_gear {
       cars[i]->speed = 0.0;
       cars[i]->gear = 1;
       if(i+1 < 4){
-        cars[i]->position_y = (3*STARTING_DISTANCE);
+        cars[i]->y = (3*STARTING_DISTANCE);
       }
       else if(i+1 < 7){
-        cars[i]->position_y = (2*STARTING_DISTANCE);
+        cars[i]->y = (2*STARTING_DISTANCE);
       }
       else if(i+1 < 10){
-        cars[i]->position_y = (1*STARTING_DISTANCE);
+        cars[i]->y = (1*STARTING_DISTANCE);
       }
       else if(i+1 < 13){
-        cars[i]->position_y = (0*STARTING_DISTANCE);
+        cars[i]->y = (0*STARTING_DISTANCE);
       }
       float x = (((i+1)%3)-1);
-      cars[i]->position_x = (x*25)+(x*400);
+      cars[i]->x = (x*25)+(x*400);
     }
   }
 
@@ -296,21 +299,21 @@ namespace top_gear {
     if(speed > Car::max_speed(gear)) return (Car::max_speed(gear)-speed)*WRONG_GEAR_EFFECT;
     switch (gear) {
       case 1:
-        return 16.0/fps;
+        return 16.0/environment::fps;
       case 2:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 6.4/fps;
+        if(speed > 0.8*Car::max_speed(gear-1)) return 6.4/environment::fps;
         else return 0.3*Car::speed_increase(gear-1, speed);
       case 3:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 7.0/fps;
+        if(speed > 0.8*Car::max_speed(gear-1)) return 7.0/environment::fps;
         else return 0.4*Car::speed_increase(gear-1, speed);
       case 4:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 7.7/fps;
+        if(speed > 0.8*Car::max_speed(gear-1)) return 7.7/environment::fps;
         else return 0.4*Car::speed_increase(gear-1, speed);
       case 5:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 8.0/fps;
+        if(speed > 0.8*Car::max_speed(gear-1)) return 8.0/environment::fps;
         else return 0.4*Car::speed_increase(gear-1, speed);
       case 6:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 8.6/fps;
+        if(speed > 0.8*Car::max_speed(gear-1)) return 8.6/environment::fps;
         else return 0.4*Car::speed_increase(gear-1, speed);
       default:
         return 0.0;
@@ -323,10 +326,10 @@ namespace top_gear {
     int left_marker = first+1, right_marker = last;
     bool done = false;
     while (!done) {
-      while (left_marker <= right_marker && cars[left_marker]->position_y <= pivot->position_y){
+      while (left_marker <= right_marker && cars[left_marker]->y <= pivot->y){
         left_marker++;
       }
-      while(cars[right_marker]->position_y >= pivot->position_y && right_marker >= left_marker){
+      while(cars[right_marker]->y >= pivot->y && right_marker >= left_marker){
         right_marker--;
       }
       if (right_marker < left_marker) {
@@ -360,7 +363,7 @@ namespace top_gear {
     if(environment::debug){
       std::cout << "----------------------" << std::endl;
       for(int i = 0; i < size; i++){
-        std::cout << cars[i]->name << ": " << cars[i]->position_y << std::endl;
+        std::cout << cars[i]->name << ": " << cars[i]->y << std::endl;
       }
     }
     return cars;

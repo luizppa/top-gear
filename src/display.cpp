@@ -1,13 +1,10 @@
 #include "../include/display.hpp"
 #include "../include/car.hpp"
+#include "../include/fonts.hpp"
 
 namespace top_gear {
 
   namespace display {
-    
-    // Screen dimensions
-    int sw = 1300;
-    int sh = 700;
 
     ALLEGRO_DISPLAY_MODE disp_data;
 
@@ -157,12 +154,12 @@ namespace top_gear {
 
     // Draw title screen
     void draw_title(){
-      clear_display(BLUE, false);
+      clear_display(colors::BLUE, false);
       al_draw_bitmap(GAME_TITLE, (SCREEN_WIDTH/2)-203, (SCREEN_HEIGHT/2)-182, 0);
-      draw_text(PIXEL_22, YELLOW, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
-      draw_text(PIXEL_22, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+85, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
-      draw_text(PIXEL_22, WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
-      draw_text(PIXEL_14, WHITE, 10, SCREEN_HEIGHT-24, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
+      draw_text(fonts::PIXEL_22, colors::YELLOW, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+30, ALLEGRO_ALIGN_CENTRE, "Press enter to continue...", false);
+      draw_text(fonts::PIXEL_22, colors::WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+85, ALLEGRO_ALIGN_CENTRE, "Licensed by... no one actually", false);
+      draw_text(fonts::PIXEL_22, colors::WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+110, ALLEGRO_ALIGN_CENTRE, "i may be fined for inappropriate use of image.", false);
+      draw_text(fonts::PIXEL_14, colors::WHITE, 10, SCREEN_HEIGHT-24, ALLEGRO_ALIGN_LEFT, "I'm sorry for skipping all those classes.", true);
     }
 
     // TODO: Use enum
@@ -177,9 +174,8 @@ namespace top_gear {
         6 = Black
     */
     ALLEGRO_BITMAP* get_car(CarsTypes car, int color){
-      // return DOMINUS_GT_PURPLE_BITMAP;
       switch (car) {
-        case CarsTypes.OCTANE:
+        case CarsTypes::OCTANE:
           switch (color) {
             case 0:
               return OCTANE_ZSR_RED_BITMAP;
@@ -197,7 +193,7 @@ namespace top_gear {
               return OCTANE_ZSR_BLACK_BITMAP;
           }
           break;
-        case CarsTypes.DOMINUS:
+        case CarsTypes::DOMINUS:
           switch (color) {
             case 0:
               return DOMINUS_GT_RED_BITMAP;
@@ -215,7 +211,7 @@ namespace top_gear {
               return DOMINUS_GT_BLACK_BITMAP;
           }
           break;
-        case CarsTypes.ROADHOG:
+        case CarsTypes::ROADHOG:
           switch (color) {
             case 0:
               return ROADHOG_RED_BITMAP;
@@ -233,7 +229,7 @@ namespace top_gear {
               return ROADHOG_BLACK_BITMAP;
           }
           break;
-        case CarsTypes.MAVERICK:
+        case CarsTypes::MAVERICK:
           switch (color) {
             case 0:
               return MAVERICK_RED_BITMAP;

@@ -1,13 +1,13 @@
 #include "../include/object.hpp"
-#include "../include/environment.hpp"
+#include "../include/display.hpp"
 
 namespace top_gear {
 
   Object::Object(float x, float y, ALLEGRO_BITMAP* texture, bool collidable){
     this->x = x;
     this->y = y;
-    this->width = get_bitmap_width(texture);
-    this->height = get_bitmap_height(texture);
+    this->width = display::get_bitmap_width(texture);
+    this->height = display::get_bitmap_height(texture);
     this->collidable = collidable;
     this->texture = texture;
   }
@@ -16,15 +16,15 @@ namespace top_gear {
     int selected = rand()%5;
     switch (selected) {
       case 0:
-        return new Object(x, y, ROCK_BITMAP, true);
+        return new Object(x, y, display::ROCK_BITMAP, true);
       case 1:
-        return new Object(x, y, TIRES_1_BITMAP, true);
+        return new Object(x, y, display::TIRES_1_BITMAP, true);
       case 2:
-        return new Object(x, y, TIRES_2_BITMAP, true);
+        return new Object(x, y, display::TIRES_2_BITMAP, true);
       case 3:
-        return new Object(x, y, BOX_1_BITMAP, true);
+        return new Object(x, y, display::BOX_1_BITMAP, true);
       case 4:
-        return new Object(x, y, BOX_2_BITMAP, true);
+        return new Object(x, y, display::BOX_2_BITMAP, true);
     }
   }
 
@@ -77,7 +77,7 @@ namespace top_gear {
   }
 
   bool Object::is_collidable(){
-    return this->ollidable;
+    return this->collidable;
   }
 
 }

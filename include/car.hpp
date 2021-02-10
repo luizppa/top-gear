@@ -24,11 +24,11 @@
 namespace top_gear {
 
   enum CarsTypes {
-    OCTANE,
-    DOMINUS,
-    ROADHOG,
-    MAVERICK
-  }
+    OCTANE = 0,
+    DOMINUS = 1,
+    ROADHOG = 2,
+    MAVERICK = 3
+  };
 
   class Car {
     private:
@@ -62,17 +62,17 @@ namespace top_gear {
       Car(int lvl, ALLEGRO_BITMAP *texture);
 
       int get_lvl() { return this->lvl; }
-      char get_name() { return this->name; }
+      char* get_name() { return this->name; }
       int get_points() { return this->points; }
       float get_width() { return this->width; }
       float get_apparent_width() { return this->apparent_width; }
       float get_height() { return this->height; }
       float get_apparent_height() { return this->apparent_height; }
       float get_speed() { return this->speed; }
-      float get_x() { return this->position_x; }
-      float get_screen_x() { return this->screen_position_x; }
-      float get_y() { return this->position_y; }
-      float get_screen_y() { return this->screen_position_y; }
+      float get_x() { return this->x; }
+      float get_screen_x() { return this->screen_x; }
+      float get_y() { return this->y; }
+      float get_screen_y() { return this->screen_y; }
       float get_nitrox() { return this->nitrox; }
       int get_gear() { return this->gear; }
       int get_max_gear() { return this->max_gear; }
