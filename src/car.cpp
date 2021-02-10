@@ -76,7 +76,7 @@ namespace top_gear {
 
   void Car::control_ia(Car** cars, Object** objects, int car_count, int object_count, bool play_sounds){
     float skill_rate = (0.05/12.0)*this->lvl;
-    float delta_speed = speed_increase(this->gear, this->speed);
+    float delta_speed = this->speed_increase();
     if(environment::collisions) {
       if(this->car_collided(cars, objects, car_count, object_count) && play_sounds){
         sounds::play_sample(sounds::COLLISION_SOUND);
@@ -103,7 +103,7 @@ namespace top_gear {
       
       if(delta_speed < 0){
         if(this->speed != (0.8 * Car::max_speed(this->max_gear-1))) this->gear_down();
-        delta_speed = Car::speed_increase(this->gear, this->speed);
+        delta_speed = this->speed_increase();
         this->speed = utils::max(0, this->speed + delta_speed);
       }
       else {
@@ -246,6 +246,38 @@ namespace top_gear {
     return Car::max_speed(gear)*precision;
   }
 
+  /*
+    Returns the variation rate of the car speed for each 1/fps seconds.
+    If the current speed is higher than the current gear's max speed, returns the
+    diference between them times a constant.
+    If the gear is higher than 80% of the bellow gear's max speed, returns the best performance variation.
+    Else, returns 30% to 40% of the bellow gear's max speed.
+  */
+  float Car::speed_increase(){
+    if(this->speed > Car::max_speed(gear)) return (Car::max_speed(this->gear)-this->speed)*WRONG_GEAR_EFFECT;
+    switch (gear) {
+      case 1:
+        return 16.0/environment::fps;
+      case 2:
+        if(this->speed > 0.8*Car::max_speed(this->gear-1)) return 6.4/environment::fps;
+        else return 0.3*Car::speed_increase();
+      case 3:
+        if(this->speed > 0.8*Car::max_speed(this->gear-1)) return 7.0/environment::fps;
+        else return 0.4*Car::speed_increase();
+      case 4:
+        if(this->speed > 0.8*Car::max_speed(this->gear-1)) return 7.7/environment::fps;
+        else return 0.4*Car::speed_increase();
+      case 5:
+        if(this->speed > 0.8*Car::max_speed(this->gear-1)) return 8.0/environment::fps;
+        else return 0.4*Car::speed_increase();
+      case 6:
+        if(this->speed > 0.8*Car::max_speed(this->gear-1)) return 8.6/environment::fps;
+        else return 0.4*Car::speed_increase();
+      default:
+        return 0.0;
+    }
+  }
+
   // Place the cars at the begginig of the road based on their position on the last match
   void Car::restart_positions(Car** cars, int count){
     for (int i = 0; i < count; i++) {
@@ -283,38 +315,6 @@ namespace top_gear {
         return 210.0;
       case 6:
         return 290.0;
-      default:
-        return 0.0;
-    }
-  }
-
-  /*
-    Returns the variation rate of the car speed for each 1/fps seconds.
-    If the current speed is higher than the current gear's max speed, returns the
-    diference between them times a constant.
-    If the gear is higher than 80% of the bellow gear's max speed, returns the best performance variation.
-    Else, returns 30% to 40% of the bellow gear's max speed.
-  */
-  float Car::speed_increase(int gear, float speed){
-    if(speed > Car::max_speed(gear)) return (Car::max_speed(gear)-speed)*WRONG_GEAR_EFFECT;
-    switch (gear) {
-      case 1:
-        return 16.0/environment::fps;
-      case 2:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 6.4/environment::fps;
-        else return 0.3*Car::speed_increase(gear-1, speed);
-      case 3:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 7.0/environment::fps;
-        else return 0.4*Car::speed_increase(gear-1, speed);
-      case 4:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 7.7/environment::fps;
-        else return 0.4*Car::speed_increase(gear-1, speed);
-      case 5:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 8.0/environment::fps;
-        else return 0.4*Car::speed_increase(gear-1, speed);
-      case 6:
-        if(speed > 0.8*Car::max_speed(gear-1)) return 8.6/environment::fps;
-        else return 0.4*Car::speed_increase(gear-1, speed);
       default:
         return 0.0;
     }

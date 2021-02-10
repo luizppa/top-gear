@@ -1,11 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "./environment.hpp"
 #include "./car.hpp"
-#include "./maps.hpp"
-#include "./utils.hpp"
-#include "./menus.hpp"
 #include "./maps.hpp"
 
 #include <allegro5/allegro5.h>

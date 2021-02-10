@@ -4,6 +4,7 @@
 #include "../include/colors.hpp"
 #include "../include/display.hpp"
 #include "../include/fonts.hpp"
+#include "../include/environment.hpp"
 
 namespace top_gear {
 
@@ -263,7 +264,7 @@ namespace top_gear {
                   if(car[0] == -1) return -1;
                   map = map_selection();
                   if(map == 4 || map == -1) return map;
-                  op = play(display::get_car((CarsTypes)car[0], car[1]), nullptr, 11, (Map)map, true);
+                  op = top_gear::play(display::get_car((CarsTypes)car[0], car[1]), nullptr, 11, (Map)map, true);
                   sounds::stop_music(sounds::music);
                   sounds::music = sounds::set_music(TITLE_MUSIC);
                   sounds::start_music(sounds::music, true);

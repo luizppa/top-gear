@@ -22,9 +22,10 @@ namespace top_gear {
 
     public:
       Object(float x, float y, ALLEGRO_BITMAP* texture, bool collidable);
-      Object* get_random_obstacle(float x, float y);
       float get_x();
+      void set_x(float x);
       float get_y();
+      void set_y(float y);
       float get_screen_x();
       float set_screen_x(float screen_x);
       float get_screen_y();
@@ -36,6 +37,8 @@ namespace top_gear {
       float get_apparent_height();
       float set_apparent_height(float apparent_height);
       bool is_collidable();
+      ALLEGRO_BITMAP* get_texture();
+      static Object* get_random_obstacle(float x, float y);
   };
 
 }

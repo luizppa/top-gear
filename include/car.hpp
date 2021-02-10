@@ -54,7 +54,7 @@ namespace top_gear {
       bool is_aligned_to(Object* object);
       bool is_aligned_to(Car* car);
       float ai_gear_up_point();
-      static int Car::partition(Car** cars, int first, int last);
+      static int partition(Car** cars, int first, int last);
       static Car** quick_sort_helper(Car** cars, int first, int last);
 
     public:
@@ -66,14 +66,23 @@ namespace top_gear {
       int get_points() { return this->points; }
       float get_width() { return this->width; }
       float get_apparent_width() { return this->apparent_width; }
+      float set_apparent_width(float apparent_width) { this->apparent_width = apparent_width; }
       float get_height() { return this->height; }
       float get_apparent_height() { return this->apparent_height; }
+      float set_apparent_height(float apparent_height) { this->apparent_height = apparent_height; }
       float get_speed() { return this->speed; }
+      float set_speed(float speed) { this->speed = speed; }
       float get_x() { return this->x; }
+      float set_x(float x) { this->x = x; }
       float get_screen_x() { return this->screen_x; }
+      float set_screen_x(float screen_x) { this->screen_x = screen_x; }
       float get_y() { return this->y; }
+      float set_y(float y) { this->y = y; }
       float get_screen_y() { return this->screen_y; }
+      float set_screen_y(float screen_y) { this->screen_y = screen_y; }
       float get_nitrox() { return this->nitrox; }
+      float set_nitrox(float nitrox) { this->nitrox = nitrox; }
+      float speed_increase();
       int get_gear() { return this->gear; }
       int get_max_gear() { return this->max_gear; }
       bool get_will_colide() { return this->will_colide; }
@@ -88,7 +97,6 @@ namespace top_gear {
       bool car_collided(Car** cars, Object** objects, int car_count, int object_count);
       static void restart_positions(Car** Cars, int count);
       static float max_speed(int gear);
-      static float speed_increase(int gear, float speed);
       static Car** quick_sort_cars(Car** cars, int size);
   };
 

@@ -12,28 +12,20 @@ namespace top_gear {
     this->texture = texture;
   }
 
-  Object* get_random_obstacle(float x, float y){
-    int selected = rand()%5;
-    switch (selected) {
-      case 0:
-        return new Object(x, y, display::ROCK_BITMAP, true);
-      case 1:
-        return new Object(x, y, display::TIRES_1_BITMAP, true);
-      case 2:
-        return new Object(x, y, display::TIRES_2_BITMAP, true);
-      case 3:
-        return new Object(x, y, display::BOX_1_BITMAP, true);
-      case 4:
-        return new Object(x, y, display::BOX_2_BITMAP, true);
-    }
-  }
-
   float Object::get_x(){
     return this->x;
   }
 
+  void Object::set_x(float x){
+    this->x = x;
+  }
+
   float Object::get_y(){
     return this->y;
+  }
+
+  void Object::set_y(float y){
+    this->y = y;
   }
 
   float Object::get_screen_x(){
@@ -78,6 +70,26 @@ namespace top_gear {
 
   bool Object::is_collidable(){
     return this->collidable;
+  }
+
+  ALLEGRO_BITMAP* Object::get_texture(){
+    return this->texture;
+  }
+
+  Object* Object::get_random_obstacle(float x, float y){
+    int selected = rand()%5;
+    switch (selected) {
+      case 0:
+        return new Object(x, y, display::ROCK_BITMAP, true);
+      case 1:
+        return new Object(x, y, display::TIRES_1_BITMAP, true);
+      case 2:
+        return new Object(x, y, display::TIRES_2_BITMAP, true);
+      case 3:
+        return new Object(x, y, display::BOX_1_BITMAP, true);
+      case 4:
+        return new Object(x, y, display::BOX_2_BITMAP, true);
+    }
   }
 
 }
