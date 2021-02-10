@@ -19,7 +19,7 @@ namespace top_gear {
   float street_length = 500.0; // Street visible spam
   float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
   float street_left_limit; // Street border
-  float track_length = 50000.0; // Standart at 50000.0
+  float track_length = 50000.0;
   float paralax = 1.3;
   double race_time;
   char* map_music_title;

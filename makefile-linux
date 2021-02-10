@@ -1,6 +1,6 @@
 CC=g++
 STD=c++11
-CFLAGS=-W --std=$(STD) -Wno-write-strings
+CFLAGS=-W --std=$(STD) -Wno-write-strings -lm
 
 BUILD_PATH=./build
 TARGET_NAME=$(BUILD_PATH)/top-gear
@@ -8,7 +8,7 @@ SOURCE_PATH=./src
 LIB_PATH=./include
 OUTPUT_PATH=./output
 
-SOURCE_EXT := c
+SOURCE_EXT := cpp
 SOURCES := $(shell find $(SOURCE_PATH) -path '*.$(SOURCE_EXT)')
 OBJECTS := $(patsubst $(SOURCE_PATH)/%,$(BUILD_PATH)/%,$(SOURCES:.$(SOURCE_EXT)=.o))
 
@@ -18,10 +18,10 @@ ALLEGRO_CONFIG=$(ALLEGRO_LIBS)
 
 all: $(TARGET_NAME)
 
-$(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.h
-	$(CC) -c $(CFLAGS) -lm $(ALLEGRO_CONFIG) -o $@ $<
+$(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.hpp
+	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -o $@ $<
 
-$(TARGET_NAME): $(OBJECTS) main.c
+$(TARGET_NAME): $(OBJECTS) main.cpp
 	$(CC) $(CFLAGS) $(ALLEGRO_CONFIG) -o $(TARGET_NAME) main.c $(OBJECTS)
 
 setup:

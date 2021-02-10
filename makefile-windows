@@ -1,6 +1,6 @@
 CC=g++
-STD=c++11
-CFLAGS=-W --std=$(STD) -Wno-write-strings
+STD.cpp++11
+CFLAGS=-W --std=$(STD) -Wno-write-strings  -lm
 
 TARGET_NAME=./top-gear
 BUILD_PATH=./build
@@ -8,8 +8,8 @@ SOURCE_PATH=./src
 LIB_PATH=./include
 OUTPUT_PATH=./output
 
-SOURCE_EXT=c
-SOURCES=$(SOURCE_PATH)/car.c $(SOURCE_PATH)/colors.c $(SOURCE_PATH)/display.c $(SOURCE_PATH)/environment.c $(SOURCE_PATH)/fonts.c $(SOURCE_PATH)/game.c $(SOURCE_PATH)/maps.c $(SOURCE_PATH)/menus.c $(SOURCE_PATH)/object.c $(SOURCE_PATH)/sounds.c $(SOURCE_PATH)/utils.c
+SOURCE_EXT=.cpp
+SOURCES=$(SOURCE_PATH)/car.cpp $(SOURCE_PATH)/colors.cpp $(SOURCE_PATH)/display.cpp $(SOURCE_PATH)/environment.cpp $(SOURCE_PATH)/fonts.cpp $(SOURCE_PATH)/game.cpp $(SOURCE_PATH)/maps.cpp $(SOURCE_PATH)/menus.cpp $(SOURCE_PATH)/object.cpp $(SOURCE_PATH)/sounds.cpp $(SOURCE_PATH)/utils.cpp
 OBJECTS := $(patsubst $(SOURCE_PATH)/%,$(BUILD_PATH)/%,$(SOURCES:.$(SOURCE_EXT)=.o))
 
 ALLEGRO_PATH=allegro
@@ -19,14 +19,13 @@ ALLEGRO_BIN=-L $(ALLEGRO_PATH)/lib
 ALLEGRO_CONFIG=$(ALLEGRO_INCLUDE) $(ALLEGRO_BIN) $(ALLEGRO_LIBS)
 ALEGRO_MONOLITH=$(ALLEGRO_PATH)/lib/liballegro-5.0.10-monolith-mt.a
 
-
 all: $(TARGET_NAME)
 
-$(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.h
-	$(CC) -c $(CFLAGS) $(ALLEGRO_CONFIG) -lm -o $@ $<
+$(BUILD_PATH)/%.o: $(SOURCE_PATH)/%.$(SOURCE_EXT) $(LIB_PATH)/%.hpp
+	$(CC) .cpp $(CFLAGS) $(ALLEGRO_CONFIG) -o $@ $<
 
-$(TARGET_NAME): $(OBJECTS) main.c
-	$(CC) $(CFLAGS) -o $(BUILD_PATH)$(TARGET_NAME) main.c $(OBJECTS) $(ALEGRO_MONOLITH)
+$(TARGET_NAME): $(OBJECTS) main.cpp
+	$(CC) $(CFLAGS) -o $(BUILD_PATH)$(TARGET_NAME) main.cpp $(OBJECTS) $(ALEGRO_MONOLITH)
 
 setup:
 	cp $(ALLEGRO_PATH)/bin/* $(BUILD_PATH)/
