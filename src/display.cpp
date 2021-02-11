@@ -175,24 +175,6 @@ namespace top_gear {
     */
     ALLEGRO_BITMAP* get_car(CarsTypes car, int color){
       switch (car) {
-        case CarsTypes::OCTANE:
-          switch (color) {
-            case 0:
-              return OCTANE_ZSR_RED_BITMAP;
-            case 1:
-              return OCTANE_ZSR_BLUE_BITMAP;
-            case 2:
-              return OCTANE_ZSR_GREEN_BITMAP;
-            case 3:
-              return OCTANE_ZSR_GREY_BITMAP;
-            case 4:
-              return OCTANE_ZSR_PURPLE_BITMAP;
-            case 5:
-              return OCTANE_ZSR_YELLOW_BITMAP;
-            case 6:
-              return OCTANE_ZSR_BLACK_BITMAP;
-          }
-          break;
         case CarsTypes::DOMINUS:
           switch (color) {
             case 0:
@@ -209,6 +191,24 @@ namespace top_gear {
               return DOMINUS_GT_YELLOW_BITMAP;
             case 6:
               return DOMINUS_GT_BLACK_BITMAP;
+          }
+          break;
+        case CarsTypes::OCTANE:
+          switch (color) {
+            case 0:
+              return OCTANE_ZSR_RED_BITMAP;
+            case 1:
+              return OCTANE_ZSR_BLUE_BITMAP;
+            case 2:
+              return OCTANE_ZSR_GREEN_BITMAP;
+            case 3:
+              return OCTANE_ZSR_GREY_BITMAP;
+            case 4:
+              return OCTANE_ZSR_PURPLE_BITMAP;
+            case 5:
+              return OCTANE_ZSR_YELLOW_BITMAP;
+            case 6:
+              return OCTANE_ZSR_BLACK_BITMAP;
           }
           break;
         case CarsTypes::ROADHOG:

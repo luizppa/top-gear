@@ -24,10 +24,10 @@
 namespace top_gear {
 
   enum CarsTypes {
-    OCTANE = 0,
     DOMINUS = 1,
-    ROADHOG = 2,
-    MAVERICK = 3
+    OCTANE = 2,
+    ROADHOG = 3,
+    MAVERICK = 4
   };
 
   class Car {
