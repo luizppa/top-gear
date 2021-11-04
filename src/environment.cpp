@@ -9,17 +9,28 @@ namespace top_gear {
   namespace environment {
 
     // Setings
-    float fps = 60.0; // Not a good ideia to change this, probably
-    bool music_on = true; // Turn on game music
-    bool sounds_on = true; // Turn off game music
-    bool collisions = true; // Cars will colide
-    bool debug = false; // Debug markers will appear on screen and events will be logged
-    bool ai_pilots = true; // Oponent cars will be controlled by AI
-    float movement_speed = 18.0; // Lateral movement speed
+    // Not a good ideia to change this, probably
+    float fps = 60.0;
+    // Turn on game music
+    bool music_on = true;
+    // Turn off game music
+    bool sounds_on = true;
+    // Cars will colide
+    bool collisions = true;
+    /*
+      Debug markers will appear on screen and
+      events will be logged if debug is set to true
+    */
+    bool debug = false;
+    // Oponent cars will be controlled by AI
+    bool ai_pilots = true;
+    // Lateral movement speed
+    float movement_speed = 18.0;
 
     ALLEGRO_DISPLAY* display = nullptr;
-    ALLEGRO_EVENT_QUEUE* queue = nullptr;
-    ALLEGRO_EVENT_QUEUE* priority_queue = nullptr;
+    ALLEGRO_EVENT_QUEUE* event_queue = nullptr;
+    ALLEGRO_EVENT_QUEUE* input_event_queue = nullptr;
+    ALLEGRO_EVENT_QUEUE* timer_event_queue = nullptr;
     ALLEGRO_TIMER* timer = nullptr;
     ALLEGRO_KEYBOARD_STATE key_state;
 
@@ -60,14 +71,17 @@ namespace top_gear {
 
     // Configure event listeners
     void setup_events(){
-      queue = al_create_event_queue();
-      priority_queue = al_create_event_queue();
+      event_queue = al_create_event_queue();
+      input_event_queue = al_create_event_queue();
+      timer_event_queue = al_create_event_queue();
       timer = al_create_timer(1.0 / fps);
-      al_register_event_source(queue, al_get_display_event_source(display));
-      al_register_event_source(queue, al_get_timer_event_source(timer));
-      al_register_event_source(queue, al_get_keyboard_event_source());
-      al_register_event_source(priority_queue, al_get_display_event_source(display));
-      al_register_event_source(priority_queue, al_get_keyboard_event_source());
+      
+      al_register_event_source(event_queue, al_get_display_event_source(display));
+      al_register_event_source(event_queue, al_get_timer_event_source(timer));
+      al_register_event_source(event_queue, al_get_keyboard_event_source());
+      al_register_event_source(input_event_queue, al_get_display_event_source(display));
+      al_register_event_source(input_event_queue, al_get_keyboard_event_source());
+      al_register_event_source(timer_event_queue, al_get_timer_event_source(timer));
       al_start_timer(timer);
     }
 
@@ -75,8 +89,9 @@ namespace top_gear {
     void destroy_environment(){
       al_destroy_timer(timer);
       al_destroy_display(display);
-      al_destroy_event_queue(queue);
-      al_destroy_event_queue(priority_queue);
+      al_destroy_event_queue(event_queue);
+      al_destroy_event_queue(input_event_queue);
+      al_destroy_event_queue(timer_event_queue);
     }
 
   }

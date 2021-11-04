@@ -1,3 +1,6 @@
+#include <string>
+#include <iostream>
+
 #include "../include/menus.hpp"
 #include "../include/game.hpp"
 #include "../include/sounds.hpp"
@@ -10,167 +13,168 @@ namespace top_gear {
 
   namespace menus {
 
-    ALLEGRO_COLOR colors[7];
+    int mode_selection();
+    int car_selection(int mode);
+    int color_selection(int mode, int car);
+    int map_selection(int mode, ALLEGRO_BITMAP* car);
 
-    // Updates menu on screen
-    int redraw_main_menu(int op){
+    ALLEGRO_COLOR get_color(int option_number, int selected_option){
+      return option_number == selected_option ? colors::WHITE : colors::YELLOW;
+    }
+
+    /**
+     * Main menu region
+    */
+    int render_main_menu(int selected_op){
       display::clear_display(colors::BLUE, false);
       al_draw_bitmap(display::GAME_TITLE, (SCREEN_WIDTH/2)-203, (SCREEN_HEIGHT/2)-250, 0);
-      display::draw_text(fonts::PIXEL_28, colors[0], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
-      display::draw_text(fonts::PIXEL_28, colors[1], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
-      display::draw_text(fonts::PIXEL_28, colors[2], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
-      display::draw_text(fonts::PIXEL_28, colors[3], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
+      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
+      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
+      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
+      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
     }
 
-    int options_menu();
-    int mode_selection();
+    int main_menu_loop(){
+      int selected_op = 0, result;
+      ALLEGRO_EVENT ev;
 
-    // Runs main menu
-    int main_menu(){
-      int op = 1;
-      // Selected option = colors::WHITE
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
-      colors[2] = colors::YELLOW;
-      colors[3] = colors::YELLOW;
-      colors[4] = colors::YELLOW;
-      // Update screen
-      redraw_main_menu(op);
-      while (true) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
-        // Quit game
+      al_flush_event_queue(environment::input_event_queue);
+      while(true){
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          return 4;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-          // Return to title
-          if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
-            sounds::play_sample(sounds::MENU_BACK_SOUND);
-            return -1;
-          }
+
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           switch (ev.keyboard.keycode) {
-            // Selection UP
+            case ALLEGRO_KEY_ESCAPE:
+              sounds::play_sample(sounds::MENU_BACK_SOUND);
+              return MENU_ACTION_GO_BACK;
+
             case ALLEGRO_KEY_UP:
             case ALLEGRO_KEY_W:
-              if(op > 1){
-                colors[op-1] = colors::YELLOW;
-                op--;
-                colors[op-1] = colors::WHITE;
+              if(selected_op > 0){
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                // Update screen
-                redraw_main_menu(op);
+                selected_op--;
               }
               break;
-            // Selection DOWN
+
             case ALLEGRO_KEY_DOWN:
             case ALLEGRO_KEY_S:
-              if(op < 4){
-                colors[op-1] = colors::YELLOW;
-                op++;
-                colors[op-1] = colors::WHITE;
+              if(selected_op < 3){
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                // Update screen
-                redraw_main_menu(op);
+                selected_op++;
               }
               break;
-            // Confirm selection
+
             case ALLEGRO_KEY_ENTER:
               sounds::play_sample(sounds::MENU_SELECT_SOUND);
-              switch (op) {
-                // Select game mode
-                case 1:
-                  op = mode_selection();
+              switch (selected_op) {
+                case 0: // Play
+                  result = mode_selection();
                   break;
-                // Configure options
-                case 2:
-                  op = options_menu();
+
+                case 1: // Settings
+                  result = options_menu();
                   sounds::set_music(TITLE_MUSIC);
                   break;
-
               }
-              if(op != -1) return op;
-              op = 1;
-              colors[0] = colors::WHITE;
-              colors[1] = colors::YELLOW;
-              colors[2] = colors::YELLOW;
-              colors[3] = colors::YELLOW;
-              redraw_main_menu(op);
+
+              switch (result) {
+                case MENU_ACTION_GO_BACK:
+                  selected_op = 0;
+                  break;
+                case MENU_ACTION_QUIT_GAME:
+                  return MENU_ACTION_QUIT_GAME;
+              }
           }
+          render_main_menu(selected_op);
         }
       }
-      display::draw_title();
-      return 0;
+      return MENU_ACTION_DONE;
     }
 
-    // Update options screen
-    void redraw_options_menu(int op){
+    /**
+     * Main menu entry point
+    */
+    int main_menu(){
+      int result;
+
+      render_main_menu(0);
+      result = main_menu_loop();
+      display::draw_title();
+
+      return result;
+    }
+
+    /**
+     * Options region
+    */
+    void render_options_menu(int selected_op){
       display::clear_display(colors::BLUE, false);
+      std::string music_status = environment::music_on ? "ON" : "OFF";
+      std::string sounds_status = environment::sounds_on ? "ON" : "OFF";
+      std::string collisions_status = environment::collisions ? "ON" : "OFF";
+      std::string debug_status = environment::debug ? "ON" : "OFF";
 
       // Music
-      display::draw_text(fonts::PIXEL_28, colors[0], (SCREEN_WIDTH/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
-      if(environment::music_on) display::draw_text(fonts::PIXEL_28, colors[0], (SCREEN_WIDTH/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-      else display::draw_text(fonts::PIXEL_28, colors[0], (SCREEN_WIDTH/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
+      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, music_status, false);
 
       // Sounds
-      display::draw_text(fonts::PIXEL_28, colors[1], (SCREEN_WIDTH/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
-      if(environment::sounds_on) display::draw_text(fonts::PIXEL_28, colors[1], (SCREEN_WIDTH/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-      else display::draw_text(fonts::PIXEL_28, colors[1], (SCREEN_WIDTH/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
+      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, sounds_status, false);
 
       // Collisions
-      display::draw_text(fonts::PIXEL_28, colors[2], (SCREEN_WIDTH/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
-      if(environment::collisions) display::draw_text(fonts::PIXEL_28, colors[2], (SCREEN_WIDTH/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-      else display::draw_text(fonts::PIXEL_28, colors[2], (SCREEN_WIDTH/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
+      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, collisions_status, false);
 
       // Debug
-      display::draw_text(fonts::PIXEL_28, colors[3], (SCREEN_WIDTH/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
-      if(environment::debug) display::draw_text(fonts::PIXEL_28, colors[3], (SCREEN_WIDTH/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "ON", false);
-      else display::draw_text(fonts::PIXEL_28, colors[3], (SCREEN_WIDTH/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, "OFF", false);
+      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
+      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, debug_status, false);
 
       al_flip_display();
     }
 
-    // Configure options
-    int options_menu(){
-      int op = 1;
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
-      colors[2] = colors::YELLOW;
-      colors[3] = colors::YELLOW;
+    int options_menu_loop(){
+      int selected_op = 0;
+      ALLEGRO_EVENT ev;
+
       while (true) {
-        redraw_options_menu(op);
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          return 4;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             sounds::play_sample(sounds::MENU_BACK_SOUND);
-            return -1;
+            return MENU_ACTION_GO_BACK;
           }
+
           switch (ev.keyboard.keycode) {
             case ALLEGRO_KEY_UP:
             case ALLEGRO_KEY_W:
-              if(op > 1){
-                colors[op-1] = colors::YELLOW;
-                op--;
-                colors[op-1] = colors::WHITE;
+              if(selected_op > 0){
+                selected_op--;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
               }
               break;
+
             case ALLEGRO_KEY_DOWN:
             case ALLEGRO_KEY_S:
-              if(op < 4){
-                colors[op-1] = colors::YELLOW;
-                op++;
-                colors[op-1] = colors::WHITE;
+              if(selected_op < 3){
+                selected_op++;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
               }
               break;
+
             case ALLEGRO_KEY_ENTER:
-              switch (op) {
-                case 1:
+              sounds::play_sample(sounds::MENU_SELECT_SOUND);
+              switch (selected_op) {
+                case 0:
                   if(environment::music_on){
                     sounds::turn_of_music(sounds::music);
                   }
@@ -178,392 +182,435 @@ namespace top_gear {
                     sounds::turn_on_music(sounds::music);
                   }
                   break;
-                case 2:
+
+                case 1:
                   environment::sounds_on = !environment::sounds_on;
                   break;
-                case 3:
+
+                case 2:
                   environment::collisions = !environment::collisions;
                   break;
-                case 4:
+
+                case 3:
                   environment::debug = !environment::debug;
                   break;
               }
-              sounds::play_sample(sounds::MENU_SELECT_SOUND);
               break;
           }
+          render_options_menu(selected_op);
         }
       }
+      return MENU_ACTION_DONE;
     }
 
-    // Update mode selection screen
-    void redraw_mode_selection(int op){
-      float square_side = 250.0;
+    /**
+     * Options menu entry point
+    */
+    int options_menu(){
+      int res;
+
+      render_options_menu(0);
+      al_flush_event_queue(environment::input_event_queue);
+      res = options_menu_loop();
+      return res;
+    }
+
+    /**
+     * Mode selection region
+    */
+    void render_mode_selection(int selected_op){
+      float square_size = 250.0;
+
       display::clear_display(colors::BLUE, false);
       display::draw_text(fonts::PIXEL_32, colors::YELLOW, SCREEN_WIDTH/2, 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-25-square_side, (SCREEN_HEIGHT/2)-(square_side/2), (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+(square_side/2), 0, 0, colors[0], 5);
-      display::draw_text(fonts::PIXEL_28, colors[0], (SCREEN_WIDTH/2)-25-(square_side/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-(square_side/2), (SCREEN_WIDTH/2)+25+square_side, (SCREEN_HEIGHT/2)+(square_side/2), 0, 0, colors[1], 5);
-      display::draw_text(fonts::PIXEL_28, colors[1], (SCREEN_WIDTH/2)+25+(square_side/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
-      switch (op) {
-        case 1:
+
+      // Quick play
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-25-square_size, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_color(0, selected_op), 5);
+      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
+      
+      // Tournament
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)+25+square_size, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_color(1, selected_op), 5);
+      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
+      switch (selected_op) {
+        case 0:
           display::draw_text(fonts::PIXEL_22, colors::WHITE, 30, SCREEN_HEIGHT-37, ALLEGRO_ALIGN_LEFT, "A single race to test your skills", true);
           break;
-        case 2:
+        case 1:
           display::draw_text(fonts::PIXEL_22, colors::WHITE, 30, SCREEN_HEIGHT-37, ALLEGRO_ALIGN_LEFT, "Join a series of races and make your way to the top!", true);
           break;
       }
     }
 
-    int* car_selection();
-    int color_selection();
-    int map_selection();
-
-    // Select gamemode
+    /**
+     * Mode selection menu entry point
+    */
     int mode_selection(){
-      int op = 1, *car, map;
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
+      int selected_op = 0, *car, map, result;
+      ALLEGRO_EVENT ev;
+
+      render_mode_selection(selected_op);
+      al_flush_event_queue(environment::input_event_queue);
       while (true) {
-        redraw_mode_selection(op);
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          return 4;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+        
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             sounds::play_sample(sounds::MENU_BACK_SOUND);
-            return -1;
+            return MENU_ACTION_GO_BACK;
           }
+
           switch (ev.keyboard.keycode) {
-            case ALLEGRO_KEY_RIGHT:
-            case ALLEGRO_KEY_D:
-              if(op < 2){
-                colors[op-1] = colors::YELLOW;
-                op++;
-                colors[op-1] = colors::WHITE;
-                sounds::play_sample(sounds::MENU_MOVE_SOUND);
-              }
-              break;
             case ALLEGRO_KEY_LEFT:
             case ALLEGRO_KEY_A:
-              if(op > 1){
-                colors[op-1] = colors::YELLOW;
-                op--;
-                colors[op-1] = colors::WHITE;
+              if(selected_op > 0){
+                selected_op--;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
               }
               break;
+
+            case ALLEGRO_KEY_RIGHT:
+            case ALLEGRO_KEY_D:
+              if(selected_op < 1){
+                selected_op++;
+                sounds::play_sample(sounds::MENU_MOVE_SOUND);
+              }
+              break;
+
             case ALLEGRO_KEY_ENTER:
               sounds::play_sample(sounds::MENU_SELECT_SOUND);
-              switch (op) {
-                // Start race
-                case 1: // Single race
-                  car = car_selection();
-                  if(car[0] == 5) return 4;
-                  if(car[0] == -1) return -1;
-                  map = map_selection();
-                  if(map == 4 || map == -1) return map;
-                  op = top_gear::play(display::get_car((CarsTypes)car[0], car[1]), nullptr, 11, (Map)map, true);
-                  sounds::stop_music(sounds::music);
-                  sounds::music = sounds::set_music(TITLE_MUSIC);
-                  sounds::start_music(sounds::music, true);
+
+              switch (selected_op) {
+
+                case 0: // Single race
+                  result = car_selection(GAME_MODE_QUICK_PLAY);
                   break;
+
                 case 2: // Tournament
-                  car = car_selection();
-                  if(car[0] == 5) return 4;
-                  if(car[0] == -1) return -1;
-                  op = tournament(display::get_car((CarsTypes)car[0], car[1]), 11);
-                  sounds::stop_music(sounds::music);
-                  sounds::music = sounds::set_music(TITLE_MUSIC);
-                  sounds::start_music(sounds::music, true);
+                  result = car_selection(GAME_MODE_TOURNAMENT);
                   break;
               }
-              return op;
+              if(result != MENU_ACTION_GO_BACK){
+                return result;
+              }
           }
+          render_mode_selection(selected_op);
         }
       }
-      return 0;
+      return MENU_ACTION_DONE;
     }
 
-    // Update car selection screen
-    void redraw_car_selection(int op){
-      float square_width = 340.0, square_height = 220;
+    /**
+     * Car selection region
+    */
+    void render_car_selection(int selected_op){
+      float square_width = 340.0, square_height = 220.0, border_tickness = 5;
       float dominus_w = display::get_bitmap_width(display::DOMINUS_GT_ICON_BITMAP), dominus_h = display::get_bitmap_height(display::DOMINUS_GT_ICON_BITMAP);
       float octane_w = display::get_bitmap_width(display::OCTANE_ZSR_ICON_BITMAP), octane_h = display::get_bitmap_height(display::OCTANE_ZSR_ICON_BITMAP);
       float roadhog_w = display::get_bitmap_width(display::ROADHOG_ICON_BITMAP), roadhog_h = display::get_bitmap_height(display::ROADHOG_ICON_BITMAP);
       float maverick_w = display::get_bitmap_width(display::MAVERICK_ICON_BITMAP), maverick_h = display::get_bitmap_height(display::MAVERICK_ICON_BITMAP);
       display::clear_display(colors::BLUE, false);
+
       // Dominus
-      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)-25, colors[0], 5);
-      display::draw_text(fonts::PIXEL_22, colors[0], (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)-25, get_color(0, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_22, get_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
       al_draw_bitmap(display::DOMINUS_GT_ICON_BITMAP, (SCREEN_WIDTH/2)-25-((square_width-dominus_w)/2)-dominus_w, (SCREEN_HEIGHT/2)-25-35-dominus_h, 0);
 
       // Octane
-      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)-25, colors[1], 5);
-      display::draw_text(fonts::PIXEL_28, colors[1], (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)-25, get_color(1, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
       al_draw_bitmap(display::OCTANE_ZSR_ICON_BITMAP, (SCREEN_WIDTH/2)+25+((square_width-octane_w)/2), (SCREEN_HEIGHT/2)-25-35-octane_h, 0);
 
       // Roadhog
-      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+25+square_height, colors[2], 5);
-      display::draw_text(fonts::PIXEL_28, colors[2], (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+25+square_height, get_color(2, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
       al_draw_bitmap(display::ROADHOG_ICON_BITMAP, (SCREEN_WIDTH/2)-25-(square_width/2)-(roadhog_w/2), (SCREEN_HEIGHT/2)+25+square_height-35-roadhog_h, 0);
 
       // Maverick
-      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)+25+square_height, colors[3], 5);
-      display::draw_text(fonts::PIXEL_28, colors[3], (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)+25+square_height, get_color(3, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
       al_draw_bitmap(display::MAVERICK_ICON_BITMAP, (SCREEN_WIDTH/2)+25+(square_width/2)-(maverick_w/2), (SCREEN_HEIGHT/2)+25+square_height-35-maverick_h, 0);
 
       display::draw_text(fonts::PIXEL_32, colors::YELLOW, (SCREEN_WIDTH/2), 30, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", true);
     }
 
-    // Select car
-    int* car_selection(){
-      int op = 1, *res = (int*) calloc(2, sizeof(int)), color;
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
-      colors[2] = colors::YELLOW;
-      colors[3] = colors::YELLOW;
-      redraw_car_selection(op);
+    /**
+     * Car selection menu entry point
+    */
+    int car_selection(int mode){
+      int selected_op = 0, result;
+      ALLEGRO_EVENT ev;
+
+      render_car_selection(selected_op);
+      al_flush_event_queue(environment::input_event_queue);
       while (true) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          res[0] = 5;
-          return res;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-          if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
-            sounds::play_sample(sounds::MENU_BACK_SOUND);
-            res[0] = -1;
-            return res;
-          }
+
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_ESCAPE:
+              sounds::play_sample(sounds::MENU_BACK_SOUND);
+              return MENU_ACTION_GO_BACK;
+
             case ALLEGRO_KEY_RIGHT:
             case ALLEGRO_KEY_D:
-              if(op == 1 || op == 3){
-                colors[op-1] = colors::YELLOW;
-                op++;
-                colors[op-1] = colors::WHITE;
+              if(selected_op == 0 || selected_op == 2){
+                selected_op++;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_car_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_DOWN:
             case ALLEGRO_KEY_S:
-              if(op < 3){
-                colors[op-1] = colors::YELLOW;
-                op += 2;
-                colors[op-1] = colors::WHITE;
+              if(selected_op < 2){
+                selected_op += 2;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_car_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_LEFT:
             case ALLEGRO_KEY_A:
-              if(op == 2 || op == 4){
-                colors[op-1] = colors::YELLOW;
-                op--;
-                colors[op-1] = colors::WHITE;
+              if(selected_op == 1 || selected_op == 3){
+                selected_op--;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_car_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_UP:
             case ALLEGRO_KEY_W:
-              if(op > 2){
-                colors[op-1] = colors::YELLOW;
-                op -= 2;
-                colors[op-1] = colors::WHITE;
+              if(selected_op > 1){
+                selected_op -= 2;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_car_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_ENTER:
               sounds::play_sample(sounds::MENU_SELECT_SOUND);
-              res[0] = op;
-              color = color_selection();
-              if(color == 7) res[0] = 5;
-              if(color == -1) res[0] = -1;
-              res[1] = color;
-              return res;
+              int result = color_selection(mode, selected_op);
+              if(result != MENU_ACTION_GO_BACK){
+                return MENU_ACTION_DONE;
+              }
+              break;
           }
+          render_car_selection(selected_op);
         }
       }
-      res[0] = 0;
-      return res;
+      return MENU_ACTION_DONE;
     }
 
-    // Update color selection screen
-    void redraw_color_selection(int op){
+    /**
+     * Color selection region
+    */
+    void render_color_selection(int selected_op){
       float block_size = 150.0;
-      ALLEGRO_COLOR options[7] = {colors::rgb(255, 0, 0), colors::rgb(0, 0, 255), colors::rgb(0, 255, 0), colors::rgb(100, 100, 100), colors::rgb(170, 0, 240), colors::rgb(247, 165, 0), colors::rgb(0, 0, 0)};
+
+      ALLEGRO_COLOR color_options[7] = {
+        colors::rgb(255, 0, 0),
+        colors::rgb(0, 0, 255),
+        colors::rgb(0, 255, 0),
+        colors::rgb(100, 100, 100),
+        colors::rgb(170, 0, 240),
+        colors::rgb(247, 165, 0),
+        colors::rgb(0, 0, 0)
+      };
+
       display::clear_display(colors::BLUE, false);
       display::draw_text(fonts::PIXEL_32, colors::YELLOW, (SCREEN_WIDTH/2), 35, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR COLOR", false);
+
       for(int i = -3; i < 4; i++){
-        al_draw_filled_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, options[i+3]);
-        al_draw_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, colors[i+3], 5);
+        al_draw_filled_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, color_options[i+3]);
+        al_draw_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, get_color(i+3, selected_op), 5);
       }
       al_flip_display();
     }
 
-    // Select car color
-    int color_selection(){
-      int op = 0;
-      // Selected option = colors::WHITE
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
-      colors[2] = colors::YELLOW;
-      colors[3] = colors::YELLOW;
-      colors[4] = colors::YELLOW;
-      colors[5] = colors::YELLOW;
-      colors[6] = colors::YELLOW;
-      redraw_color_selection(op);
+    /**
+     * Color selection menu entry point
+    */
+    int color_selection(int mode, int car){
+      int selected_op = 0, result;
+      ALLEGRO_EVENT ev;
+
+      render_color_selection(selected_op);
+      al_flush_event_queue(environment::input_event_queue);
       while (true) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          return 7;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-          if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-            sounds::play_sample(sounds::MENU_BACK_SOUND);
-            return -1;
-          }
+
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_ESCAPE:
+              sounds::play_sample(sounds::MENU_BACK_SOUND);
+              return MENU_ACTION_GO_BACK;
+
             case ALLEGRO_KEY_RIGHT:
             case ALLEGRO_KEY_D:
-              if(op < 6){
-                colors[op] = colors::YELLOW;
-                op++;
-                colors[op] = colors::WHITE;
+              if(selected_op < 6){
+                selected_op++;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_color_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_LEFT:
             case ALLEGRO_KEY_A:
-              if(op > 0){
-                colors[op] = colors::YELLOW;
-                op--;
-                colors[op] = colors::WHITE;
+              if(selected_op > 0){
+                selected_op--;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                redraw_color_selection(op);
               }
               break;
+
             case ALLEGRO_KEY_ENTER:
               sounds::play_sample(sounds::MENU_SELECT_SOUND);
-              return op;
+              result = map_selection(mode, display::get_car_bitmap((CarsTypes)car, selected_op));
+
+              if(result != MENU_ACTION_GO_BACK){
+                return result;
+              }
+              break;
           }
+          render_color_selection(selected_op);
         }
       }
-      return 0;
+      return MENU_ACTION_DONE;
     }
 
-    void redraw_map_selection(int op){
+    /**
+     * Map selection region
+    */
+    void render_map_selection(int selected_op){
       int square_w = 500, square_h = 200;
       display::clear_display(colors::BLUE, false);
+
       display::draw_text(fonts::PIXEL_28, colors::YELLOW, SCREEN_WIDTH/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
+
       display::draw_text(fonts::PIXEL_22, colors::YELLOW, (SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
       al_draw_bitmap(display::LAS_VEGAS_ICON_BITMAP, (SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), (SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, colors[0], 5);
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), (SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(0, selected_op), 5);
       al_flip_display();
     }
 
-    void flip_map_selection(int op, bool go_right){
+    void flip_map_selection(int selected_op, bool go_right){
       int square_w = 500, square_h = 200;
-      float positions[4];
+      float positions[4], slide_speed = 1.3;
+
+      float frame_offset = (SCREEN_WIDTH*slide_speed)/environment::fps;
+
       if(go_right) {
-        positions[0] = (SCREEN_WIDTH*(1-op));
-        positions[1] = (SCREEN_WIDTH*(2-op));
-        positions[2] = (SCREEN_WIDTH*(3-op));
-        positions[3] = (SCREEN_WIDTH*(4-op));
+        positions[0] = (SCREEN_WIDTH*(1-selected_op));
+        positions[1] = (SCREEN_WIDTH*(2-selected_op));
+        positions[2] = (SCREEN_WIDTH*(3-selected_op));
+        positions[3] = (SCREEN_WIDTH*(4-selected_op));
       }
+
       else {
-        positions[0] = (SCREEN_WIDTH*(-1-op));
-        positions[1] = (SCREEN_WIDTH*(-op));
-        positions[2] = (SCREEN_WIDTH*(1-op));
-        positions[3] = (SCREEN_WIDTH*(2-op));
+        positions[0] = (SCREEN_WIDTH*(-1-selected_op));
+        positions[1] = (SCREEN_WIDTH*(-selected_op));
+        positions[2] = (SCREEN_WIDTH*(1-selected_op));
+        positions[3] = (SCREEN_WIDTH*(2-selected_op));
       }
-      al_flush_event_queue(environment::queue);
-      while((go_right && positions[op] > 0) || (!go_right && positions[op] < 0)){
+
+      al_flush_event_queue(environment::timer_event_queue);
+      while((go_right && positions[selected_op] > 0) || (!go_right && positions[selected_op] < 0)){
         ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
-        if(ev.type == ALLEGRO_EVENT_TIMER){
-          for (int i = 0; i < 4; i++) {
-            if(go_right) positions[i] -= (SCREEN_WIDTH*1.3)/60;
-            else positions[i] += (SCREEN_WIDTH*1.3)/60;
-          }
-          display::clear_display(colors::BLUE, false);
-          display::draw_text(fonts::PIXEL_28, colors::YELLOW, SCREEN_WIDTH/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
-          // Lass Vegas
-          display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[0]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
-          al_draw_bitmap(display::LAS_VEGAS_ICON_BITMAP, positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-          al_draw_rounded_rectangle(positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[0]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, colors[0], 5);
-          // Bordeaux
-          display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[1]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
-          al_draw_bitmap(display::BORDEAUX_ICON_BITMAP, positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-          al_draw_rounded_rectangle(positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[1]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, colors[1], 5);
-          // Hiroshima
-          display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[2]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
-          al_draw_bitmap(display::HIROSHIMA_ICON_BITMAP, positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-          al_draw_rounded_rectangle(positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[2]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, colors[2], 5);
-          // Frankfurt
-          display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[3]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
-          al_draw_bitmap(display::FRANKFURT_ICON_BITMAP, positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-          al_draw_rounded_rectangle(positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[3]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, colors[3], 5);
-          al_flip_display();
+        al_wait_for_event(environment::timer_event_queue, &ev);
+
+        for (int i = 0; i < 4; i++) {
+          if(go_right) positions[i] -= frame_offset;
+          else positions[i] += frame_offset;
         }
+
+        display::clear_display(colors::BLUE, false);
+        display::draw_text(fonts::PIXEL_28, colors::YELLOW, SCREEN_WIDTH/2, 20, ALLEGRO_ALIGN_CENTRE, "MAP SELECTION", false);
+
+        // Lass Vegas
+        display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[0]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
+        al_draw_bitmap(display::LAS_VEGAS_ICON_BITMAP, positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
+        al_draw_rounded_rectangle(positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[0]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(0, selected_op), 5);
+        
+        // Bordeaux
+        display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[1]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
+        al_draw_bitmap(display::BORDEAUX_ICON_BITMAP, positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
+        al_draw_rounded_rectangle(positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[1]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(1, selected_op), 5);
+        
+        // Hiroshima
+        display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[2]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
+        al_draw_bitmap(display::HIROSHIMA_ICON_BITMAP, positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
+        al_draw_rounded_rectangle(positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[2]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(2, selected_op), 5);
+        
+        // Frankfurt
+        display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[3]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
+        al_draw_bitmap(display::FRANKFURT_ICON_BITMAP, positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
+        al_draw_rounded_rectangle(positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[3]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(3, selected_op), 5);
+        al_flip_display();
       }
     }
 
-    int map_selection(){
-      int op = 0;
-      // Selected option = colors::WHITE
-      colors[0] = colors::WHITE;
-      colors[1] = colors::YELLOW;
-      colors[2] = colors::YELLOW;
-      colors[3] = colors::YELLOW;
-      redraw_map_selection(op);
+    int map_selection(int mode, ALLEGRO_BITMAP* car){
+      ALLEGRO_EVENT ev;
+      int selected_op = 0, result;
+
+      render_map_selection(selected_op);
+      al_flush_event_queue(environment::input_event_queue);
       while (true) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(environment::queue, &ev);
+        al_wait_for_event(environment::input_event_queue, &ev);
+
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-          return 4;
+          return MENU_ACTION_QUIT_GAME;
         }
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-          if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-            sounds::play_sample(sounds::MENU_BACK_SOUND);
-            return -1;
-          }
+
+        if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
           switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_ESCAPE:
+              sounds::play_sample(sounds::MENU_BACK_SOUND);
+              return MENU_ACTION_GO_BACK;
+
             case ALLEGRO_KEY_RIGHT:
             case ALLEGRO_KEY_D:
-              if(op < 3){
-                colors[op] = colors::YELLOW;
-                op++;
-                colors[op] = colors::WHITE;
+              if(selected_op < 3){
+                selected_op++;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                flip_map_selection(op, true);
+                flip_map_selection(selected_op, true);
               }
               break;
+
             case ALLEGRO_KEY_LEFT:
             case ALLEGRO_KEY_A:
-              if(op > 0){
-                colors[op] = colors::YELLOW;
-                op--;
-                colors[op] = colors::WHITE;
+              if(selected_op > 0){
+                selected_op--;
                 sounds::play_sample(sounds::MENU_MOVE_SOUND);
-                flip_map_selection(op, false);
+                flip_map_selection(selected_op, false);
               }
               break;
+
             case ALLEGRO_KEY_ENTER:
               sounds::play_sample(sounds::MENU_SELECT_SOUND);
-              return op;
+              switch (mode) {
+              case GAME_MODE_QUICK_PLAY:
+                result = top_gear::play(car, nullptr, 11, (Map)selected_op, true);
+                break;
+              
+              default:
+                result = top_gear::tournament(car, 11);
+                break;
+              }
+              sounds::stop_music(sounds::music);
+              sounds::music = sounds::set_music(TITLE_MUSIC);
+              sounds::start_music(sounds::music, true);
+              return result;
           }
         }
       }
-      return 0;
+      return MENU_ACTION_DONE;
     }
 
   }

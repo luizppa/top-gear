@@ -3,6 +3,7 @@
 
 #include "./car.hpp"
 
+#include <string>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_image.h>
@@ -87,10 +88,12 @@ namespace top_gear {
         float get_bitmap_width(ALLEGRO_BITMAP* bitmap);
         float get_bitmap_height(ALLEGRO_BITMAP* bitmap);
         void draw_text(ALLEGRO_FONT *selected_font, ALLEGRO_COLOR color, int position_x, int position_y, int align, char* text, bool flip);
+        void draw_text(ALLEGRO_FONT *selected_font, ALLEGRO_COLOR color, int position_x, int position_y, int align, std::string text, bool flip);
         void clear_display(ALLEGRO_COLOR color, bool flip);
+        void draw_splash();
         void draw_title();
         void destroy_bitmaps();
-        ALLEGRO_BITMAP* get_car(CarsTypes car, int color);
+        ALLEGRO_BITMAP* get_car_bitmap(CarsTypes car, int color);
 
     }
 

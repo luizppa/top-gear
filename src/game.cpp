@@ -336,28 +336,30 @@ namespace top_gear {
     player->set_y(player->get_y() + (player->get_speed() * DISTANCE_VARIATION));
   }
 
+  // Process AI commands for each oponent
   void control_oponents(){
     for (int i = 0; i < oponent_count; i++){
       oponents[i]->control_ia(cars, objects, oponent_count+1, object_count, is_car_visible(oponents[i]));
     }
   }
 
-  // Update game instant
-  int update(){
-    control_gears();
-    al_get_keyboard_state(&environment::key_state);
-    move();
-    control_oponents();
+  // Move visible scenario objects
+  void move_scenario_objects(){
     for (int i = 0; i < 5; i++) {
-      if(object_distance(i) >= objects[i]->get_height()){
+      if(object_distance(i) < -objects[i]->get_height()){
         objects[i]->set_y(objects[i]->get_y() + ((5-1)*120) + objects[i]->get_height());
         objects[i+5]->set_y(objects[i+5]->get_y() + ((5-1)*120) + objects[i]->get_height());
       }
     }
-    // Update screen
-    // al_stop_timer(environment::timer);
+  }
+
+  // Update game instant
+  int update(){
+    control_gears();
+    move();
+    control_oponents();
+    move_scenario_objects();
     draw_game();
-    // al_start_timer(environment::timer);
     if(player->get_y() >= track_length) {
       return 1;
     }
@@ -405,7 +407,7 @@ namespace top_gear {
     sounds::set_music_volume(sounds::music, 0.6);
     while (true) {
       ALLEGRO_EVENT ev;
-      al_wait_for_event(environment::priority_queue, &ev);
+      al_wait_for_event(environment::input_event_queue, &ev);
       // Quit game
       if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
         return 4;
@@ -469,7 +471,7 @@ namespace top_gear {
 
   int deaccelerate_until_stop(){
     while (true) {
-      al_wait_for_event(environment::queue, &ev);
+      al_wait_for_event(environment::event_queue, &ev);
       if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) return 4;
 
       else if(ev.type == ALLEGRO_EVENT_TIMER) {
@@ -491,7 +493,7 @@ namespace top_gear {
         }
         if(player->get_speed() <= 0){
           al_rest(3);
-          al_flush_event_queue(environment::queue);
+          al_flush_event_queue(environment::event_queue);
           return 0;
         }
       }
@@ -516,7 +518,7 @@ namespace top_gear {
     else display::draw_text(fonts::PIXEL_32, colors::YELLOW, SCREEN_WIDTH/2, 25, ALLEGRO_ALIGN_CENTER, "YOU DID NOT QUALIFIED", false);
     display::draw_text(fonts::PIXEL_22, colors::ORANGE, SCREEN_WIDTH/2, 150, ALLEGRO_ALIGN_CENTER, "Press enter to continue", false);
     while (true) {
-      al_wait_for_event(environment::queue, &ev);
+      al_wait_for_event(environment::event_queue, &ev);
       // Continue
       if(ev.type == ALLEGRO_EVENT_KEY_UP){
         if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER || ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
@@ -543,7 +545,7 @@ namespace top_gear {
     al_draw_bitmap(map_landscape, (SCREEN_WIDTH/2)-1500+landscape_position, SCREEN_HEIGHT-250, 0);
     al_flip_display();
     while (true) {
-      al_wait_for_event(environment::queue, &ev);
+      al_wait_for_event(environment::event_queue, &ev);
       // Continue
       if(ev.type == ALLEGRO_EVENT_KEY_UP){
         if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER || ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) break;
@@ -580,21 +582,22 @@ namespace top_gear {
     int player_position = oponent_count+1;
     street_left_limit = (SCREEN_WIDTH-street_width)/2;
     object_count = 30;
-    objects = (Object**) malloc(object_count*sizeof(Object*));
-    cars = (Car**) malloc((oponent_count+1)*sizeof(Car*));
 
     // Initialize objects
+    objects = (Object**) malloc(object_count*sizeof(Object*));
     objects[object_count-1] = new Object(0, track_length, display::FINISH_LINE, false);
     for (int i = 0; i < 5; i++) {
       objects[i] = new Object(-(street_width/2)-120, i*120, display::ROAD_SIGN, false);
       objects[i+5] = new Object((street_width/2)+120, i*120, display::ROAD_SIGN, false);
     }
     for (int i = 10; i < object_count-1; i++) {
-      float x = (rand()%(int)(street_width-30))-((street_width-30)/2), y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
+      float x = (rand()%(int)(street_width-40))-((street_width-40)/2);
+      float y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
       objects[i] = Object::get_random_obstacle(x, y);
     }
 
     // Initialize oponents
+    cars = (Car**) malloc((oponent_count+1)*sizeof(Car*));
     if(tournament_cars){
       oponents = tournament_cars;
     }
@@ -604,7 +607,7 @@ namespace top_gear {
       for (int i = 0; i < oponent_count; i++) {
         car_type = rand()%4;
         car_color = rand()%7;
-        oponents[i] = new Car(i+1, display::get_car((CarsTypes)car_type, car_color));
+        oponents[i] = new Car(i+1, display::get_car_bitmap((CarsTypes)car_type, car_color));
       }
     }
     for (int i = 0; i < oponent_count; i++) {
@@ -683,8 +686,8 @@ namespace top_gear {
       al_rest(1);
     }
     sounds::play_sample(sounds::GO_SOUND);
-    al_flush_event_queue(environment::queue);
-    al_flush_event_queue(environment::priority_queue);
+    al_flush_event_queue(environment::event_queue);
+    al_flush_event_queue(environment::input_event_queue);
     al_set_timer_count(environment::timer, 0);
   }
 
@@ -700,8 +703,8 @@ namespace top_gear {
     countdown();
     // Main loop
     while (true) {
-      while(!al_is_event_queue_empty(environment::priority_queue)){
-        al_wait_for_event(environment::priority_queue, &ev);
+      while(!al_is_event_queue_empty(environment::input_event_queue)){
+        al_wait_for_event(environment::input_event_queue, &ev);
         // Quit game
         if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
           if(engine_running && player_engine_sound_instance) sounds::stop_sample(player_engine_sound_instance);
@@ -712,7 +715,7 @@ namespace top_gear {
           result = handle_key_events();
         }
       }
-      al_wait_for_event(environment::queue, &ev);
+      al_wait_for_event(environment::event_queue, &ev);
       // Each 1/environment::fps seconds
       if(ev.type == ALLEGRO_EVENT_TIMER) {
         result = update();
@@ -752,7 +755,7 @@ namespace top_gear {
     for (int i = 0; i < oponents_amount; i++) {
       car_type = (rand()%4)+1;
       car_color = rand()%7;
-      tournament_cars[i] = new Car(i+1, display::get_car((CarsTypes)car_type, car_color));
+      tournament_cars[i] = new Car(i+1, display::get_car_bitmap((CarsTypes)car_type, car_color));
     }
     for (int i = 0; i < 4; i++) {
       op = play(player_texture, tournament_cars, oponents_amount, (Map)i, (i==3));
