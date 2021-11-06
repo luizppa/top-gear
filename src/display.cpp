@@ -1,6 +1,7 @@
 #include "../include/display.hpp"
 #include "../include/car.hpp"
 #include "../include/fonts.hpp"
+#include "../include/environment.hpp"
 
 namespace top_gear {
 
@@ -146,10 +147,24 @@ namespace top_gear {
       if(flip) al_flip_display();
     }
 
+    void draw_text(ALLEGRO_FONT *selected_font, ALLEGRO_COLOR color, int position_x, int position_y, int align, std::string text, bool flip){
+      al_draw_text(selected_font, color, position_x, position_y, align, text.c_str());
+      if(flip) al_flip_display();
+    }
+
     // Clear the display to a given color
     void clear_display(ALLEGRO_COLOR color, bool flip){
       al_clear_to_color(color);
       if(flip) al_flip_display();
+    }
+
+    void draw_splash(){
+        /* Presentation screen */
+        draw_text(fonts::DISKUN_60, colors::BLUE, SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-60, ALLEGRO_ALIGN_CENTRE, "LUIZ PHILIPPE", false);
+        draw_text(fonts::PIXEL_28, colors::WHITE, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, ALLEGRO_ALIGN_CENTRE, "presents", true);
+        al_rest(3);
+        al_flush_event_queue(environment::event_queue);
+        top_gear::display::draw_title();
     }
 
     // Draw title screen
@@ -173,7 +188,7 @@ namespace top_gear {
         5 = Yellow
         6 = Black
     */
-    ALLEGRO_BITMAP* get_car(CarsTypes car, int color){
+    ALLEGRO_BITMAP* get_car_bitmap(CarsTypes car, int color){
       switch (car) {
         case CarsTypes::DOMINUS:
           switch (color) {
