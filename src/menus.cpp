@@ -18,7 +18,7 @@ namespace top_gear {
     int color_selection(int mode, int car);
     int map_selection(int mode, ALLEGRO_BITMAP* car);
 
-    ALLEGRO_COLOR get_color(int option_number, int selected_option){
+    ALLEGRO_COLOR get_option_color(int option_number, int selected_option){
       return option_number == selected_option ? colors::WHITE : colors::YELLOW;
     }
 
@@ -28,10 +28,10 @@ namespace top_gear {
     int render_main_menu(int selected_op){
       display::clear_display(colors::BLUE, false);
       al_draw_bitmap(display::GAME_TITLE, (SCREEN_WIDTH/2)-203, (SCREEN_HEIGHT/2)-250, 0);
-      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
-      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
-      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
-      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
+      display::draw_text(fonts::PIXEL_28, get_option_color(0, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-35, ALLEGRO_ALIGN_CENTRE, "PLAY", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(1, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(2, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+45, ALLEGRO_ALIGN_CENTRE, "CREDITS", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(3, selected_op), SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+85, ALLEGRO_ALIGN_CENTRE, "EXIT", true);
     }
 
     int main_menu_loop(){
@@ -119,20 +119,20 @@ namespace top_gear {
       std::string debug_status = environment::debug ? "ON" : "OFF";
 
       // Music
-      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
-      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, music_status, false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(0, selected_op), (SCREEN_WIDTH/2)-80, 200+(1*35), ALLEGRO_ALIGN_RIGHT, "Music", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(0, selected_op), (SCREEN_WIDTH/2)+80, 200+(1*35), ALLEGRO_ALIGN_LEFT, music_status, false);
 
       // Sounds
-      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
-      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, sounds_status, false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(1, selected_op), (SCREEN_WIDTH/2)-80, 200+(2*35), ALLEGRO_ALIGN_RIGHT, "Sounds", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(1, selected_op), (SCREEN_WIDTH/2)+80, 200+(2*35), ALLEGRO_ALIGN_LEFT, sounds_status, false);
 
       // Collisions
-      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
-      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, collisions_status, false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(2, selected_op), (SCREEN_WIDTH/2)-80, 200+(3*35), ALLEGRO_ALIGN_RIGHT, "Collisions", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(2, selected_op), (SCREEN_WIDTH/2)+80, 200+(3*35), ALLEGRO_ALIGN_LEFT, collisions_status, false);
 
       // Debug
-      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
-      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, debug_status, false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(3, selected_op), (SCREEN_WIDTH/2)-80, 200+(4*35), ALLEGRO_ALIGN_RIGHT, "Debug", false);
+      display::draw_text(fonts::PIXEL_28, get_option_color(3, selected_op), (SCREEN_WIDTH/2)+80, 200+(4*35), ALLEGRO_ALIGN_LEFT, debug_status, false);
 
       al_flip_display();
     }
@@ -225,12 +225,12 @@ namespace top_gear {
       display::draw_text(fonts::PIXEL_32, colors::YELLOW, SCREEN_WIDTH/2, 35, ALLEGRO_ALIGN_CENTRE, "GAME MODE", false);
 
       // Quick play
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-25-square_size, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_color(0, selected_op), 5);
-      display::draw_text(fonts::PIXEL_28, get_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-25-square_size, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_option_color(0, selected_op), 5);
+      display::draw_text(fonts::PIXEL_28, get_option_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "QUICK PLAY", false);
       
       // Tournament
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)+25+square_size, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_color(1, selected_op), 5);
-      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-(square_size/2), (SCREEN_WIDTH/2)+25+square_size, (SCREEN_HEIGHT/2)+(square_size/2), 0, 0, get_option_color(1, selected_op), 5);
+      display::draw_text(fonts::PIXEL_28, get_option_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_size/2), (SCREEN_HEIGHT/2)-14, ALLEGRO_ALIGN_CENTRE, "TOURNAMENT", false);
       switch (selected_op) {
         case 0:
           display::draw_text(fonts::PIXEL_22, colors::WHITE, 30, SCREEN_HEIGHT-37, ALLEGRO_ALIGN_LEFT, "A single race to test your skills", true);
@@ -315,23 +315,23 @@ namespace top_gear {
       display::clear_display(colors::BLUE, false);
 
       // Dominus
-      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)-25, get_color(0, selected_op), border_tickness);
-      display::draw_text(fonts::PIXEL_22, get_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)-25, get_option_color(0, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_22, get_option_color(0, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Dominus GT", false);
       al_draw_bitmap(display::DOMINUS_GT_ICON_BITMAP, (SCREEN_WIDTH/2)-25-((square_width-dominus_w)/2)-dominus_w, (SCREEN_HEIGHT/2)-25-35-dominus_h, 0);
 
       // Octane
-      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)-25, get_color(1, selected_op), border_tickness);
-      display::draw_text(fonts::PIXEL_28, get_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)-25-square_height, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)-25, get_option_color(1, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_option_color(1, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)-25-square_height+12, ALLEGRO_ALIGN_CENTRE, "Octane ZSR", false);
       al_draw_bitmap(display::OCTANE_ZSR_ICON_BITMAP, (SCREEN_WIDTH/2)+25+((square_width-octane_w)/2), (SCREEN_HEIGHT/2)-25-35-octane_h, 0);
 
       // Roadhog
-      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+25+square_height, get_color(2, selected_op), border_tickness);
-      display::draw_text(fonts::PIXEL_28, get_color(2, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)-25-square_width, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)-25, (SCREEN_HEIGHT/2)+25+square_height, get_option_color(2, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_option_color(2, selected_op), (SCREEN_WIDTH/2)-25-(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Roadhog", false);
       al_draw_bitmap(display::ROADHOG_ICON_BITMAP, (SCREEN_WIDTH/2)-25-(square_width/2)-(roadhog_w/2), (SCREEN_HEIGHT/2)+25+square_height-35-roadhog_h, 0);
 
       // Maverick
-      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)+25+square_height, get_color(3, selected_op), border_tickness);
-      display::draw_text(fonts::PIXEL_28, get_color(3, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
+      al_draw_rectangle((SCREEN_WIDTH/2)+25, (SCREEN_HEIGHT/2)+25, (SCREEN_WIDTH/2)+25+square_width, (SCREEN_HEIGHT/2)+25+square_height, get_option_color(3, selected_op), border_tickness);
+      display::draw_text(fonts::PIXEL_28, get_option_color(3, selected_op), (SCREEN_WIDTH/2)+25+(square_width/2), (SCREEN_HEIGHT/2)+25+12, ALLEGRO_ALIGN_CENTRE, "Maverick", false);
       al_draw_bitmap(display::MAVERICK_ICON_BITMAP, (SCREEN_WIDTH/2)+25+(square_width/2)-(maverick_w/2), (SCREEN_HEIGHT/2)+25+square_height-35-maverick_h, 0);
 
       display::draw_text(fonts::PIXEL_32, colors::YELLOW, (SCREEN_WIDTH/2), 30, ALLEGRO_ALIGN_CENTRE, "SELECT YOUR VEICHLE", true);
@@ -426,7 +426,7 @@ namespace top_gear {
 
       for(int i = -3; i < 4; i++){
         al_draw_filled_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, color_options[i+3]);
-        al_draw_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, get_color(i+3, selected_op), 5);
+        al_draw_rounded_rectangle((SCREEN_WIDTH/2)+(i*(block_size+25.0))-(block_size/2), (SCREEN_HEIGHT/2)-(block_size/2), (SCREEN_WIDTH/2)+(i*(block_size+25))+(block_size/2), (SCREEN_HEIGHT/2)+(block_size/2), 0, 0, get_option_color(i+3, selected_op), 5);
       }
       al_flip_display();
     }
@@ -495,7 +495,7 @@ namespace top_gear {
 
       display::draw_text(fonts::PIXEL_22, colors::YELLOW, (SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
       al_draw_bitmap(display::LAS_VEGAS_ICON_BITMAP, (SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), (SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(0, selected_op), 5);
+      al_draw_rounded_rectangle((SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), (SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_option_color(0, selected_op), 5);
       al_flip_display();
     }
 
@@ -535,22 +535,22 @@ namespace top_gear {
         // Lass Vegas
         display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[0]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "LAS VEGAS", false);
         al_draw_bitmap(display::LAS_VEGAS_ICON_BITMAP, positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-        al_draw_rounded_rectangle(positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[0]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(0, selected_op), 5);
+        al_draw_rounded_rectangle(positions[0]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[0]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_option_color(0, selected_op), 5);
         
         // Bordeaux
         display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[1]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "BORDEAUX", false);
         al_draw_bitmap(display::BORDEAUX_ICON_BITMAP, positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-        al_draw_rounded_rectangle(positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[1]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(1, selected_op), 5);
+        al_draw_rounded_rectangle(positions[1]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[1]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_option_color(1, selected_op), 5);
         
         // Hiroshima
         display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[2]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "Hiroshima", false);
         al_draw_bitmap(display::HIROSHIMA_ICON_BITMAP, positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-        al_draw_rounded_rectangle(positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[2]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(2, selected_op), 5);
+        al_draw_rounded_rectangle(positions[2]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[2]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_option_color(2, selected_op), 5);
         
         // Frankfurt
         display::draw_text(fonts::PIXEL_22, colors::YELLOW, positions[3]+(SCREEN_WIDTH/2), 100, ALLEGRO_ALIGN_CENTRE, "FRANKFURT", false);
         al_draw_bitmap(display::FRANKFURT_ICON_BITMAP, positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), 0);
-        al_draw_rounded_rectangle(positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[3]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_color(3, selected_op), 5);
+        al_draw_rounded_rectangle(positions[3]+(SCREEN_WIDTH/2)-(square_w/2), (SCREEN_HEIGHT/2)-(square_h/2), positions[3]+(SCREEN_WIDTH/2)+(square_w/2), (SCREEN_HEIGHT/2)+(square_h/2), 0, 0, get_option_color(3, selected_op), 5);
         al_flip_display();
       }
     }

@@ -8,6 +8,7 @@
 namespace top_gear{
 
     enum Map {
+        NONE = -1,
         LAS_VEGAS,
         BORDEAUX,
         HIROSHIMA,
@@ -16,8 +17,8 @@ namespace top_gear{
 
     namespace maps {
 
+        std::string get_map_song_title(Map map);
         ALLEGRO_AUDIO_STREAM* get_map_music(Map map);
-        char* get_map_music_title(Map map);
         ALLEGRO_BITMAP* get_map_landscape(Map map);
         ALLEGRO_COLOR get_map_color(Map map);
 

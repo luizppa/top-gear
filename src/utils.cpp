@@ -1,4 +1,5 @@
 #include "../include/utils.hpp"
+#include "../include/display.hpp"
 
 namespace top_gear {
 
@@ -46,6 +47,13 @@ namespace top_gear {
       float delta = (D+h-d)/(D+h);
       return delta;
       // return 1;
+    }
+
+    /**
+     * Returns (SCREEN_WIDTH / 2) + position
+    */
+    float normalize(float position){
+      return (SCREEN_WIDTH / 2) + position;
     }
 
   }

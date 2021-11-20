@@ -4,9 +4,10 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
-#include <stdio.h>
+#include <iostream>
+#include <vector>
 
-#include "object.hpp"
+#include "./obstacle.hpp"
 
 // Environmental values
 #define GRASS_SLOW_EFFECT 0.13333333333
@@ -49,13 +50,15 @@ namespace top_gear {
       int max_gear;
       bool will_colide;
       bool going_right;
+      bool engine_running = false;
+      bool boosting = false;
       ALLEGRO_BITMAP* texture;
+      ALLEGRO_SAMPLE_INSTANCE* engine_sound_instance = nullptr;
       
-      bool is_aligned_to(Object* object);
+      bool is_aligned_to(Obstacle* object);
       bool is_aligned_to(Car* car);
       float ai_gear_up_point();
-      static int partition(Car** cars, int first, int last);
-      static Car** quick_sort_helper(Car** cars, int first, int last);
+      static bool compare(Car* a, Car* b);
 
     public:
       Car(ALLEGRO_BITMAP* texture);
@@ -66,38 +69,47 @@ namespace top_gear {
       int get_points() { return this->points; }
       float get_width() { return this->width; }
       float get_apparent_width() { return this->apparent_width; }
-      float set_apparent_width(float apparent_width) { this->apparent_width = apparent_width; }
       float get_height() { return this->height; }
       float get_apparent_height() { return this->apparent_height; }
-      float set_apparent_height(float apparent_height) { this->apparent_height = apparent_height; }
       float get_speed() { return this->speed; }
-      float set_speed(float speed) { this->speed = speed; }
       float get_x() { return this->x; }
-      float set_x(float x) { this->x = x; }
       float get_screen_x() { return this->screen_x; }
-      float set_screen_x(float screen_x) { this->screen_x = screen_x; }
       float get_y() { return this->y; }
-      float set_y(float y) { this->y = y; }
       float get_screen_y() { return this->screen_y; }
-      float set_screen_y(float screen_y) { this->screen_y = screen_y; }
       float get_nitrox() { return this->nitrox; }
-      float set_nitrox(float nitrox) { this->nitrox = nitrox; }
       float speed_increase();
       int get_gear() { return this->gear; }
       int get_max_gear() { return this->max_gear; }
-      bool get_will_colide() { return this->will_colide; }
-      bool get_going_right() { return this->going_right; }
+      bool is_will_colide() { return this->will_colide; }
+      bool is_going_right() { return this->going_right; }
+      bool is_engine_running() { return this->engine_running; }
+      bool is_boosting() { return this->boosting; }
       ALLEGRO_BITMAP* get_texture() { return this->texture; }
+      ALLEGRO_SAMPLE_INSTANCE* get_engine_sound_instance() { return this->engine_sound_instance; };
+
+      
+      void set_apparent_width(float apparent_width) { this->apparent_width = apparent_width; }
+      void set_apparent_height(float apparent_height) { this->apparent_height = apparent_height; }
+      void set_speed(float speed) { this->speed = speed; }
+      void set_x(float x) { this->x = x; }
+      void set_screen_x(float screen_x) { this->screen_x = screen_x; }
+      void set_y(float y) { this->y = y; }
+      void set_screen_y(float screen_y) { this->screen_y = screen_y; }
+      void set_nitrox(float nitrox) { this->nitrox = nitrox; }
+      void set_engine_running(bool running) { this->engine_running = running; }
+      void set_boosting(bool boosting) { this->boosting = boosting; }
 
       void gear_up();
       void gear_down();
       void set_gear(int gear);
-      void control_ia(Car** cars, Object** objects, int car_count, int object_count, bool play_sounds);
+      void control_ia(std::vector<Car*>& cars, std::vector<Obstacle*>& objects, bool play_sounds);
+      void play_engine_sound();
+      void stop_engine_sound();
       int get_gear_progress();
-      bool car_collided(Car** cars, Object** objects, int car_count, int object_count);
-      static void restart_positions(Car** Cars, int count);
+      bool car_collided(std::vector<Car*>& cars, std::vector<Obstacle*>& objects);
+      static void restart_positions(std::vector<Car*>& cars);
       static float max_speed(int gear);
-      static Car** quick_sort_cars(Car** cars, int size);
+      static void sort(std::vector<Car*>& cars);
   };
 
 }

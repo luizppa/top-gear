@@ -6,6 +6,7 @@
 #include "../include/sounds.hpp"
 
 #include<iostream>
+#include<algorithm>
 
 namespace top_gear {
 
@@ -74,11 +75,24 @@ namespace top_gear {
     if(gear > 0 && gear <= this->max_gear) this->gear = gear;
   }
 
-  void Car::control_ia(Car** cars, Object** objects, int car_count, int object_count, bool play_sounds){
+  void Car::play_engine_sound(){
+    if(this->engine_running){
+      sounds::stop_sample(this->engine_sound_instance);
+    }
+  }
+
+  void Car::stop_engine_sound(){
+    if(this->engine_running){
+      this->engine_sound_instance = sounds::continuously_play_sample(sounds::CAR_ENGINE_SOUND);
+      sounds::set_sample_volume(this->engine_sound_instance, this->get_speed()/Car::max_speed(this->get_gear()));
+    }
+  }
+
+  void Car::control_ia(std::vector<Car*>& cars, std::vector<Obstacle*>& obstacles, bool play_sounds){
     float skill_rate = (0.05/12.0)*this->lvl;
     float delta_speed = this->speed_increase();
     if(environment::collisions) {
-      if(this->car_collided(cars, objects, car_count, object_count) && play_sounds){
+      if(this->car_collided(cars, obstacles) && play_sounds){
         sounds::play_sample(sounds::COLLISION_SOUND);
       }
     }
@@ -129,13 +143,13 @@ namespace top_gear {
   }
 
   // Returns true if car collided with either an object or another car (also impacts speed)
-  bool Car::car_collided(Car** cars, Object** objects, int car_count, int object_count){
+  bool Car::car_collided(std::vector<Car*>& cars, std::vector<Obstacle*>& obstacles){
     float relative_speed, distance;
     bool aligned;
     this->will_colide = false;
 
     // Collision with other cars
-    for(int i = 0; i < car_count; i++){
+    for(int i = 0; i < cars.size(); i++){
       relative_speed = this->speed - cars[i]->speed;
       distance = cars[i]->y - this->y;
       aligned = this->is_aligned_to(cars[i]);
@@ -159,10 +173,10 @@ namespace top_gear {
     }
 
     // Collision with objects
-    for(int i = 0; i < object_count; i++){
-      if(objects[i]->is_collidable()){
-        distance = objects[i]->get_y(); - this->y;
-        aligned = this->is_aligned_to(objects[i]);
+    for(int i = 0; i < obstacles.size(); i++){
+      if(obstacles[i]->is_collidable()){
+        distance = obstacles[i]->get_y(); - this->y;
+        aligned = this->is_aligned_to(obstacles[i]);
         if(aligned){
           if (distance <= COLLISION_DISTANCE*2.5 && distance >= 0){
             this->will_colide = true;
@@ -179,7 +193,7 @@ namespace top_gear {
   }
 
   // Returns true if the cars is horizontally aligned with the object
-  bool Car::is_aligned_to(Object* object){
+  bool Car::is_aligned_to(Obstacle* object){
     float car_x0 = this->screen_x - (this->width/2);
     float car_xf = this->screen_x + (this->width/2);
     float object_x0 = object->get_screen_x() - (object->get_width()/2);
@@ -279,8 +293,8 @@ namespace top_gear {
   }
 
   // Place the cars at the begginig of the road based on their position on the last match
-  void Car::restart_positions(Car** cars, int count){
-    for (int i = 0; i < count; i++) {
+  void Car::restart_positions(std::vector<Car*>& cars){
+    for (int i = 0; i < cars.size(); i++) {
       cars[i]->speed = 0.0;
       cars[i]->gear = 1;
       if(i+1 < 4){
@@ -320,53 +334,14 @@ namespace top_gear {
     }
   }
 
-  // quick_sort_cars sorting logic
-  int Car::partition(Car** cars, int first, int last){
-    Car *pivot = cars[first], *aux;
-    int left_marker = first+1, right_marker = last;
-    bool done = false;
-    while (!done) {
-      while (left_marker <= right_marker && cars[left_marker]->y <= pivot->y){
-        left_marker++;
-      }
-      while(cars[right_marker]->y >= pivot->y && right_marker >= left_marker){
-        right_marker--;
-      }
-      if (right_marker < left_marker) {
-        done = true;
-      }
-      else{
-        aux = cars[left_marker];
-        cars[left_marker] = cars[right_marker];
-        cars[right_marker] = aux;
-      }
-    }
-    aux = cars[first];
-    cars[first] = cars[right_marker];
-    cars[right_marker] = aux;
-    return right_marker;
-  }
-
   // Recursive call of quick_sort_cars
-  Car** Car::quick_sort_helper(Car** cars, int first, int last){
-    if(first < last){
-      int split_point = Car::partition(cars, first, last);
-      Car::quick_sort_helper(cars, first, split_point-1);
-      Car::quick_sort_helper(cars, split_point+1, last);
-    }
-    return cars;
+  bool Car::compare(Car* a, Car* b){
+    return a->get_y() < b->get_y();
   }
 
   // Sort the cars array based on their Y position
-  Car** Car::quick_sort_cars(Car** cars, int size){
-    Car::quick_sort_helper(cars, 0, size-1);
-    if(environment::debug){
-      std::cout << "----------------------" << std::endl;
-      for(int i = 0; i < size; i++){
-        std::cout << cars[i]->name << ": " << cars[i]->y << std::endl;
-      }
-    }
-    return cars;
+  void Car::sort(std::vector<Car*>& cars){
+    std::sort(cars.begin(), cars.end(), Car::compare);
   }
 
 }

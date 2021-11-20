@@ -7,262 +7,356 @@
 #include "../include/colors.hpp"
 #include "../include/sounds.hpp"
 
-#include <time.h>
 #include <unistd.h>
+#include <ctime>
+#include <vector>
+#include <fstream>
 
 namespace top_gear {
 
-  bool finished = false;
-  bool engine_running = false;
-  bool boosting = false;
-  bool best_time = false;
-  int map; // The map code
-  int placement = 1; // Player race position
-  int oponent_count; // Number of AI controlled oponents on the game
-  int object_count = 0; // Number of static objects on the map
-  int record = 0;
-  float position; // The road center x coordinate on the screen
-  float street_width = 1300.0; // Street base width
-  float street_length = 500.0; // Street visible s pam
-  float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
-  float street_left_limit; // Street border
-  float track_length = 50000.0;
-  float paralax = 1.3;
-  double race_time;
-  char* map_music_title;
-  ALLEGRO_EVENT ev;
-  Car* player;
-  Car** oponents;
-  Car** cars;
-  Object** objects;
-  ALLEGRO_COLOR map_soil;
-  ALLEGRO_BITMAP* map_landscape = nullptr;
-  ALLEGRO_SAMPLE_INSTANCE *player_engine_sound_instance = nullptr;
-
-  void countdown();
-  void clear_game();
-
-  // Distance from the car wheels to the bottom of the screen
-  float distance_from_bottom(Car* oponent){
-    return oponent->get_y() - player->get_y();
+  Race::Race(ALLEGRO_BITMAP* player_texture, Map map, std::vector<Car*> tournament_cars){
+    this->renderer = GameRenderer(this);
+    this->map = map;
+    this->is_tournament = true;
+    this->is_single_race = !this->is_tournament;
+    this->oponent_count = tournament_cars.size();
+    this->setup(player_texture, tournament_cars);
   }
 
-  // Distance from the car wheels to static object
-  float object_distance(int i){
-    return objects[i]->get_y() - player->get_y();
+  Race::Race(ALLEGRO_BITMAP* player_texture, Map map, int oponents_amount){
+    this->renderer = GameRenderer(this);
+    this->map = map;
+    this->is_tournament = false;
+    this->is_single_race = !this->is_tournament;
+    this->oponent_count = oponents_amount;
+    this->setup(player_texture, std::vector<Car*>(oponents_amount));
   }
 
-  // Verify if the car should be rendered
-  bool is_car_visible(Car* car){
-    float delta = utils::get_delta(street_width, street_width/view_angle, street_length, distance_from_bottom(car));
-    float apparent_height = car->get_height()*delta;
-    return (distance_from_bottom(car) <= street_length-8 && distance_from_bottom(car) >= -apparent_height-(20*delta));
-    // return true;
+  void Race::sort(){
+    Car::sort(this->oponents);
   }
 
-  // Verify if the static object should be rendered
-  bool is_object_visible(int i){
-    float delta = utils::get_delta(street_width, street_width/view_angle, street_length, object_distance(i));
-    float apparent_height = objects[i]->get_height()*delta;
-    return (object_distance(i) <= street_length && object_distance(i) >= -apparent_height);
+  /**
+   * Load the stored best time from disk
+  */
+  int Race::load_best_time(){
+    int best_time = 0;
+    std::fstream save_file;
+    if(access(SAVE_FILE, F_OK) == 0){
+      save_file.open(SAVE_FILE, std::fstream::ios_base::in);
+      save_file >> best_time;
+    }
+    else{
+      save_file.open(SAVE_FILE, std::fstream::ios_base::out);
+      save_file << best_time;
+    }
+    save_file.close();
+    return best_time;
   }
 
-  // Verify it the car went off the road
-  bool is_car_on_track(){
-    return (position-(player->get_width()/2) >= street_left_limit && position+(player->get_width()/2) <= SCREEN_WIDTH-street_left_limit);
-  }
-
-  // Draw the scenario
-  void draw_track(){
-    al_draw_bitmap(map_landscape, -(2600/2)+(position/paralax), 0, 0);
-    al_draw_bitmap(display::LAS_VEGAS_ROAD_BITMAP, position-(street_width/2), SCREEN_HEIGHT-street_length, 0);
-    if(environment::debug){
-      al_draw_filled_circle(position, SCREEN_HEIGHT-60, 1, colors::BLUE);
-      al_draw_line(position-(street_width/2), SCREEN_HEIGHT, position-((street_width/view_angle)/2), SCREEN_HEIGHT-street_length, colors::BLUE, 1);
-      al_draw_line(position+(street_width/2), SCREEN_HEIGHT, position+((street_width/view_angle)/2), SCREEN_HEIGHT-street_length, colors::BLUE, 1);
+  /**
+   *  Initialize obstacles 
+  */
+  void Race::create_obstacles(){
+    this->obstacles = std::vector<Obstacle*>(OBSTACLE_COUNT);
+    this->obstacles[OBSTACLE_COUNT-1] = new Obstacle(0, TRACK_LENGTH, display::FINISH_LINE, false);
+    
+    for (int i = 0; i < 5; i++) {
+      this->obstacles[i] = new Obstacle(-(STREET_WIDTH/2)-120, i*120, display::ROAD_SIGN, false);
+      this->obstacles[i+5] = new Obstacle((STREET_WIDTH/2)+120, i*120, display::ROAD_SIGN, false);
+    }
+    
+    for (int i = 10; i < OBSTACLE_COUNT-1; i++) {
+      float x = (rand()%(int)(STREET_WIDTH-40))-((STREET_WIDTH-40)/2);
+      float y = (rand()%(int)(TRACK_LENGTH-(TRACK_LENGTH/4)+1))+(TRACK_LENGTH/4);
+      this->obstacles[i] = Obstacle::get_random_obstacle(x, y);
     }
   }
 
-  // Draw player's car
-  void draw_player(){
-    al_draw_bitmap(player->get_texture(), (SCREEN_WIDTH/2)-(player->get_width()/2), SCREEN_HEIGHT-player->get_height(), 0);
-    if(environment::debug) {
-      al_draw_rectangle((SCREEN_WIDTH/2)-(player->get_width()/2), SCREEN_HEIGHT-player->get_height(), (SCREEN_WIDTH/2)+(player->get_width()/2), SCREEN_HEIGHT, colors::BLUE, 1);
-      al_draw_filled_circle(SCREEN_WIDTH/2, SCREEN_HEIGHT-(player->get_height()/2), 1, colors::BLUE);
-      al_draw_line(player->get_screen_x()-(player->get_width()/2), 0, player->get_screen_x()-(player->get_width()/2), SCREEN_HEIGHT, colors::BLUE, 1);
-      al_draw_line(player->get_screen_x()+(player->get_width()/2), 0, player->get_screen_x()+(player->get_width()/2), SCREEN_HEIGHT, colors::BLUE, 1);
-      al_draw_line(0, SCREEN_HEIGHT-(player->get_height()/2), SCREEN_WIDTH, SCREEN_HEIGHT-(player->get_height()/2), colors::BLUE, 1);
-    }
-  }
-
-  // Draw oponent's car
-  void draw_oponent(Car* oponent){
-    float distance = distance_from_bottom(oponent);
-    // Perspective rate
-    float delta = utils::get_delta(street_width, street_width/view_angle, street_length, distance);
-    oponent->set_apparent_width(oponent->get_width() * delta);
-    oponent->set_apparent_height(oponent->get_height() * delta);
-    oponent->set_screen_x(position + oponent->get_x());
-    oponent->set_screen_y(SCREEN_HEIGHT-distance-(oponent->get_height()/2));
-    float height_variation = oponent->get_height()-oponent->get_apparent_height();
-    ALLEGRO_FONT *name_font = fonts::font(PIXEL_FONT, 14*delta);
-    display::draw_text(name_font, colors::WHITE, position+(oponent->get_x()*delta), SCREEN_HEIGHT-distance-(20*delta)-oponent->get_height()+height_variation, ALLEGRO_ALIGN_CENTRE, oponent->get_name(), false);
-    al_destroy_font(name_font);
-    al_draw_scaled_bitmap(oponent->get_texture(), 0, 0, oponent->get_width(), oponent->get_height(), position+(oponent->get_x()*delta)-(oponent->get_apparent_width()/2), SCREEN_HEIGHT-distance-oponent->get_apparent_height(), oponent->get_apparent_width(), oponent->get_apparent_height(), 0);
-  }
-
-  // Draw a static object to the screen
-  void draw_object(int i){
-    Object* object = objects[i];
-    float distance = object_distance(i);
-    // Perspective rate
-    float delta = utils::get_delta(street_width, street_width/view_angle, street_length, distance);
-    object->set_apparent_width(object->get_width()*delta);
-    object->set_apparent_height(object->get_height()*delta);
-    object->set_screen_x(position+(object->get_x()*delta));
-    object->set_screen_y(SCREEN_HEIGHT-distance-(object->get_apparent_height()/2));
-    al_draw_scaled_bitmap(object->get_texture(), 0, 0, object->get_width(), object->get_height(), object->get_screen_x()-(object->get_apparent_width()/2), object->get_screen_y()-(object->get_apparent_height()/2), object->get_apparent_width(), object->get_apparent_height(), 0);
-  }
-
-  // Draw screen info
-  void draw_hud(){
-    float minimap_heigth = track_length/300;
-    float player_minimap_position = utils::min(player->get_y(), track_length)/300;
-    int gear_progress = utils::min(10, player->get_gear_progress());
-
-    // Minimap
-    al_draw_line(30, SCREEN_HEIGHT-250, 30, (SCREEN_HEIGHT-250)-minimap_heigth, colors::YELLOW, 6);
-    al_draw_filled_circle(30, SCREEN_HEIGHT-250, 9, colors::ORANGE);
-    al_draw_filled_circle(30, (SCREEN_HEIGHT-250)-minimap_heigth, 9, colors::ORANGE);
-    for (int i = 0; i < oponent_count; i++) {
-      al_draw_filled_circle(30, (SCREEN_HEIGHT-250)-(utils::min(oponents[i]->get_y(), track_length)/300), 9, colors::RED);
-    }
-    al_draw_filled_circle(30, (SCREEN_HEIGHT-250)-player_minimap_position, 9, colors::BLUE);
-
-    // Position
-    al_draw_text(fonts::DISKUN_60, colors::YELLOW, 30, SCREEN_HEIGHT-160, ALLEGRO_ALIGN_LEFT, "POSITION");
-    al_draw_textf(fonts::DISKUN_100, colors::YELLOW, 30, SCREEN_HEIGHT-100, ALLEGRO_ALIGN_LEFT, "%dth", placement);
-
-    // Gears
-    al_draw_text(fonts::DISKUN_60, colors::YELLOW, SCREEN_WIDTH-30, SCREEN_HEIGHT-280, ALLEGRO_ALIGN_RIGHT, "GEAR");
-    al_draw_textf(fonts::DISKUN_80, colors::YELLOW, SCREEN_WIDTH-30, SCREEN_HEIGHT-220, ALLEGRO_ALIGN_RIGHT, "%d", player->get_gear());
-    al_draw_filled_rounded_rectangle(15, 15, 258, 85, 5.0, 5.0, colors::YELLOW);
-    al_draw_filled_rounded_rectangle(20, 20, 253, 80, 3.0, 3.0, colors::rgb(50, 50, 50));
-    for (int i = 1; i <= gear_progress; i++) {
-      int red = (int)(200*(i/10.0));
-      int green = 65+(int)(190*((10-i)/10.0));
-      al_draw_filled_rectangle(i*23, 23, (i*23)+20, 77, colors::rgb(red, green, 40));
-    }
-
-    // Speed
-    al_draw_text(fonts::DISKUN_60, colors::YELLOW, SCREEN_WIDTH-30, SCREEN_HEIGHT-140, ALLEGRO_ALIGN_RIGHT, "SPEED");
-    al_draw_textf(fonts::DISKUN_80, colors::YELLOW, SCREEN_WIDTH-30, SCREEN_HEIGHT-80, ALLEGRO_ALIGN_RIGHT, "%.0f Km/h", utils::max(0, player->get_speed()));
-
-    // Nitrox
-    al_draw_text(fonts::DISKUN_60, colors::YELLOW, SCREEN_WIDTH-30, 20, ALLEGRO_ALIGN_RIGHT, "NITROX");
-    al_draw_filled_rounded_rectangle(SCREEN_WIDTH-60, 90, SCREEN_WIDTH-30, 300, 5.0, 5.0, colors::YELLOW);
-    al_draw_filled_rounded_rectangle(SCREEN_WIDTH-55, 95, SCREEN_WIDTH-35, 295, 3.0, 3.0, colors::rgb(50, 50, 50));
-    al_draw_filled_rectangle(SCREEN_WIDTH-53, 293-(196*(player->get_nitrox()/100)), SCREEN_WIDTH-37, 293, colors::RED);
-  }
-
-  // Draw the game cars
-  void draw_cars(){
-    if(!finished) {
-      Car::quick_sort_cars(cars, oponent_count+1);
-      placement = 1;
-    } 
-    for(int i = oponent_count; i >= 0; i--){
-      if(cars[i] == player){
-        draw_player();
-      }
-      else{
-        if(!finished && cars[i]->get_y() > player->get_y()) {
-          placement++;
-        }
-        if(is_car_visible(cars[i])){
-          draw_oponent(cars[i]);
-        }
+  /**
+   * Initialize oponents
+   * @param tournament_cars vector of oponent cars
+  */
+  void Race::create_oponents(std::vector<Car*> tournament_cars){
+    this->oponents = tournament_cars;
+    if(this->is_single_race){
+      int car_type, car_color;
+      for (int i = 0; i < oponent_count; i++) {
+        car_type = rand()%4;
+        car_color = rand()%7;
+        oponents[i] = new Car(i+1, display::get_car_bitmap((CarsTypes)car_type, car_color));
       }
     }
+    // cars = (Car**) malloc((oponent_count+1)*sizeof(Car*));
+    // for (int i = 0; i < oponent_count; i++) {
+    //   cars[i] = oponents[i];
+    // }
   }
 
-  // Draw static objects
-  // TODO: Fix the order in which the objects are rendered (not sure how is this possible)
-  void draw_objects(){
-    for (int i = 0; i < object_count; i++) {
-      if(is_object_visible(i)){
-        draw_object(i);
-      }
+  /**
+   * Change track to map's theme
+  */
+  void Race::setup_music(){
+    if(this->map != Map::NONE){
+      sounds::stop_music(sounds::music);
+      this->map_music_title = maps::get_map_song_title(this->map);
+      sounds::music = maps::get_map_music(this->map);
+      sounds::start_music(sounds::music, true);
     }
   }
 
-  // Refresh game screen
-  void draw_game(){
-    al_clear_to_color(map_soil);
-    // Draw track boundaries
-    draw_track();
-    // Draw static objects
-    draw_objects();
-    // Draw player and oponents
-    draw_cars();
-    // Draw screen stats
-    draw_hud();
-    al_flip_display();
+  /**
+   * Initialize map's scenario
+  */
+  void Race::setup_scenario(){
+    if(this->map != Map::NONE){
+      this->map_landscape = maps::get_map_landscape((Map)map);
+      this->map_soil = maps::get_map_color((Map)map);
+    }
   }
 
-  // Draw game screen on pause
-  void draw_paused_game(int op){
-    ALLEGRO_COLOR colors[4];
-    colors[0] = colors::YELLOW;
-    colors[1] = colors::YELLOW;
-    colors[2] = colors::YELLOW;
-    colors[3] = colors::YELLOW;
-    colors[op] = colors::WHITE;
-    al_clear_to_color(map_soil);
-    // Draw track boundaries
-    draw_track();
-    // Draw static objects
-    draw_objects();
-    // Draw player and oponents
-    draw_cars();
-    // Draw screen stats
-    draw_hud();
-    // Draw dialog box
-    al_draw_filled_rectangle((SCREEN_WIDTH/2)-300, (SCREEN_HEIGHT/2)-200, (SCREEN_WIDTH/2)+300, (SCREEN_HEIGHT/2)+200, colors::BLUE);
-    al_draw_rectangle((SCREEN_WIDTH/2)-300, (SCREEN_HEIGHT/2)-200, (SCREEN_WIDTH/2)+300, (SCREEN_HEIGHT/2)+200, colors::YELLOW, 5);
-    display::draw_text(fonts::PIXEL_28, colors[0], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-71, ALLEGRO_ALIGN_CENTRE, "RESUME", false);
-    display::draw_text(fonts::PIXEL_28, colors[1], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)-33, ALLEGRO_ALIGN_CENTRE, "RESTART", false);
-    display::draw_text(fonts::PIXEL_28, colors[2], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+5, ALLEGRO_ALIGN_CENTRE, "OPTIONS", false);
-    display::draw_text(fonts::PIXEL_28, colors[3], SCREEN_WIDTH/2, (SCREEN_HEIGHT/2)+38, ALLEGRO_ALIGN_CENTRE, "MAIN MENU", true);
-    al_flip_display();
+  void Race::restart(){
+    Car::restart_positions(this->oponents);
+    this->sort();
+
+    int placement = this->oponents.size() + 1; 
+    player->set_y(this->get_player_start_distance(placement));
+    player->set_x(this->get_player_start_position(placement));
+
+    this->camera_position = utils::normalize(-player->get_x());
+    player->set_gear(1);
+    player->set_speed(0.0);
+    player->set_nitrox(100.0);
+
+    for (int i = 0; i < 5; i++) {
+      this->obstacles[i]->set_x(-(STREET_WIDTH / 2) - 120);
+      this->obstacles[i]->set_y(i * 120);
+      this->obstacles[i+5]->set_x((STREET_WIDTH / 2) + 120);
+      this->obstacles[i+5]->set_y(i * 120);
+    }
+
+    sounds::restart_music(sounds::music);
+    countdown();
+    al_set_timer_count(environment::timer, 0);
   }
 
-  // Set gear to a specifc value if the numeric key corresponding to the gear is pressed
-  void control_gears(){
+  // TODO: Make logic generic
+  /**
+   * Returns the initial y coordinate for the player
+  */
+  float Race::get_player_start_distance(int placement){
+    if(placement < 4){
+      return (3*STARTING_DISTANCE);
+    }
+    else if(placement < 7){
+      return (2*STARTING_DISTANCE);
+    }
+    else if(placement < 10){
+      return (1*STARTING_DISTANCE);
+    }
+    else if(placement < 13){
+      return (0*STARTING_DISTANCE);
+    }
+    else {
+      return 0;
+    }
+  }
+
+  /**
+   * Returns the initial x coordinate for the player
+  */
+  float Race::get_player_start_position(int placement){
+    float x = (placement % 3) - 1;
+    return ((x*25)+(x*400));
+  }
+
+  void Race::setup(ALLEGRO_BITMAP* player_texture, std::vector<Car*> tournament_cars){
+    this->best_time = Race::load_best_time();
+    this->create_obstacles();
+    this->create_oponents(tournament_cars);
+    this->setup_music();
+    this->setup_scenario();
+
+    this->player = new Car(player_texture);
+    this->player->set_y(Race::get_player_start_distance(oponent_count + 1));
+    this->player->set_x(Race::get_player_start_position(oponent_count + 1));
+
+    // cars[oponent_count] = player;
+    // Car::quick_sort_cars(cars, oponent_count+1);
+    
+    this->camera_position = utils::normalize(-player->get_x());
+  }
+
+  /**
+   * Displays countdown to race start
+  */
+  void Race::countdown(){
+    for (int i = 3; i > 0; i--) {
+      renderer.draw_game();
+      al_draw_textf(fonts::DISKUN_60, colors::YELLOW, SCREEN_WIDTH/2, SCREEN_HEIGHT/3, ALLEGRO_ALIGN_CENTRE, "%d", i);
+      al_flip_display();
+      sounds::play_sample(sounds::READY_SOUND);
+      al_rest(1);
+    }
+    sounds::play_sample(sounds::GO_SOUND);
+    al_flush_event_queue(environment::event_queue);
+    al_flush_event_queue(environment::input_event_queue);
+    al_flush_event_queue(environment::timer_event_queue);
+    al_set_timer_count(environment::timer, 0);
+  }
+
+  InputResult Race::handle_key_events(ALLEGRO_EVENT ev){
+    int result;
+
+    switch (ev.keyboard.keycode) {
+      case ALLEGRO_KEY_E:
+        this->player->gear_up();
+        return InputResult::CONTINUE;
+
+      case ALLEGRO_KEY_Q:
+        this->player->gear_up();
+        return InputResult::CONTINUE;
+
+      case ALLEGRO_KEY_R:
+        int new_position = rand()%(int)(STREET_WIDTH + 1);
+        this->player->set_x((float)new_position);
+        return InputResult::CONTINUE;
+
+      case ALLEGRO_KEY_ESCAPE:
+        return InputResult::PAUSE;
+      
+      default:
+        return InputResult::CONTINUE;
+    }
+  }
+
+  int Race::perform_pause_action(int op){
+    int result;
+
+    switch (op) {
+      case 0: return MENU_ACTION_RESUME;
+
+      case 1:
+        this->restart();
+        return MENU_ACTION_RESUME;
+
+      case 2:
+        result = menus::options_menu();
+        if(result == MENU_ACTION_QUIT_GAME) return MENU_ACTION_QUIT_GAME;
+        op = 0;
+        return MENU_ACTION_DONE;
+
+      case 3:
+        return MENU_ACTION_GO_BACK;
+    }
+  }
+
+  int Race::pause_menu_loop(){
+    int op = 0, result;
+    ALLEGRO_EVENT ev;
+
+    renderer.draw_paused_game(op);
+    sounds::set_music_volume(sounds::music, 0.6);
+
+    while (true) {
+      al_wait_for_event(environment::input_event_queue, &ev);
+
+      switch(ev.type){
+        case ALLEGRO_EVENT_DISPLAY_CLOSE: return MENU_ACTION_QUIT_GAME;
+
+        case ALLEGRO_EVENT_KEY_DOWN:
+          switch (ev.keyboard.keycode) {
+            case ALLEGRO_KEY_ESCAPE:
+              sounds::play_sample(sounds::MENU_BACK_SOUND);
+              return MENU_ACTION_RESUME;
+
+            case ALLEGRO_KEY_UP:
+            case ALLEGRO_KEY_W:
+              if(op > 0){
+                op--;
+                sounds::play_sample(sounds::MENU_MOVE_SOUND);
+                renderer.draw_paused_game(op);
+              }
+              break;
+
+            case ALLEGRO_KEY_DOWN:
+            case ALLEGRO_KEY_S:
+              if(op < 3){
+                op++;
+                sounds::play_sample(sounds::MENU_MOVE_SOUND);
+                renderer.draw_paused_game(op);
+              }
+              break;
+
+            case ALLEGRO_KEY_ENTER:
+              sounds::play_sample(sounds::MENU_SELECT_SOUND);
+              result = this->perform_pause_action(op);
+              if(result == MENU_ACTION_DONE){
+                renderer.draw_paused_game(op);
+              }
+              else{
+                return result;
+              }
+              break;
+          }
+          break;
+      }
+    }
+    sounds::play_sample(sounds::MENU_BACK_SOUND);
+    sounds::set_music_volume(sounds::music, 1.0);
+    return MENU_ACTION_RESUME;
+  }
+
+  int Race::pause_menu(){
+    int result;
+
+    player->stop_engine_sound();
+    al_stop_timer(environment::timer);
+    result = this->pause_menu_loop();
+    al_start_timer(environment::timer);
+    sounds::set_music_volume(sounds::music, 1.0);
+
+    if(result == MENU_ACTION_RESUME) {
+      player->stop_engine_sound();
+      renderer.draw_game();
+    }
+    else {
+      return result;
+    }
+  }
+
+  /**
+   * @brief Set gear to a specifc value if the numeric key corresponding to the gear is pressed
+   * 
+   */
+  void Race::control_gears(){
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_1)) {
-      player->set_gear(1);
+      this->player->set_gear(1);
     }
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_2)) {
-      player->set_gear(2);
+      this->player->set_gear(2);
     }
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_3)) {
-      player->set_gear(3);
+      this->player->set_gear(3);
     }
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_4)) {
-      player->set_gear(4);
+      this->player->set_gear(4);
     }
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_5)) {
-      player->set_gear(5);
+      this->player->set_gear(5);
     }
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_6)) {
-      player->set_gear(6);
+      this->player->set_gear(6);
     }
   }
 
-  // Move the player based on input
-  void move(){
+  /**
+   * @brief Move the player based on input
+   * 
+   */
+  void Race::move(){
     float delta_speed = player->speed_increase();
-    if(environment::collisions) player->car_collided(cars, objects, oponent_count+1, object_count);
+    if(environment::collisions) player->car_collided(this->oponents, this->obstacles);
     al_get_keyboard_state(&environment::key_state);
     
     if(is_car_on_track()){
@@ -273,20 +367,20 @@ namespace top_gear {
       player->set_speed(utils::max(0, player->get_speed() - GRASS_SLOW_EFFECT));
     }
     
-    if (al_key_down(&environment::key_state, ALLEGRO_KEY_A)) {
-      if(position < utils::max(SCREEN_WIDTH, street_width)+player->get_width()) position += utils::min(environment::movement_speed*((player->get_speed())/40), environment::movement_speed);
+    if (al_key_down(&environment::key_state, ALLEGRO_KEY_A) && camera_position < utils::max(SCREEN_WIDTH, STREET_WIDTH)+player->get_width()) {
+      camera_position += utils::min(environment::movement_speed*((player->get_speed())/40), environment::movement_speed);
     }
     
-    if (al_key_down(&environment::key_state, ALLEGRO_KEY_D)){
-      if(position > 0-player->get_width()) position -= utils::min(environment::movement_speed*((player->get_speed())/40), environment::movement_speed);
+    if (al_key_down(&environment::key_state, ALLEGRO_KEY_D) && camera_position > -player->get_width()){
+      camera_position -= utils::min(environment::movement_speed*((player->get_speed())/40), environment::movement_speed);
     }
     
     if (al_key_down(&environment::key_state, ALLEGRO_KEY_W)){
-      if(!engine_running){
-        player_engine_sound_instance = sounds::continuously_play_sample(sounds::CAR_ENGINE_SOUND);
-        engine_running = true;
+      if(!player->is_engine_running()){
+        player->set_engine_running(true);
+        player->play_engine_sound();
       }
-      sounds::set_sample_volume(player_engine_sound_instance, utils::max(0, player->get_speed()/Car::max_speed(player->get_gear())));
+      sounds::set_sample_volume(player->get_engine_sound_instance(), utils::max(0, player->get_speed()/Car::max_speed(player->get_gear())));
       if(delta_speed < 0){
         player->set_speed(utils::max(0, player->get_speed() + delta_speed));
       }
@@ -298,9 +392,9 @@ namespace top_gear {
       }
     }
     else {
-      if(engine_running && player->get_speed() == 0.0){
-        sounds::stop_sample(player_engine_sound_instance);
-        engine_running = false;
+      if(player->is_engine_running() && player->get_speed() == 0.0){
+        player->set_engine_running(false);
+        player->stop_engine_sound();
       }
       if(player->speed_increase() < 0){
         player->set_speed(utils::max(0, player->get_speed() + player->speed_increase()));
@@ -310,20 +404,20 @@ namespace top_gear {
     
     if(al_key_down(&environment::key_state, ALLEGRO_KEY_LSHIFT)){
       if(player->get_nitrox() > 33.333/environment::fps){
-        if(!boosting) {
+        if(!player->is_boosting()) {
           sounds::play_sample(sounds::CAR_BOOST_SOUND);
-          boosting = true;
+          player->set_boosting(true);
         }
         player->set_speed(player->get_speed() + (15.0/environment::fps));
         player->set_nitrox(utils::max(0, player->get_nitrox()-(33.333/environment::fps)));
       }
-      else if(boosting){
-        boosting = false;
+      else if(player->is_boosting()){
+        player->set_boosting(false);
       }
     }
     else{
-      if(boosting){
-        boosting = false;
+      if(player->is_boosting()){
+        player->set_boosting(false);
       }
       if(player->get_nitrox() < 100.0){
         player->set_nitrox(utils::min(100.0, player->get_nitrox()+(4.0/environment::fps)));
@@ -334,6 +428,116 @@ namespace top_gear {
       player->set_speed(utils::max(0, player->get_speed() - BREAK_EFFECT));
     }
     player->set_y(player->get_y() + (player->get_speed() * DISTANCE_VARIATION));
+  }
+
+  /**
+   * @brief Update game instant
+   * 
+   * @return int 
+   */
+  int Race::update(){
+    this->control_gears();
+    this->move();
+    control_oponents();
+    move_scenario_objects();
+    draw_game();
+    if(player->get_y() >= track_length) {
+      return 1;
+    }
+    else return 0;
+  }
+
+  int Race::play(){
+    int result;
+    ALLEGRO_EVENT ev;
+    
+    this->countdown();
+
+    while (true) {
+      while(!al_is_event_queue_empty(environment::input_event_queue)){
+        al_wait_for_event(environment::input_event_queue, &ev);
+        
+        if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+          if(player->is_engine_running() && player->get_engine_sound_instance() != nullptr){
+            sounds::stop_sample(player->get_engine_sound_instance());
+          }
+          return MENU_ACTION_QUIT_GAME;
+        }
+        
+        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
+          result = handle_key_events(ev);
+          if(result == InputResult::PAUSE){
+            result = this->pause_menu();
+            if(result != MENU_ACTION_RESUME){
+              return result;
+            }
+          }
+        }
+      }
+
+      al_wait_for_event(environment::event_queue, &ev);
+      if(ev.type == ALLEGRO_EVENT_TIMER) {
+        result = update();
+        if(result == -1){
+          if(engine_running) sounds::stop_sample(player->get_engine_sound_instance());
+          return -1;
+        }
+        else if(result == 1){
+          finished = true;
+          boosting = false;
+          race_time = al_get_timer_count(environment::timer)/environment::fps;
+          if(al_get_timer_count(environment::timer) < record || record == 0){
+            best_time = true;
+            record = al_get_timer_count(environment::timer);
+            FILE *save = fopen(SAVE_FILE, "w");
+            fprintf(save, "%d", record);
+            fclose(save);
+          }
+          deaccelerate_until_stop();
+          if(tournament_cars == nullptr) free(oponents);
+          if(single_match){
+            result = show_leaderboard();
+            clear_game();
+            return result;
+          }
+          else return 0;
+        }
+      }
+    }
+    return 0;
+  }
+
+  // bool finished = false;
+  // bool engine_running = false;
+  // bool boosting = false;
+  // bool best_time = false;
+  // int map; // The map code
+  // int placement = 1; // Player race position
+  // int object_count = 0; // Number of static objects on the map
+  // float position; // The road center x coordinate on the screen
+  // float street_width = STREET_WIDTH;
+  // float track_visible_length = 500.0; // Street visible s pam
+  // float view_angle = 16.0; // Perspective angle (not related to any real wolrd angle value)
+  // float street_left_limit; // Street border
+  // float track_length = 50000.0;
+  // float paralax = 1.3;
+  // double race_time;
+  // char* map_music_title;
+  // ALLEGRO_EVENT ev;
+  // Car* player;
+  // Car** oponents;
+  // Car** cars;
+  // Obstacle** objects;
+  // ALLEGRO_COLOR map_soil;
+  // ALLEGRO_BITMAP* map_landscape = nullptr;
+  // ALLEGRO_SAMPLE_INSTANCE *player_engine_sound_instance = nullptr;
+
+  void countdown();
+  void clear_game();
+
+  // Verify it the car went off the road
+  bool is_car_on_track(){
+    return (position-(player->get_width()/2) >= street_left_limit && position+(player->get_width()/2) <= SCREEN_WIDTH-street_left_limit);
   }
 
   // Process AI commands for each oponent
@@ -351,122 +555,6 @@ namespace top_gear {
         objects[i+5]->set_y(objects[i+5]->get_y() + ((5-1)*120) + objects[i]->get_height());
       }
     }
-  }
-
-  // Update game instant
-  int update(){
-    control_gears();
-    move();
-    control_oponents();
-    move_scenario_objects();
-    draw_game();
-    if(player->get_y() >= track_length) {
-      return 1;
-    }
-    else return 0;
-  }
-
-  // Reinicia a corrida
-  void restart(){
-    Car::restart_positions(oponents, oponent_count);
-    Car::quick_sort_cars(cars, oponent_count+1);
-    int player_position = oponent_count+1;
-    if(player_position < 4){
-      player->set_y(3*STARTING_DISTANCE);
-    }
-    else if(player_position < 7){
-      player->set_y(2*STARTING_DISTANCE);
-    }
-    else if(player_position < 10){
-      player->set_y(1*STARTING_DISTANCE);
-    }
-    else if(player_position < 13){
-      player->set_y(0*STARTING_DISTANCE);
-    }
-    float x = (player_position%3)-1;
-    player->set_x((x*25)+(x*400));
-    position = (SCREEN_WIDTH/2)-player->get_x();
-    player->set_gear(1);
-    player->set_speed(0.0);
-    player->set_nitrox(100.0);
-    for (int i = 0; i < 5; i++) {
-      objects[i]->set_x(-(street_width/2)-120);
-      objects[i]->set_y(i*120);
-      objects[i+5]->set_x((street_width/2)+120);
-      objects[i+5]->set_y(i*120);
-    }
-    sounds::restart_music(sounds::music);
-    countdown();
-    al_set_timer_count(environment::timer, 0);
-  }
-
-  // Handle paused game
-  int pause(){
-    int op = 0;
-    draw_paused_game(op);
-    sounds::set_music_volume(sounds::music, 0.6);
-    while (true) {
-      ALLEGRO_EVENT ev;
-      al_wait_for_event(environment::input_event_queue, &ev);
-      // Quit game
-      if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-        return 4;
-      }
-      else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-        // Return to title
-        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE){
-          sounds::play_sample(sounds::MENU_BACK_SOUND);
-          break;
-        }
-        switch (ev.keyboard.keycode) {
-          // Selection UP
-          case ALLEGRO_KEY_UP:
-          case ALLEGRO_KEY_W:
-            if(op > 0){
-              op--;
-              sounds::play_sample(sounds::MENU_MOVE_SOUND);
-              // Update screen
-              draw_paused_game(op);
-            }
-            break;
-          // Selection DOWN
-          case ALLEGRO_KEY_DOWN:
-          case ALLEGRO_KEY_S:
-            if(op < 3){
-              op++;
-              sounds::play_sample(sounds::MENU_MOVE_SOUND);
-              // Update screen
-              draw_paused_game(op);
-            }
-            break;
-          // Confirm selection
-          case ALLEGRO_KEY_ENTER:
-            sounds::play_sample(sounds::MENU_SELECT_SOUND);
-            switch (op) {
-              case 0:
-                // Resume
-                return 0;
-                break;
-              case 1:
-                // Restart race
-                restart();
-                return 0;
-              case 2:
-                // Configure options
-                if(menus::options_menu() == 4) return 4;
-                op = 0;
-                break;
-              case 3:
-                // Quit to title
-                return -1;
-            }
-            draw_paused_game(op);
-        }
-      }
-    }
-    sounds::play_sample(sounds::MENU_BACK_SOUND);
-    sounds::set_music_volume(sounds::music, 1.0);
-    return 0;
   }
 
   int deaccelerate_until_stop(){
@@ -565,188 +653,8 @@ namespace top_gear {
     return 0;
   }
 
-  // Setup game environment
-  void setup(ALLEGRO_BITMAP* player_texture, Car** tournament_cars, bool single_match){
-    if(access(SAVE_FILE, F_OK) == 0){
-      FILE *save = fopen(SAVE_FILE, "r");
-      fscanf(save, "%d", &record);
-      fclose(save);
-    }
-    else{
-      record = 0;
-      FILE *save = fopen(SAVE_FILE, "w");
-      fprintf(save, "%d", record);
-      fclose(save);
-    }
-    // Initialize environment
-    int player_position = oponent_count+1;
-    street_left_limit = (SCREEN_WIDTH-street_width)/2;
-    object_count = 30;
-
-    // Initialize objects
-    objects = (Object**) malloc(object_count*sizeof(Object*));
-    objects[object_count-1] = new Object(0, track_length, display::FINISH_LINE, false);
-    for (int i = 0; i < 5; i++) {
-      objects[i] = new Object(-(street_width/2)-120, i*120, display::ROAD_SIGN, false);
-      objects[i+5] = new Object((street_width/2)+120, i*120, display::ROAD_SIGN, false);
-    }
-    for (int i = 10; i < object_count-1; i++) {
-      float x = (rand()%(int)(street_width-40))-((street_width-40)/2);
-      float y = (rand()%(int)(track_length-(track_length/4)+1))+(track_length/4);
-      objects[i] = Object::get_random_obstacle(x, y);
-    }
-
-    // Initialize oponents
-    cars = (Car**) malloc((oponent_count+1)*sizeof(Car*));
-    if(tournament_cars){
-      oponents = tournament_cars;
-    }
-    else{
-      oponents = (Car**) malloc(oponent_count*sizeof(Car*));
-      int car_type, car_color;
-      for (int i = 0; i < oponent_count; i++) {
-        car_type = rand()%4;
-        car_color = rand()%7;
-        oponents[i] = new Car(i+1, display::get_car_bitmap((CarsTypes)car_type, car_color));
-      }
-    }
-    for (int i = 0; i < oponent_count; i++) {
-      cars[i] = oponents[i];
-    }
-
-    // Change track to Las Vegas theme
-    sounds::stop_music(sounds::music);
-    map_music_title = maps::get_map_music_title((Map)map);
-    sounds::music = maps::get_map_music((Map)map);
-    sounds::start_music(sounds::music, true);
-
-    // Initialize Landscape
-    map_landscape = maps::get_map_landscape((Map)map);
-    map_soil = maps::get_map_color((Map)map);
-
-    // Initialize player
-    player = new Car(player_texture);
-    cars[oponent_count] = player;
-    Car::quick_sort_cars(cars, oponent_count+1);
-    if(player_position < 4){
-      player->set_y(3*STARTING_DISTANCE);
-    }
-    else if(player_position < 7){
-      player->set_y(2*STARTING_DISTANCE);
-    }
-    else if(player_position < 10){
-      player->set_y(1*STARTING_DISTANCE);
-    }
-    else if(player_position < 13){
-      player->set_y(0*STARTING_DISTANCE);
-    }
-    float x = (player_position%3)-1;
-    player->set_x((x*25)+(x*400));
-    position = (SCREEN_WIDTH/2)-player->get_x();
-  }
-
-  int handle_key_events(){
-    int result;
-    // Gear up
-    if(ev.keyboard.keycode == ALLEGRO_KEY_E) player->gear_up();
-    // Gear down
-    else if(ev.keyboard.keycode == ALLEGRO_KEY_Q) player->gear_down();
-    // Reset position
-    else if(ev.keyboard.keycode == ALLEGRO_KEY_R){
-      int new_position = rand()%(int)(street_width + 1);
-      position = (float)new_position;
-    }
-    // Pause
-    if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-      if(engine_running){
-        sounds::stop_sample(player_engine_sound_instance);
-      }
-      al_stop_timer(environment::timer);
-      result = pause();
-      al_start_timer(environment::timer);
-      sounds::set_music_volume(sounds::music, 1.0);
-      if(result == -1 || result == 4) return result;
-      if(result == 0) {
-        if(engine_running){
-          player_engine_sound_instance = sounds::continuously_play_sample(sounds::CAR_ENGINE_SOUND);
-          sounds::set_sample_volume(player_engine_sound_instance, player->get_speed()/Car::max_speed(player->get_gear()));
-        }
-        draw_game();
-      }
-    }
-  }
-
-  // Countdown to race start
-  void countdown(){
-    for (int i = 3; i > 0; i--) {
-      draw_game();
-      al_draw_textf(fonts::DISKUN_60, colors::YELLOW, SCREEN_WIDTH/2, SCREEN_HEIGHT/3, ALLEGRO_ALIGN_CENTRE, "%d", i);
-      al_flip_display();
-      sounds::play_sample(sounds::READY_SOUND);
-      al_rest(1);
-    }
-    sounds::play_sample(sounds::GO_SOUND);
-    al_flush_event_queue(environment::event_queue);
-    al_flush_event_queue(environment::input_event_queue);
-    al_set_timer_count(environment::timer, 0);
-  }
-
   // Single match
-  int play(ALLEGRO_BITMAP* player_texture, Car** tournament_cars, int oponents_amount, Map choosen_map, bool single_match){
-    int result;
-    map = choosen_map;
-    oponent_count = oponents_amount;
-    if(single_match) best_time = false;
-
-    setup(player_texture, tournament_cars, single_match);
-    
-    countdown();
-    // Main loop
-    while (true) {
-      while(!al_is_event_queue_empty(environment::input_event_queue)){
-        al_wait_for_event(environment::input_event_queue, &ev);
-        // Quit game
-        if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-          if(engine_running && player_engine_sound_instance) sounds::stop_sample(player_engine_sound_instance);
-          return 4;
-        }
-        // Handle input
-        else if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
-          result = handle_key_events();
-        }
-      }
-      al_wait_for_event(environment::event_queue, &ev);
-      // Each 1/environment::fps seconds
-      if(ev.type == ALLEGRO_EVENT_TIMER) {
-        result = update();
-        if(result == -1){
-          if(engine_running) sounds::stop_sample(player_engine_sound_instance);
-          return -1;
-        }
-        else if(result == 1){
-          finished = true;
-          boosting = false;
-          race_time = al_get_timer_count(environment::timer)/environment::fps;
-          if(al_get_timer_count(environment::timer) < record || record == 0){
-            best_time = true;
-            record = al_get_timer_count(environment::timer);
-            FILE *save = fopen(SAVE_FILE, "w");
-            fprintf(save, "%d", record);
-            fclose(save);
-          }
-          deaccelerate_until_stop();
-          if(tournament_cars == nullptr) free(oponents);
-          if(single_match){
-            result = show_leaderboard();
-            clear_game();
-            return result;
-          }
-          else return 0;
-        }
-      }
-    }
-    return 0;
-  }
+  
 
   int tournament(ALLEGRO_BITMAP* player_texture, int oponents_amount){
     Car **tournament_cars = (Car**) calloc(oponents_amount, sizeof(Car*));

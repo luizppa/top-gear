@@ -1,5 +1,5 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef OBSTACLE_H
+#define OBSTACLE_H
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_image.h>
@@ -7,7 +7,7 @@
 
 namespace top_gear {
 
-  class Object {
+  class Obstacle {
     private:
       float x;
       float y;
@@ -21,7 +21,7 @@ namespace top_gear {
       ALLEGRO_BITMAP* texture;
 
     public:
-      Object(float x, float y, ALLEGRO_BITMAP* texture, bool collidable);
+      Obstacle(float x, float y, ALLEGRO_BITMAP* texture, bool collidable);
       float get_x();
       void set_x(float x);
       float get_y();
@@ -38,7 +38,7 @@ namespace top_gear {
       float set_apparent_height(float apparent_height);
       bool is_collidable();
       ALLEGRO_BITMAP* get_texture();
-      static Object* get_random_obstacle(float x, float y);
+      static Obstacle* get_random_obstacle(float x, float y);
   };
 
 }

@@ -27,7 +27,7 @@ namespace top_gear {
     }
 
     // Returns the file name to the map music asset
-    char* get_map_music_title(Map map){
+    std::string get_map_song_title(Map map){
       switch (map) {
         case Map::LAS_VEGAS: return LAS_VEGAS_MUSIC;
         case Map::BORDEAUX: return BORDEAUX_MUSIC;
